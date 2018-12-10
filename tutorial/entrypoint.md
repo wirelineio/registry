@@ -14,7 +14,7 @@ To get started create two files in your project directory that will instantiate 
 
 Start by adding the following code to `nsd/main.go`:
 
-> _*NOTE*_: Your application needs to import the code you just wrote. Here the import path is set to this repository (`github.com/cosmos/sdk-application-tutorial`). If you are following along in your own repo you will need to change the import path to reflect that (`github.com/{ .Username }/{ .Project.Repo }`).
+> _*NOTE*_: Your application needs to import the code you just wrote. Here the import path is set to this repository (`github.com/wirelineio/cosmos-htlc`). If you are following along in your own repo you will need to change the import path to reflect that (`github.com/{ .Username }/{ .Project.Repo }`).
 
 ```go
 package main
@@ -36,7 +36,7 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 
 	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
-	app "github.com/cosmos/sdk-application-tutorial"
+	app "github.com/wirelineio/cosmos-htlc"
 	abci "github.com/tendermint/tendermint/abci/types"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -217,7 +217,7 @@ Notes on the above code:
 
 Finish up by building the `nscli` command:
 
-> _*NOTE*_: Your application needs to import the code you just wrote. Here the import path is set to this repository (`github.com/cosmos/sdk-application-tutorial`). If you are following along in your own repo you will need to change the import path to reflect that (`github.com/{ .Username }/{ .Project.Repo }`).
+> _*NOTE*_: Your application needs to import the code you just wrote. Here the import path is set to this repository (`github.com/wirelineio/cosmos-htlc`). If you are following along in your own repo you will need to change the import path to reflect that (`github.com/{ .Username }/{ .Project.Repo }`).
 
 ```go
 package main
@@ -240,9 +240,9 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	app "github.com/cosmos/sdk-application-tutorial"
-	nsclient "github.com/cosmos/sdk-application-tutorial/x/nameservice/client"
-	nsrest "github.com/cosmos/sdk-application-tutorial/x/nameservice/client/rest"
+	app "github.com/wirelineio/cosmos-htlc"
+	nsclient "github.com/wirelineio/cosmos-htlc/x/nameservice/client"
+	nsrest "github.com/wirelineio/cosmos-htlc/x/nameservice/client/rest"
 )
 
 const (

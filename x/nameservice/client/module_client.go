@@ -2,9 +2,9 @@ package client
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
-	nameservicecmd "github.com/cosmos/sdk-application-tutorial/x/nameservice/client/cli"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
+	nameservicecmd "github.com/wirelineio/cosmos-htlc/x/nameservice/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module

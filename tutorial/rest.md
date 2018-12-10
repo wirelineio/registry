@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/sdk-application-tutorial/x/nameservice"
+	"github.com/wirelineio/cosmos-htlc/x/nameservice"
 
 	"github.com/gorilla/mux"
 )

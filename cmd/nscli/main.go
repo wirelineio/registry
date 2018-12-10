@@ -8,19 +8,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/spf13/cobra"
-	amino "github.com/tendermint/go-amino"
-	"github.com/tendermint/tendermint/libs/cli"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	app "github.com/cosmos/sdk-application-tutorial"
-	nsclient "github.com/cosmos/sdk-application-tutorial/x/nameservice/client"
-	nsrest "github.com/cosmos/sdk-application-tutorial/x/nameservice/client/rest"
+	"github.com/spf13/cobra"
+	amino "github.com/tendermint/go-amino"
+	"github.com/tendermint/tendermint/libs/cli"
+	app "github.com/wirelineio/cosmos-htlc"
+	nsclient "github.com/wirelineio/cosmos-htlc/x/nameservice/client"
+	nsrest "github.com/wirelineio/cosmos-htlc/x/nameservice/client/rest"
 )
 
 const (
