@@ -18,6 +18,7 @@ import (
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 	app "github.com/wirelineio/cosmos-htlc"
+	htlcclient "github.com/wirelineio/cosmos-htlc/x/htlc/client"
 	nsclient "github.com/wirelineio/cosmos-htlc/x/nameservice/client"
 	nsrest "github.com/wirelineio/cosmos-htlc/x/nameservice/client/rest"
 )
@@ -43,6 +44,7 @@ func main() {
 
 	mc := []sdk.ModuleClients{
 		nsclient.NewModuleClient(storeNS, cdc),
+		htlcclient.NewModuleClient(cdc),
 	}
 
 	rootCmd := &cobra.Command{

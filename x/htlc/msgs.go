@@ -6,33 +6,21 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Status represents the status of an HTLC.
-type Status uint8
-
-// HTLC status enum.
-const (
-	HtlcCreated  Status = 1
-	HtlcRedeemed Status = 2
-	HtlcFailed   Status = 3
-)
-
 // MsgAddHtlc defines a AddHtlc message.
 type MsgAddHtlc struct {
-	Status         Status
 	Amount         sdk.Coin
 	Hash           string
-	Timelock       uint
+	Locktime       int64
 	RedeemAddress  sdk.AccAddress
 	TimeoutAddress sdk.AccAddress
 }
 
 // NewMsgAddHtlc is the constructor function for MsgAddHtlc.
-func NewMsgAddHtlc(amount sdk.Coin, hash string, timelock uint, redeemAddress sdk.AccAddress, timeoutAddress sdk.AccAddress) MsgAddHtlc {
+func NewMsgAddHtlc(amount sdk.Coin, hash string, locktime int64, redeemAddress sdk.AccAddress, timeoutAddress sdk.AccAddress) MsgAddHtlc {
 	return MsgAddHtlc{
-		Status:         HtlcCreated,
 		Amount:         amount,
 		Hash:           hash,
-		Timelock:       timelock,
+		Locktime:       locktime,
 		RedeemAddress:  redeemAddress,
 		TimeoutAddress: timeoutAddress,
 	}
@@ -54,8 +42,8 @@ func (msg MsgAddHtlc) ValidateBasic() sdk.Error {
 		return sdk.ErrUnknownRequest("Hash cannot be empty.")
 	}
 
-	if msg.Timelock == 0 {
-		return sdk.ErrUnknownRequest("Timelock should be greater than zero.")
+	if msg.Locktime == 0 {
+		return sdk.ErrUnknownRequest("Locktime should be greater than zero.")
 	}
 
 	if msg.RedeemAddress.Empty() {
@@ -86,14 +74,14 @@ func (msg MsgAddHtlc) GetSigners() []sdk.AccAddress {
 // MsgRedeemHtlc defines the RedeemHtlc message.
 type MsgRedeemHtlc struct {
 	Preimage string
-	Redeemer sdk.AccAddress
+	Sender   sdk.AccAddress
 }
 
 // NewMsgRedeemHtlc is the constructor function for MsgRedeemHtlc.
-func NewMsgRedeemHtlc(preimage string, redeemer sdk.AccAddress) MsgRedeemHtlc {
+func NewMsgRedeemHtlc(preimage string, sender sdk.AccAddress) MsgRedeemHtlc {
 	return MsgRedeemHtlc{
 		Preimage: preimage,
-		Redeemer: redeemer,
+		Sender:   sender,
 	}
 }
 
@@ -109,8 +97,8 @@ func (msg MsgRedeemHtlc) ValidateBasic() sdk.Error {
 		return sdk.ErrUnknownRequest("Preimage cannot be empty.")
 	}
 
-	if msg.Redeemer.Empty() {
-		return sdk.ErrInvalidAddress(msg.Redeemer.String())
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
 	}
 
 	return nil
@@ -127,7 +115,7 @@ func (msg MsgRedeemHtlc) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgRedeemHtlc) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Redeemer}
+	return []sdk.AccAddress{msg.Sender}
 }
 
 // MsgFailHtlc defines the FailHtlc message.

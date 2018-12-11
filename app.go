@@ -14,6 +14,7 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
+	"github.com/wirelineio/cosmos-htlc/x/htlc"
 	"github.com/wirelineio/cosmos-htlc/x/nameservice"
 )
 
@@ -31,11 +32,13 @@ type nameserviceApp struct {
 	keyNSowners      *sdk.KVStoreKey
 	keyNSprices      *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
+	keyHtlcStore     *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	nsKeeper            nameservice.Keeper
+	htlcKeeper          htlc.Keeper
 }
 
 // NewnameserviceApp is a constructor function for nameserviceApp
@@ -58,6 +61,7 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 		keyNSowners:      sdk.NewKVStoreKey("ns_owners"),
 		keyNSprices:      sdk.NewKVStoreKey("ns_prices"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
+		keyHtlcStore:     sdk.NewKVStoreKey("htlc"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -83,6 +87,8 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 		app.cdc,
 	)
 
+	app.htlcKeeper = htlc.NewKeeper(app.bankKeeper, app.keyHtlcStore, app.cdc)
+
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
@@ -90,7 +96,8 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 	// Register the bank and nameservice routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("nameservice", nameservice.NewHandler(app.nsKeeper))
+		AddRoute("nameservice", nameservice.NewHandler(app.nsKeeper)).
+		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
@@ -105,6 +112,7 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 		app.keyNSnames,
 		app.keyNSowners,
 		app.keyNSprices,
+		app.keyHtlcStore,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)
@@ -169,6 +177,7 @@ func MakeCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	nameservice.RegisterCodec(cdc)
+	htlc.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
