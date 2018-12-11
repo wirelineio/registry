@@ -1,6 +1,7 @@
 package htlc
 
 import (
+	"crypto/sha256"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -65,17 +66,72 @@ func handleMsgAddHtlc(ctx sdk.Context, keeper Keeper, msg MsgAddHtlc) sdk.Result
 		BlockCreatedAt: ctx.BlockHeight(),
 	}
 
-	keeper.AddHtlc(ctx, obj)
+	keeper.UpsertHtlc(ctx, obj)
 
 	return sdk.Result{}
 }
 
 // Handle MsgRedeemHtlc
 func handleMsgRedeemHtlc(ctx sdk.Context, keeper Keeper, msg MsgRedeemHtlc) sdk.Result {
-	return sdk.ErrUnknownRequest("MsgRedeemHtlc: Not Implemented.").Result()
+	// Compute hash of preimage.
+	hash := fmt.Sprintf("%x", sha256.Sum256([]byte(msg.Preimage)))
+
+	if !keeper.HasHtlc(ctx, hash) {
+		return sdk.ErrInternal("HTLC doesn't exist.").Result()
+	}
+
+	obj := keeper.GetHtlc(ctx, hash)
+	if obj.Status != HtlcCreated {
+		return sdk.ErrInternal("HTLC already redeemed or timed out.").Result()
+	}
+
+	if !obj.RedeemAddress.Equals(msg.Sender) {
+		return sdk.ErrInternal("HTLC redeemer account mismatch.").Result()
+	}
+
+	unlockBlockHeight := obj.BlockCreatedAt + obj.Locktime
+	if ctx.BlockHeight() >= unlockBlockHeight {
+		return sdk.ErrInternal(fmt.Sprintf("HTLC timed out at block %d, current block %d.", unlockBlockHeight, ctx.BlockHeight())).Result()
+	}
+
+	obj.Status = HtlcRedeemed
+	keeper.UpsertHtlc(ctx, obj)
+
+	_, _, err := keeper.coinKeeper.AddCoins(ctx, obj.RedeemAddress, sdk.Coins{obj.Amount})
+	if err != nil {
+		return sdk.ErrInsufficientCoins("Error redeeming HTLC.").Result()
+	}
+
+	return sdk.Result{}
 }
 
 // Handle MsgFailHtlc
 func handleMsgFailHtlc(ctx sdk.Context, keeper Keeper, msg MsgFailHtlc) sdk.Result {
-	return sdk.ErrUnknownRequest("MsgFailHtlc: Not Implemented.").Result()
+	if !keeper.HasHtlc(ctx, msg.Hash) {
+		return sdk.ErrInternal("HTLC doesn't exist.").Result()
+	}
+
+	obj := keeper.GetHtlc(ctx, msg.Hash)
+	if obj.Status != HtlcCreated {
+		return sdk.ErrInternal("HTLC already redeemed or timed out.").Result()
+	}
+
+	if !obj.TimeoutAddress.Equals(msg.Sender) {
+		return sdk.ErrInternal("HTLC timeout account mismatch.").Result()
+	}
+
+	unlockBlockHeight := obj.BlockCreatedAt + obj.Locktime
+	if ctx.BlockHeight() < unlockBlockHeight {
+		return sdk.ErrInternal(fmt.Sprintf("HTLC timeout after block %d, current block %d.", unlockBlockHeight, ctx.BlockHeight())).Result()
+	}
+
+	obj.Status = HtlcFailed
+	keeper.UpsertHtlc(ctx, obj)
+
+	_, _, err := keeper.coinKeeper.AddCoins(ctx, obj.TimeoutAddress, sdk.Coins{obj.Amount})
+	if err != nil {
+		return sdk.ErrInsufficientCoins("Error timing out HTLC.").Result()
+	}
+
+	return sdk.Result{}
 }

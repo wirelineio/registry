@@ -39,6 +39,8 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 
 	htlcTxCmd.AddCommand(client.PostCommands(
 		htlccmd.GetCmdAddHtlc(mc.cdc),
+		htlccmd.GetCmdRedeemHtlc(mc.cdc),
+		htlccmd.GetCmdFailHtlc(mc.cdc),
 	)...)
 
 	return htlcTxCmd

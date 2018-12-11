@@ -31,8 +31,19 @@ func (k Keeper) HasHtlc(ctx sdk.Context, hash string) bool {
 	return bz != nil
 }
 
-// AddHtlc - adds a HTLC to the store.
-func (k Keeper) AddHtlc(ctx sdk.Context, obj ObjHtlc) {
+// UpsertHtlc - adds a HTLC to the store.
+func (k Keeper) UpsertHtlc(ctx sdk.Context, obj ObjHtlc) {
 	store := ctx.KVStore(k.htlcStoreKey)
 	store.Set([]byte(obj.Hash), k.cdc.MustMarshalBinaryBare(obj))
+}
+
+// GetHtlc - gets a HTLC from the store.
+func (k Keeper) GetHtlc(ctx sdk.Context, hash string) ObjHtlc {
+	store := ctx.KVStore(k.htlcStoreKey)
+
+	bz := store.Get([]byte(hash))
+	var obj ObjHtlc
+	k.cdc.MustUnmarshalBinaryBare(bz, &obj)
+
+	return obj
 }
