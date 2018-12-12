@@ -14,7 +14,7 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
-	"github.com/wirelineio/cosmos-htlc/x/htlc"
+	"github.com/wirelineio/wirechain/x/htlc"
 )
 
 const (
@@ -36,8 +36,8 @@ type wirechainApp struct {
 	htlcKeeper          htlc.Keeper
 }
 
-// NewwirechainApp is a constructor function for wirechainApp
-func NewwirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
+// NewWirechainApp is a constructor function for wirechainApp
+func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()

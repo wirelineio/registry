@@ -17,8 +17,8 @@ import (
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-	app "github.com/wirelineio/cosmos-htlc"
-	htlcclient "github.com/wirelineio/cosmos-htlc/x/htlc/client"
+	app "github.com/wirelineio/wirechain"
+	htlcclient "github.com/wirelineio/wirechain/x/htlc/client"
 )
 
 const (

@@ -24,7 +24,7 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
-	app "github.com/wirelineio/cosmos-htlc"
+	app "github.com/wirelineio/wirechain"
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
@@ -61,12 +61,12 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewwirechainApp(logger, db)
+	return app.NewWirechainApp(logger, db)
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool) (
 	json.RawMessage, []tmtypes.GenesisValidator, error) {
-	dapp := app.NewwirechainApp(logger, db)
+	dapp := app.NewWirechainApp(logger, db)
 	return dapp.ExportAppStateAndValidators()
 }
 
