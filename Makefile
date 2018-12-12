@@ -1,3 +1,7 @@
+#
+# Copyright 2018 Wireline, Inc.
+#
+
 DEP := $(shell command -v dep 2> /dev/null)
 
 get_tools:

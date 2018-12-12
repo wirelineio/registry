@@ -1,3 +1,7 @@
+//
+// Copyright 2018 Wireline, Inc.
+//
+
 package main
 
 import (
