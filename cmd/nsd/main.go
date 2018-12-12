@@ -28,7 +28,7 @@ import (
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
-var DefaultNodeHome = os.ExpandEnv("$HOME/.nsd")
+var DefaultNodeHome = os.ExpandEnv("$HOME/.wirechaind")
 
 const (
 	flagOverwrite = "overwrite"
@@ -41,8 +41,8 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "nsd",
-		Short:             "nameservice App Daemon (server)",
+		Use:               "wirechaind",
+		Short:             "wirechain App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
@@ -52,7 +52,7 @@ func main() {
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	// prepare and add flags
-	executor := cli.PrepareBaseCmd(rootCmd, "NS", DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(rootCmd, "WIRE", DefaultNodeHome)
 	err := executor.Execute()
 	if err != nil {
 		// handle with #870
@@ -61,12 +61,12 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewnameserviceApp(logger, db)
+	return app.NewwirechainApp(logger, db)
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool) (
 	json.RawMessage, []tmtypes.GenesisValidator, error) {
-	dapp := app.NewnameserviceApp(logger, db)
+	dapp := app.NewwirechainApp(logger, db)
 	return dapp.ExportAppStateAndValidators()
 }
 
@@ -114,7 +114,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 			cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
-			fmt.Printf("Initialized nsd configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
+			fmt.Printf("Initialized wirechaind configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
 			return nil
 		},
 	}
@@ -135,7 +135,7 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 		Long: strings.TrimSpace(`
 Adds accounts to the genesis file so that you can start a chain with coins in the CLI:
 
-$ nsd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAKE,1000mycoin
+$ wirechaind add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAKE,1000mycoin
 `),
 		RunE: func(_ *cobra.Command, args []string) error {
 			addr, err := sdk.AccAddressFromBech32(args[0])

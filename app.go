@@ -15,34 +15,29 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 	"github.com/wirelineio/cosmos-htlc/x/htlc"
-	"github.com/wirelineio/cosmos-htlc/x/nameservice"
 )
 
 const (
-	appName = "nameservice"
+	appName = "wirechain"
 )
 
-type nameserviceApp struct {
+type wirechainApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
 	keyMain          *sdk.KVStoreKey
 	keyAccount       *sdk.KVStoreKey
-	keyNSnames       *sdk.KVStoreKey
-	keyNSowners      *sdk.KVStoreKey
-	keyNSprices      *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
 	keyHtlcStore     *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
-	nsKeeper            nameservice.Keeper
 	htlcKeeper          htlc.Keeper
 }
 
-// NewnameserviceApp is a constructor function for nameserviceApp
-func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
+// NewwirechainApp is a constructor function for wirechainApp
+func NewwirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -51,15 +46,12 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc))
 
 	// Here you initialize your application with the store keys it requires
-	var app = &nameserviceApp{
+	var app = &wirechainApp{
 		BaseApp: bApp,
 		cdc:     cdc,
 
 		keyMain:          sdk.NewKVStoreKey("main"),
 		keyAccount:       sdk.NewKVStoreKey("acc"),
-		keyNSnames:       sdk.NewKVStoreKey("ns_names"),
-		keyNSowners:      sdk.NewKVStoreKey("ns_owners"),
-		keyNSprices:      sdk.NewKVStoreKey("ns_prices"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyHtlcStore:     sdk.NewKVStoreKey("htlc"),
 	}
@@ -77,31 +69,16 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
 
-	// The NameserviceKeeper is the Keeper from the module for this tutorial
-	// It handles interactions with the namestore
-	app.nsKeeper = nameservice.NewKeeper(
-		app.bankKeeper,
-		app.keyNSnames,
-		app.keyNSowners,
-		app.keyNSprices,
-		app.cdc,
-	)
-
 	app.htlcKeeper = htlc.NewKeeper(app.bankKeeper, app.keyHtlcStore, app.cdc)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
 	// The app.Router is the main transaction router where each module registers its routes
-	// Register the bank and nameservice routes here
+	// Register the bank and wirechain routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("nameservice", nameservice.NewHandler(app.nsKeeper)).
 		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper))
-
-	// The app.QueryRouter is the main query router where each module registers its routes
-	app.QueryRouter().
-		AddRoute("nameservice", nameservice.NewQuerier(app.nsKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
@@ -109,9 +86,6 @@ func NewnameserviceApp(logger log.Logger, db dbm.DB) *nameserviceApp {
 	app.MountStores(
 		app.keyMain,
 		app.keyAccount,
-		app.keyNSnames,
-		app.keyNSowners,
-		app.keyNSprices,
 		app.keyHtlcStore,
 	)
 
@@ -128,7 +102,7 @@ type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
 }
 
-func (app *nameserviceApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *wirechainApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(GenesisState)
@@ -146,7 +120,7 @@ func (app *nameserviceApp) initChainer(ctx sdk.Context, req abci.RequestInitChai
 }
 
 // ExportAppStateAndValidators does the things
-func (app *nameserviceApp) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
+func (app *wirechainApp) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abci.Header{})
 	accounts := []*auth.BaseAccount{}
 
@@ -176,7 +150,6 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
-	nameservice.RegisterCodec(cdc)
 	htlc.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)

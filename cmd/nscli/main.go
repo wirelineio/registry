@@ -19,16 +19,13 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	app "github.com/wirelineio/cosmos-htlc"
 	htlcclient "github.com/wirelineio/cosmos-htlc/x/htlc/client"
-	nsclient "github.com/wirelineio/cosmos-htlc/x/nameservice/client"
-	nsrest "github.com/wirelineio/cosmos-htlc/x/nameservice/client/rest"
 )
 
 const (
 	storeAcc = "acc"
-	storeNS  = "nameservice"
 )
 
-var defaultCLIHome = os.ExpandEnv("$HOME/.nscli")
+var defaultCLIHome = os.ExpandEnv("$HOME/.wirecli")
 
 func main() {
 	cobra.EnableCommandSorting = false
@@ -43,13 +40,12 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClients{
-		nsclient.NewModuleClient(storeNS, cdc),
 		htlcclient.NewModuleClient(cdc),
 	}
 
 	rootCmd := &cobra.Command{
-		Use:   "nscli",
-		Short: "nameservice Client",
+		Use:   "wirecli",
+		Short: "wirechain Client",
 	}
 
 	// Construct Root Command
@@ -67,7 +63,7 @@ func main() {
 		version.VersionCmd,
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "NS", defaultCLIHome)
+	executor := cli.PrepareMainCmd(rootCmd, "WIRE", defaultCLIHome)
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -81,7 +77,6 @@ func registerRoutes(rs *lcd.RestServer) {
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	nsrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeNS)
 }
 
 func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
