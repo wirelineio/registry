@@ -45,6 +45,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 		htlccmd.GetCmdAddHtlc(mc.cdc),
 		htlccmd.GetCmdRedeemHtlc(mc.cdc),
 		htlccmd.GetCmdFailHtlc(mc.cdc),
+		htlccmd.GetCmdClearHtlc(mc.cdc),
 	)...)
 
 	return htlcTxCmd

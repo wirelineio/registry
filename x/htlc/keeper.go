@@ -51,3 +51,13 @@ func (k Keeper) GetHtlc(ctx sdk.Context, hash string) ObjHtlc {
 
 	return obj
 }
+
+// Clear - clear all entries from the store [TESTING ONLY!].
+func (k Keeper) Clear(ctx sdk.Context) {
+	store := ctx.KVStore(k.htlcStoreKey)
+	itr := store.Iterator(nil, nil)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		store.Delete(itr.Key())
+	}
+}

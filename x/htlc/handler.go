@@ -42,6 +42,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgRedeemHtlc(ctx, keeper, msg)
 		case MsgFailHtlc:
 			return handleMsgFailHtlc(ctx, keeper, msg)
+		case MsgClearHtlc:
+			return handleMsgClearHtlc(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized htlc Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -136,6 +138,13 @@ func handleMsgFailHtlc(ctx sdk.Context, keeper Keeper, msg MsgFailHtlc) sdk.Resu
 	if err != nil {
 		return sdk.ErrInsufficientCoins("Error timing out HTLC.").Result()
 	}
+
+	return sdk.Result{}
+}
+
+// Handle MsgClearHtlc
+func handleMsgClearHtlc(ctx sdk.Context, keeper Keeper, msg MsgClearHtlc) sdk.Result {
+	keeper.Clear(ctx)
 
 	return sdk.Result{}
 }

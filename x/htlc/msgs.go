@@ -168,3 +168,44 @@ func (msg MsgFailHtlc) GetSignBytes() []byte {
 func (msg MsgFailHtlc) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
+
+// MsgClearHtlc defines the ClearHtlc message.
+type MsgClearHtlc struct {
+	Sender sdk.AccAddress
+}
+
+// NewMsgClearHtlc is the constructor function for MsgClearHtlc.
+func NewMsgClearHtlc(sender sdk.AccAddress) MsgClearHtlc {
+	return MsgClearHtlc{
+		Sender: sender,
+	}
+}
+
+// Route Implements Msg.
+func (msg MsgClearHtlc) Route() string { return "htlc" }
+
+// Type Implements Msg.
+func (msg MsgClearHtlc) Type() string { return "clear_htlc" }
+
+// ValidateBasic Implements Msg.
+func (msg MsgClearHtlc) ValidateBasic() sdk.Error {
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+
+	return nil
+}
+
+// GetSignBytes Implements Msg.
+func (msg MsgClearHtlc) GetSignBytes() []byte {
+	b, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}
+
+// GetSigners Implements Msg.
+func (msg MsgClearHtlc) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}

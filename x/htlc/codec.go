@@ -13,4 +13,5 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgAddHtlc{}, "htlc/AddHtlc", nil)
 	cdc.RegisterConcrete(MsgRedeemHtlc{}, "htlc/RedeemHtlc", nil)
 	cdc.RegisterConcrete(MsgFailHtlc{}, "htlc/FailHtlc", nil)
+	cdc.RegisterConcrete(MsgClearHtlc{}, "htlc/ClearHtlc", nil)
 }

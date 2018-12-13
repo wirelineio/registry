@@ -7,6 +7,7 @@ package cli
 import (
 	"crypto/sha256"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -63,6 +64,10 @@ func GetCmdAddHtlc(cdc *codec.Codec) *cobra.Command {
 
 			cliCtx.PrintResponse = true
 
+			if cliCtx.GenerateOnly {
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []sdk.Msg{msg}, false)
+			}
+
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
@@ -100,6 +105,10 @@ func GetCmdRedeemHtlc(cdc *codec.Codec) *cobra.Command {
 
 			cliCtx.PrintResponse = true
 
+			if cliCtx.GenerateOnly {
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []sdk.Msg{msg}, false)
+			}
+
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
@@ -134,6 +143,47 @@ func GetCmdFailHtlc(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
+
+			if cliCtx.GenerateOnly {
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []sdk.Msg{msg}, false)
+			}
+
+			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+		},
+	}
+}
+
+// GetCmdClearHtlc is the CLI command for sending a ClearHtlc transaction.
+func GetCmdClearHtlc(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "clear",
+		Short: "Clear HTLCs.",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+
+			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc)
+
+			if err := cliCtx.EnsureAccountExists(); err != nil {
+				return err
+			}
+
+			senderAccount, err := cliCtx.GetFromAddress()
+			if err != nil {
+				return err
+			}
+
+			msg := htlc.NewMsgClearHtlc(senderAccount)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			cliCtx.PrintResponse = true
+
+			if cliCtx.GenerateOnly {
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []sdk.Msg{msg}, false)
+			}
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},
