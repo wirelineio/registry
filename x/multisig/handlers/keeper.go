@@ -17,7 +17,6 @@ type State int8
 const (
 	StateCreated State = 1
 	StateLocked  State = 2
-	StateAborted State = 3
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine.
@@ -60,4 +59,21 @@ func (k Keeper) HasContract(ctx sdk.Context, id string) bool {
 func (k Keeper) UpsertContract(ctx sdk.Context, obj Contract) {
 	store := ctx.KVStore(k.multisigStoreKey)
 	store.Set([]byte(obj.ID), k.cdc.MustMarshalBinaryBare(obj))
+}
+
+// GetContract - gets a contract from the store.
+func (k Keeper) GetContract(ctx sdk.Context, id string) Contract {
+	store := ctx.KVStore(k.multisigStoreKey)
+
+	bz := store.Get([]byte(id))
+	var obj Contract
+	k.cdc.MustUnmarshalBinaryBare(bz, &obj)
+
+	return obj
+}
+
+// DeleteContract - deletes a contract from the store.
+func (k Keeper) DeleteContract(ctx sdk.Context, id string) {
+	store := ctx.KVStore(k.multisigStoreKey)
+	store.Delete([]byte(id))
 }
