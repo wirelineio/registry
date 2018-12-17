@@ -32,7 +32,7 @@ type ObjHtlc struct {
 	BlockCreatedAt int64
 }
 
-// NewHandler returns a handler for "wirechain" type messages.
+// NewHandler returns a handler for "htlc" type messages.
 func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
