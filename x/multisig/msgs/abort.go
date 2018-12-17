@@ -17,7 +17,7 @@ type MsgAbortMultiSig struct {
 }
 
 // NewMsgAbortMultiSig is the constructor function for MsgAbortMultiSig.
-func NewMsgAbortMultiSig(id string, amount sdk.Coin, aliceAddress sdk.AccAddress) MsgAbortMultiSig {
+func NewMsgAbortMultiSig(id string, aliceAddress sdk.AccAddress) MsgAbortMultiSig {
 	return MsgAbortMultiSig{
 		ID:           id,
 		AliceAddress: aliceAddress,

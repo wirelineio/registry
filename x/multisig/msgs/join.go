@@ -13,15 +13,15 @@ import (
 // MsgJoinMultiSig defines a JoinMultiSig message.
 type MsgJoinMultiSig struct {
 	ID         string
-	Amount     sdk.Coin
+	BobAmount  sdk.Coin
 	BobAddress sdk.AccAddress
 }
 
 // NewMsgJoinMultiSig is the constructor function for MsgJoinMultiSig.
-func NewMsgJoinMultiSig(id string, amount sdk.Coin, bobAddress sdk.AccAddress) MsgJoinMultiSig {
+func NewMsgJoinMultiSig(id string, bobAmount sdk.Coin, bobAddress sdk.AccAddress) MsgJoinMultiSig {
 	return MsgJoinMultiSig{
 		ID:         id,
-		Amount:     amount,
+		BobAmount:  bobAmount,
 		BobAddress: bobAddress,
 	}
 }
@@ -38,7 +38,7 @@ func (msg MsgJoinMultiSig) ValidateBasic() sdk.Error {
 		return sdk.ErrUnknownRequest("ID cannot be empty.")
 	}
 
-	if !msg.Amount.IsPositive() {
+	if !msg.BobAmount.IsPositive() {
 		return sdk.ErrInsufficientCoins("Amount must be positive.")
 	}
 

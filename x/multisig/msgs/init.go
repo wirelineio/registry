@@ -13,17 +13,19 @@ import (
 // MsgInitMultiSig defines a InitMultiSig message.
 type MsgInitMultiSig struct {
 	ID           string
-	Amount       sdk.Coin
+	AliceAmount  sdk.Coin
 	AliceAddress sdk.AccAddress
+	BobAmount    sdk.Coin
 	BobAddress   sdk.AccAddress
 }
 
 // NewMsgInitMultiSig is the constructor function for MsgInitMultiSig.
-func NewMsgInitMultiSig(id string, amount sdk.Coin, aliceAddress sdk.AccAddress, bobAddress sdk.AccAddress) MsgInitMultiSig {
+func NewMsgInitMultiSig(id string, aliceAmount sdk.Coin, aliceAddress sdk.AccAddress, bobAmount sdk.Coin, bobAddress sdk.AccAddress) MsgInitMultiSig {
 	return MsgInitMultiSig{
 		ID:           id,
-		Amount:       amount,
+		AliceAmount:  aliceAmount,
 		AliceAddress: aliceAddress,
+		BobAmount:    bobAmount,
 		BobAddress:   bobAddress,
 	}
 }
@@ -40,12 +42,16 @@ func (msg MsgInitMultiSig) ValidateBasic() sdk.Error {
 		return sdk.ErrUnknownRequest("ID cannot be empty.")
 	}
 
-	if !msg.Amount.IsPositive() {
-		return sdk.ErrInsufficientCoins("Amount must be positive.")
+	if !msg.AliceAmount.IsPositive() {
+		return sdk.ErrInsufficientCoins("Alice's amount must be positive.")
 	}
 
 	if msg.AliceAddress.Empty() {
 		return sdk.ErrInvalidAddress(msg.AliceAddress.String())
+	}
+
+	if !msg.BobAmount.IsPositive() {
+		return sdk.ErrInsufficientCoins("Bob's amount must be positive.")
 	}
 
 	if msg.BobAddress.Empty() {
