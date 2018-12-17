@@ -8,12 +8,11 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/wirelineio/wirechain/x/multisig/keepers"
 	"github.com/wirelineio/wirechain/x/multisig/msgs"
 )
 
 // NewHandler returns a handler for "multisig" type messages.
-func NewHandler(keeper keepers.Keeper) sdk.Handler {
+func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
 		case msgs.MsgInitMultiSig:

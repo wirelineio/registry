@@ -21,7 +21,6 @@ import (
 	"github.com/wirelineio/wirechain/x/htlc"
 	"github.com/wirelineio/wirechain/x/multisig"
 	msighandler "github.com/wirelineio/wirechain/x/multisig/handlers"
-	msigkeeper "github.com/wirelineio/wirechain/x/multisig/keepers"
 )
 
 const (
@@ -42,7 +41,7 @@ type wirechainApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	htlcKeeper          htlc.Keeper
-	multisigKeeper      msigkeeper.Keeper
+	multisigKeeper      msighandler.Keeper
 }
 
 // NewWirechainApp is a constructor function for wirechainApp
@@ -81,7 +80,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	app.htlcKeeper = htlc.NewKeeper(app.bankKeeper, app.keyHtlcStore, app.cdc)
 
-	app.multisigKeeper = msigkeeper.NewKeeper(app.bankKeeper, app.keyMultisigStore, app.cdc)
+	app.multisigKeeper = msighandler.NewKeeper(app.bankKeeper, app.keyMultisigStore, app.cdc)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
