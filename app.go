@@ -19,6 +19,9 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 	"github.com/wirelineio/wirechain/x/htlc"
+	"github.com/wirelineio/wirechain/x/multisig"
+	msighandler "github.com/wirelineio/wirechain/x/multisig/handlers"
+	msigkeeper "github.com/wirelineio/wirechain/x/multisig/keepers"
 )
 
 const (
@@ -33,11 +36,13 @@ type wirechainApp struct {
 	keyAccount       *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
 	keyHtlcStore     *sdk.KVStoreKey
+	keyMultisigStore *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	htlcKeeper          htlc.Keeper
+	multisigKeeper      msigkeeper.Keeper
 }
 
 // NewWirechainApp is a constructor function for wirechainApp
@@ -58,6 +63,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		keyAccount:       sdk.NewKVStoreKey("acc"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyHtlcStore:     sdk.NewKVStoreKey("htlc"),
+		keyMultisigStore: sdk.NewKVStoreKey("multisig"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -75,6 +81,8 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	app.htlcKeeper = htlc.NewKeeper(app.bankKeeper, app.keyHtlcStore, app.cdc)
 
+	app.multisigKeeper = msigkeeper.NewKeeper(app.bankKeeper, app.keyMultisigStore, app.cdc)
+
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
@@ -82,7 +90,8 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 	// Register the bank and wirechain routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper))
+		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper)).
+		AddRoute("multisig", msighandler.NewHandler(app.multisigKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
@@ -91,6 +100,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		app.keyMain,
 		app.keyAccount,
 		app.keyHtlcStore,
+		app.keyMultisigStore,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)
@@ -155,6 +165,7 @@ func MakeCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	htlc.RegisterCodec(cdc)
+	multisig.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)

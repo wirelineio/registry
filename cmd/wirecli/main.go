@@ -23,6 +23,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	app "github.com/wirelineio/wirechain"
 	htlcclient "github.com/wirelineio/wirechain/x/htlc/client"
+	msigclient "github.com/wirelineio/wirechain/x/multisig/client"
 )
 
 const (
@@ -45,6 +46,7 @@ func main() {
 
 	mc := []sdk.ModuleClients{
 		htlcclient.NewModuleClient(cdc),
+		msigclient.NewModuleClient(cdc),
 	}
 
 	rootCmd := &cobra.Command{
