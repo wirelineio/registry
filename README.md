@@ -67,7 +67,7 @@ Add initial funds to the accounts.
 
 ```
 $ wirechaind add-genesis-account $(wirecli keys show alice --address) 1000wire
-$ wirechaind add-genesis-account $(wirecli keys show bob --address) 10wire
+$ wirechaind add-genesis-account $(wirecli keys show bob --address) 1000wire
 
 ```
 
@@ -140,6 +140,12 @@ Alice creates a multisig contract and contributes 10wire, requiring Bob to depos
 
 ```
 $ wirecli tx multisig init test1 10wire 10wire $(wirecli keys show bob --address) --from=$(wirecli keys show alice --address) --chain-id=wireline
+```
+
+Anyone can view the state of the contract.
+
+```
+$ wirecli query multisig view test1 --chain-id=wireline
 ```
 
 Bob joins the contract.
@@ -232,11 +238,39 @@ Verify that the target account (Charlie) has got the funds.
 $ wirecli query account $(wirecli keys show charlie --address) --indent --chain-id=wireline
 ```
 
-TODO(ashwin): Command to check funds have been deducted from the contract.
+Check that the funds have been deducted from the contract.
+
+```
+$ wirecli query multisig view test1 --chain-id=wireline
+```
 
 ## Contract Abort
 
-TODO(ashwin): Abort flow.
+Alice creates another multisig contract and contributes 10wire, requiring Bob to deposit 100wire.
+
+```
+$ wirecli tx multisig init test2 10wire 100wire $(wirecli keys show bob --address) --from=$(wirecli keys show alice --address) --chain-id=wireline
+```
+
+Note the contract details, especially the 'State', and Alice's balance.
+
+```
+$ wirecli query multisig view test2 --chain-id=wireline
+$ wirecli query account $(wirecli keys show alice --address) --indent --chain-id=wireline
+```
+
+Before Bob joins, Alice can abort the contract and recover her funds.
+
+```
+$ wirecli tx multisig abort test2 --from=$(wirecli keys show alice --address) --chain-id=wireline
+```
+
+Confirm that the contract is deleted and Alice has been refunded the funds locked in the contract.
+
+```
+$ wirecli query multisig view test2 --chain-id=wireline
+$ wirecli query account $(wirecli keys show alice --address) --indent --chain-id=wireline
+```
 
 ## References
 
