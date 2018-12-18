@@ -92,6 +92,10 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper)).
 		AddRoute("multisig", msighandler.NewHandler(app.multisigKeeper))
 
+	// The app.QueryRouter is the main query router where each module registers its routes
+	app.QueryRouter().
+		AddRoute("multisig", msighandler.NewQuerier(app.multisigKeeper))
+
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
 

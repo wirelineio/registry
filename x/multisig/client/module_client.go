@@ -8,17 +8,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
+	multisigqry "github.com/wirelineio/wirechain/x/multisig/client/cli/query"
 	multisigcmd "github.com/wirelineio/wirechain/x/multisig/client/cli/tx"
 )
 
 // ModuleClient exports all client functionality from this module.
 type ModuleClient struct {
-	cdc *amino.Codec
+	storeKey string
+	cdc      *amino.Codec
 }
 
 // NewModuleClient is the constructor for the module client.
-func NewModuleClient(cdc *amino.Codec) ModuleClient {
-	return ModuleClient{cdc}
+func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
+	return ModuleClient{storeKey, cdc}
 }
 
 // GetQueryCmd returns the cli query commands for this module.
@@ -29,7 +31,9 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		Short: "Querying commands for the multisig module",
 	}
 
-	multisigQueryCmd.AddCommand(client.GetCommands()...)
+	multisigQueryCmd.AddCommand(client.GetCommands(
+		multisigqry.GetCmdView(mc.storeKey, mc.cdc),
+	)...)
 
 	return multisigQueryCmd
 }

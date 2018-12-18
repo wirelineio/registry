@@ -27,7 +27,8 @@ import (
 )
 
 const (
-	storeAcc = "acc"
+	storeAcc      = "acc"
+	storeMultisig = "multisig"
 )
 
 var defaultCLIHome = os.ExpandEnv("$HOME/.wirecli")
@@ -46,7 +47,7 @@ func main() {
 
 	mc := []sdk.ModuleClients{
 		htlcclient.NewModuleClient(cdc),
-		msigclient.NewModuleClient(cdc),
+		msigclient.NewModuleClient(storeMultisig, cdc),
 	}
 
 	rootCmd := &cobra.Command{
