@@ -41,7 +41,7 @@ func GetCmdBirthOutput(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := utxo.NewMsgBirthAccUtxo(coin, account)
+			msg := utxo.NewMsgBirthAccOutput(coin, account)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

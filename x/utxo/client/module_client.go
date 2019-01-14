@@ -30,7 +30,8 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 	}
 
 	utxoQueryCmd.AddCommand(client.GetCommands(
-		utxocmd.GetCmdListAccountUtxo("utxo", mc.cdc),
+		utxocmd.GetCmdListAccOutput("utxo", mc.cdc),
+		utxocmd.GetCmdList("utxo", mc.cdc),
 	)...)
 
 	return utxoQueryCmd

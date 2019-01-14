@@ -10,5 +10,5 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec.
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgBirthAccUtxo{}, "utxo/BirthAccUtxo", nil)
+	cdc.RegisterConcrete(MsgBirthAccOutput{}, "utxo/BirthAccOutput", nil)
 }

@@ -8,6 +8,26 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// AccOutput represents an account based output birth record.
+type AccOutput struct {
+	ID      []byte
+	Value   uint64
+	Address sdk.AccAddress
+	Block   int64
+}
+
+// OutPoint identifies an output from a previous transaction by index.
+// Index >= 0 indicates Hash is a transaction ID.
+// Index = -1 indicates Hash refers to an account based output birth record.
+// Index = -2 indicates Hash refers to a voucher based output birth record.
+type OutPoint struct {
+	Hash  []byte
+	Index int32
+}
+
+// OutPointAccountBirth indicates Hash refers to an account based output birth record.
+const OutPointAccountBirth = -1
+
 // PayToAddress indicates the UTXO is payable to an address.
 type PayToAddress struct {
 	Address sdk.AccAddress
@@ -25,15 +45,6 @@ type TxOut struct {
 	PkScript []byte
 }
 
-// OutPoint identifies an output from a previous transaction by index.
-// Index >= 0 indicates Hash is a transaction ID.
-// Index = -1 indicates Hash refers to an account based UTXO birth record.
-// Index = -2 indicates Hash refers to a voucher based UTXO birth record.
-type OutPoint struct {
-	Hash  string
-	Index uint32
-}
-
 // TxIn represents a transaction input.
 type TxIn struct {
 	Input    OutPoint
@@ -46,12 +57,4 @@ type Tx struct {
 	TxIn     []TxIn
 	TxOut    []TxOut
 	LockTime uint32
-}
-
-// AccountUtxo represents an account based UTXO birth record.
-type AccountUtxo struct {
-	ID      []byte
-	Value   uint64
-	Address sdk.AccAddress
-	Block   int64
 }
