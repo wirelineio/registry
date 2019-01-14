@@ -24,6 +24,7 @@ import (
 	app "github.com/wirelineio/wirechain"
 	htlcclient "github.com/wirelineio/wirechain/x/htlc/client"
 	msigclient "github.com/wirelineio/wirechain/x/multisig/client"
+	utxoclient "github.com/wirelineio/wirechain/x/utxo/client"
 )
 
 const (
@@ -48,6 +49,7 @@ func main() {
 	mc := []sdk.ModuleClients{
 		htlcclient.NewModuleClient(cdc),
 		msigclient.NewModuleClient(storeMultisig, cdc),
+		utxoclient.NewModuleClient(cdc),
 	}
 
 	rootCmd := &cobra.Command{

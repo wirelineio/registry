@@ -21,6 +21,7 @@ import (
 	"github.com/wirelineio/wirechain/x/htlc"
 	"github.com/wirelineio/wirechain/x/multisig"
 	msighandler "github.com/wirelineio/wirechain/x/multisig/handlers"
+	"github.com/wirelineio/wirechain/x/utxo"
 )
 
 const (
@@ -36,12 +37,15 @@ type wirechainApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	keyHtlcStore     *sdk.KVStoreKey
 	keyMultisigStore *sdk.KVStoreKey
+	keyAccUtxoStore  *sdk.KVStoreKey
+	keyUtxoStore     *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	htlcKeeper          htlc.Keeper
 	multisigKeeper      msighandler.Keeper
+	utxoKeeper          utxo.Keeper
 }
 
 // NewWirechainApp is a constructor function for wirechainApp
@@ -63,6 +67,8 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyHtlcStore:     sdk.NewKVStoreKey("htlc"),
 		keyMultisigStore: sdk.NewKVStoreKey("multisig"),
+		keyAccUtxoStore:  sdk.NewKVStoreKey("acc_utxo"),
+		keyUtxoStore:     sdk.NewKVStoreKey("utxo"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -82,6 +88,8 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	app.multisigKeeper = msighandler.NewKeeper(app.bankKeeper, app.keyMultisigStore, app.cdc)
 
+	app.utxoKeeper = utxo.NewKeeper(app.accountKeeper, app.bankKeeper, app.keyAccUtxoStore, app.keyUtxoStore, app.cdc)
+
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
@@ -90,11 +98,13 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
 		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper)).
-		AddRoute("multisig", msighandler.NewHandler(app.multisigKeeper))
+		AddRoute("multisig", msighandler.NewHandler(app.multisigKeeper)).
+		AddRoute("utxo", utxo.NewHandler(app.utxoKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
-		AddRoute("multisig", msighandler.NewQuerier(app.multisigKeeper))
+		AddRoute("multisig", msighandler.NewQuerier(app.multisigKeeper)).
+		AddRoute("utxo", utxo.NewQuerier(app.utxoKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
@@ -104,6 +114,8 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		app.keyAccount,
 		app.keyHtlcStore,
 		app.keyMultisigStore,
+		app.keyAccUtxoStore,
+		app.keyUtxoStore,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)
@@ -169,6 +181,7 @@ func MakeCodec() *codec.Codec {
 	bank.RegisterCodec(cdc)
 	htlc.RegisterCodec(cdc)
 	multisig.RegisterCodec(cdc)
+	utxo.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
