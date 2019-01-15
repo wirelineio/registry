@@ -34,3 +34,29 @@ func GenAccOutput(ctx sdk.Context, keeper Keeper, msg MsgBirthAccOutput) (AccOut
 		Block:   ctx.BlockHeight(),
 	}, nil
 }
+
+// GetTxOutValue returns the sum of the output values.
+func GetTxOutValue(outputs []TxOut) uint64 {
+	var value uint64
+
+	for _, output := range outputs {
+		value += output.Value
+	}
+
+	return value
+}
+
+// GenTxHash generates a transaction hash.
+func GenTxHash(keeper Keeper, tx Tx) []byte {
+	// TODO(ashwin): Sort inputs/outputs in canonical order.
+
+	first := sha256.New()
+	first.Write(keeper.cdc.MustMarshalBinaryBare(tx))
+	firstHash := first.Sum(nil)
+
+	second := sha256.New()
+	second.Write(firstHash)
+	secondHash := second.Sum(nil)
+
+	return secondHash
+}

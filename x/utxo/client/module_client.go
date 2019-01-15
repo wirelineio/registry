@@ -46,6 +46,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 
 	utxoTxCmd.AddCommand(client.PostCommands(
 		utxocmd.GetCmdBirthOutput(mc.cdc),
+		utxocmd.GetCmdPayToAddress(mc.cdc),
 	)...)
 
 	return utxoTxCmd

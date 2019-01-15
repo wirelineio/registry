@@ -34,9 +34,9 @@ type PayToAddress struct {
 }
 
 // PayToScript indicates the UTXO is payable to a script.
-type PayToScript struct {
-	Script []byte
-}
+// type PayToScript struct {
+// 	Script []byte
+// }
 
 // TxOut represents a transaction output.
 // PkScript is the go-amino binary marshalled PayTo* struct.

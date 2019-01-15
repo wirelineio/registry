@@ -39,6 +39,7 @@ type wirechainApp struct {
 	keyMultisigStore *sdk.KVStoreKey
 	keyAccUtxoStore  *sdk.KVStoreKey
 	keyUtxoStore     *sdk.KVStoreKey
+	keyTxStore       *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
@@ -69,6 +70,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		keyMultisigStore: sdk.NewKVStoreKey("multisig"),
 		keyAccUtxoStore:  sdk.NewKVStoreKey("acc_utxo"),
 		keyUtxoStore:     sdk.NewKVStoreKey("utxo"),
+		keyTxStore:       sdk.NewKVStoreKey("tx"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -88,7 +90,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	app.multisigKeeper = msighandler.NewKeeper(app.bankKeeper, app.keyMultisigStore, app.cdc)
 
-	app.utxoKeeper = utxo.NewKeeper(app.accountKeeper, app.bankKeeper, app.keyAccUtxoStore, app.keyUtxoStore, app.cdc)
+	app.utxoKeeper = utxo.NewKeeper(app.accountKeeper, app.bankKeeper, app.keyAccUtxoStore, app.keyUtxoStore, app.keyTxStore, app.cdc)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
@@ -116,6 +118,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		app.keyMultisigStore,
 		app.keyAccUtxoStore,
 		app.keyUtxoStore,
+		app.keyTxStore,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)
