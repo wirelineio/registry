@@ -113,7 +113,7 @@ func NewMsgPayToAddress(cdc *codec.Codec, hash []byte, index int32, amount uint6
 						Hash:  hash,
 						Index: index,
 					},
-					Witness: from.Bytes(),
+					// Witness: from.Bytes(),
 				},
 			},
 			TxOut: []TxOut{

@@ -141,3 +141,22 @@ func (k Keeper) GetTx(ctx sdk.Context, hash []byte) Tx {
 
 	return obj
 }
+
+// ListTx - get all account UTXO records.
+func (k Keeper) ListTx(ctx sdk.Context) []Tx {
+	var records []Tx
+
+	store := ctx.KVStore(k.txStoreKey)
+	itr := store.Iterator(nil, nil)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		bz := store.Get(itr.Key())
+		if bz != nil {
+			var obj Tx
+			k.cdc.MustUnmarshalBinaryBare(bz, &obj)
+			records = append(records, obj)
+		}
+	}
+
+	return records
+}

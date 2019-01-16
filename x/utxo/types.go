@@ -58,3 +58,18 @@ type Tx struct {
 	TxOut    []TxOut
 	LockTime uint32
 }
+
+// Wallet data structures.
+
+// OutPointVal is an outpoint and it's value.
+type OutPointVal struct {
+	Hash  []byte
+	Index int32
+	Value uint64
+}
+
+// Wallet represents a balance and UTXOs for an address.
+type Wallet struct {
+	Balance uint64
+	Entries []OutPointVal
+}

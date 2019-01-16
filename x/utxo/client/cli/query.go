@@ -55,3 +55,73 @@ func GetCmdList(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+// GetCmdListTx queries all transaction records.
+func GetCmdListTx(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "ls-tx",
+		Short: "List transaction records.",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/ls-tx", queryRoute), nil)
+			if err != nil {
+				fmt.Println("{}")
+				return nil
+			}
+
+			fmt.Println(string(res))
+
+			return nil
+		},
+	}
+}
+
+// GetCmdGetTx queries a transaction record.
+func GetCmdGetTx(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "get-tx [hash]",
+		Short: "Get transaction record.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			hash := args[0]
+
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get-tx/%s", queryRoute, hash), nil)
+			if err != nil {
+				fmt.Println("{}")
+				return nil
+			}
+
+			fmt.Println(string(res))
+
+			return nil
+		},
+	}
+}
+
+// GetCmdGetBalance gets the balance for the given address.
+func GetCmdGetBalance(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "balance [address]",
+		Short: "Get balance for address.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			hash := args[0]
+
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/balance/%s", queryRoute, hash), nil)
+			if err != nil {
+				fmt.Println("{}")
+				return nil
+			}
+
+			fmt.Println(string(res))
+
+			return nil
+		},
+	}
+}
