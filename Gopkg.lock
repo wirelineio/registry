@@ -129,6 +129,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:c83558921001d3884e7dd035f3e3b47c3adca5adeb987ad660e02894a59b17aa"
+  name = "github.com/emicklei/dot"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4b3663f21c4131d0d8d0b441299a336abe402c2a"
+  version = "0.8.0"
+
+[[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
@@ -726,7 +734,6 @@
     "github.com/cosmos/cosmos-sdk/client/rpc",
     "github.com/cosmos/cosmos-sdk/client/tx",
     "github.com/cosmos/cosmos-sdk/client/utils",
-    "github.com/cosmos/cosmos-sdk/cmd/gaia/app",
     "github.com/cosmos/cosmos-sdk/cmd/gaia/init",
     "github.com/cosmos/cosmos-sdk/codec",
     "github.com/cosmos/cosmos-sdk/server",
@@ -740,7 +747,7 @@
     "github.com/cosmos/cosmos-sdk/x/bank/client/cli",
     "github.com/cosmos/cosmos-sdk/x/bank/client/rest",
     "github.com/cosmos/cosmos-sdk/x/stake",
-    "github.com/gorilla/mux",
+    "github.com/emicklei/dot",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
     "github.com/tendermint/go-amino",

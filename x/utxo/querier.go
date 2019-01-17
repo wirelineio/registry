@@ -10,7 +10,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/emicklei/dot"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/wirelineio/wirechain/x/utxo/utils"
 )
 
 // Endpoints supported by the Querier.
@@ -20,6 +22,7 @@ const (
 	ListTx        = "ls-tx"
 	GetTx         = "get-tx"
 	GetBalance    = "balance"
+	GetGraph      = "graph"
 )
 
 // NewQuerier is the module level router for state queries
@@ -36,6 +39,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return getTx(ctx, path[1:], req, keeper)
 		case GetBalance:
 			return getBalance(ctx, path[1:], req, keeper)
+		case GetGraph:
+			return getGraph(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("Unknown utxo query endpoint.")
 		}
@@ -68,7 +73,7 @@ func listUtxo(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 
 // nolint: unparam
 func listTx(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
-	records := keeper.ListTx(ctx)
+	records, _ := keeper.ListTx(ctx)
 
 	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, records)
 	if err2 != nil {
@@ -123,26 +128,14 @@ func getBalance(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Ke
 
 			var obj PayToAddress
 			keeper.cdc.MustUnmarshalBinaryBare(txOut.PkScript, &obj)
-
 			if obj.Address.Equals(address) {
-				wallet.Balance += txOut.Value
-				wallet.Entries = append(wallet.Entries, OutPointVal{
-					Hash:  outpoint.Hash,
-					Index: outpoint.Index,
-					Value: txOut.Value,
-				})
+				updateWallet(&wallet, outpoint, txOut.Value)
 			}
 
 		} else if outpoint.Index == OutPointAccountBirth {
 			accOutput := keeper.GetAccOutput(ctx, outpoint.Hash)
-
 			if accOutput.Address.Equals(address) {
-				wallet.Balance += accOutput.Value
-				wallet.Entries = append(wallet.Entries, OutPointVal{
-					Hash:  outpoint.Hash,
-					Index: outpoint.Index,
-					Value: accOutput.Value,
-				})
+				updateWallet(&wallet, outpoint, accOutput.Value)
 			}
 		}
 	}
@@ -153,4 +146,52 @@ func getBalance(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Ke
 	}
 
 	return bz, nil
+}
+
+func updateWallet(wallet *Wallet, outpoint OutPoint, value uint64) {
+	wallet.Balance += value
+	wallet.Entries = append(wallet.Entries, OutPointVal{
+		Hash:  outpoint.Hash,
+		Index: outpoint.Index,
+		Value: value,
+	})
+}
+
+// nolint: unparam
+func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
+	g := dot.NewGraph(dot.Directed)
+
+	txns, txIds := keeper.ListTx(ctx)
+	for txIndex, tx := range txns {
+		txNodeID := utils.BytesToBase64(txIds[txIndex])
+		var txLabel []string
+		txDotNode := TxNode(g, txNodeID)
+
+		txLabel = append(txLabel, "TXN")
+		txLabel = append(txLabel, txNodeID)
+
+		for _, txIn := range tx.TxIn {
+			g.Edge(
+				g.Node(txNodeID),
+				TxNode(g, utils.BytesToBase64(txIn.Input.Hash)),
+				TxInLabel(txIn),
+			)
+		}
+
+		for txOutputIndex, txOut := range tx.TxOut {
+			txLabel = append(txLabel, TxOutLabel(txOutputIndex, txOut))
+		}
+
+		txDotNode.Attr("label", strings.Join(txLabel, " | "))
+	}
+
+	for _, accOut := range keeper.ListAccOutput(ctx) {
+		AccOutNode(g, accOut)
+	}
+
+	for _, utxo := range keeper.ListUtxo(ctx) {
+		UnspentOutputNode(g, utxo)
+	}
+
+	return []byte(g.String()), nil
 }

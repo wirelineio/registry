@@ -125,3 +125,25 @@ func GetCmdGetBalance(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+// GetCmdGraph generates a dot graph.
+func GetCmdGraph(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "graph",
+		Short: "Generate dot graph.",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/graph", queryRoute), nil)
+			if err != nil {
+				fmt.Println("{}")
+				return nil
+			}
+
+			fmt.Println(string(res))
+
+			return nil
+		},
+	}
+}

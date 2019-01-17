@@ -35,6 +35,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		utxocmd.GetCmdListTx("utxo", mc.cdc),
 		utxocmd.GetCmdGetTx("utxo", mc.cdc),
 		utxocmd.GetCmdGetBalance("utxo", mc.cdc),
+		utxocmd.GetCmdGraph("utxo", mc.cdc),
 	)...)
 
 	return utxoQueryCmd

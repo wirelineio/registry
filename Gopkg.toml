@@ -65,3 +65,7 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/emicklei/dot"
+  version = "0.8.0"

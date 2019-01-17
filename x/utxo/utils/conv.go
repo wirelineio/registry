@@ -4,7 +4,10 @@
 
 package utils
 
-import "encoding/binary"
+import (
+	"encoding/base64"
+	"encoding/binary"
+)
 
 // UInt64ToBytes converts a unint64 into a byte array.
 func UInt64ToBytes(n uint64) []byte {
@@ -20,4 +23,9 @@ func Int64ToBytes(n int64) []byte {
 	binary.PutVarint(buf, n)
 
 	return buf
+}
+
+// BytesToBase64 encodes a byte array as a base64 string.
+func BytesToBase64(bytes []byte) string {
+	return base64.StdEncoding.EncodeToString(bytes)
 }
