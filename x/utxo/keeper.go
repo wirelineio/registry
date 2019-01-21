@@ -42,13 +42,13 @@ func (k Keeper) PutAccOutput(ctx sdk.Context, accUtxo AccOutput) {
 }
 
 // HasAccOutput - checks if an account output by the given ID exists.
-func (k Keeper) HasAccOutput(ctx sdk.Context, id []byte) bool {
+func (k Keeper) HasAccOutput(ctx sdk.Context, id Hash) bool {
 	store := ctx.KVStore(k.accUtxoStoreKey)
 	return store.Has(id)
 }
 
 // GetAccOutput - gets a AccOutput from the store.
-func (k Keeper) GetAccOutput(ctx sdk.Context, id []byte) AccOutput {
+func (k Keeper) GetAccOutput(ctx sdk.Context, id Hash) AccOutput {
 	store := ctx.KVStore(k.accUtxoStoreKey)
 
 	bz := store.Get(id)
@@ -120,19 +120,19 @@ func (k Keeper) ListUtxo(ctx sdk.Context) []OutPoint {
 }
 
 // HasTx checks if a transaction by the given hash exists.
-func (k Keeper) HasTx(ctx sdk.Context, hash []byte) bool {
+func (k Keeper) HasTx(ctx sdk.Context, hash Hash) bool {
 	store := ctx.KVStore(k.txStoreKey)
 	return store.Has(hash)
 }
 
 // PutTx - saves a transaction to the store.
-func (k Keeper) PutTx(ctx sdk.Context, hash []byte, tx Tx) {
+func (k Keeper) PutTx(ctx sdk.Context, hash Hash, tx Tx) {
 	store := ctx.KVStore(k.txStoreKey)
 	store.Set(hash, k.cdc.MustMarshalBinaryBare(tx))
 }
 
 // GetTx - gets a transaction from the store.
-func (k Keeper) GetTx(ctx sdk.Context, hash []byte) Tx {
+func (k Keeper) GetTx(ctx sdk.Context, hash Hash) Tx {
 	store := ctx.KVStore(k.txStoreKey)
 
 	bz := store.Get(hash)
@@ -143,9 +143,9 @@ func (k Keeper) GetTx(ctx sdk.Context, hash []byte) Tx {
 }
 
 // ListTx - get all account UTXO records.
-func (k Keeper) ListTx(ctx sdk.Context) ([]Tx, [][]byte) {
+func (k Keeper) ListTx(ctx sdk.Context) ([]Tx, []Hash) {
 	var records []Tx
-	var txIds [][]byte
+	var txIds []Hash
 
 	store := ctx.KVStore(k.txStoreKey)
 	itr := store.Iterator(nil, nil)

@@ -5,14 +5,12 @@
 package utxo
 
 import (
-	"encoding/base64"
-	"strings"
+	"encoding/hex"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/emicklei/dot"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/wirelineio/wirechain/x/utxo/utils"
 )
 
 // Endpoints supported by the Querier.
@@ -86,13 +84,12 @@ func listTx(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper
 // nolint: unparam
 func getTx(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 
-	// strings.Join works around an issue where the base64 encoded string contains a slash.
-	hash, err2 := base64.StdEncoding.DecodeString(strings.Join(path, "/"))
-
+	hashBytes, err2 := hex.DecodeString(path[0])
 	if err2 != nil {
-		return nil, sdk.ErrInternal("Error decoding transaction hash.")
+		return nil, sdk.ErrInternal("Invalid transaction hash.")
 	}
 
+	hash := Hash(hashBytes)
 	if !keeper.HasTx(ctx, hash) {
 		return nil, sdk.ErrInternal("Transaction not found.")
 	}
@@ -163,26 +160,7 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 
 	txns, txIds := keeper.ListTx(ctx)
 	for txIndex, tx := range txns {
-		txNodeID := utils.BytesToBase64(txIds[txIndex])
-		var txLabel []string
-		txDotNode := TxNode(g, txNodeID)
-
-		txLabel = append(txLabel, "TXN")
-		txLabel = append(txLabel, txNodeID)
-
-		for _, txIn := range tx.TxIn {
-			g.Edge(
-				g.Node(txNodeID),
-				TxNode(g, utils.BytesToBase64(txIn.Input.Hash)),
-				TxInLabel(txIn),
-			)
-		}
-
-		for txOutputIndex, txOut := range tx.TxOut {
-			txLabel = append(txLabel, TxOutLabel(txOutputIndex, txOut))
-		}
-
-		txDotNode.Attr("label", strings.Join(txLabel, " | "))
+		TxNode(g, txIds[txIndex], tx)
 	}
 
 	for _, accOut := range keeper.ListAccOutput(ctx) {

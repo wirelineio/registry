@@ -5,7 +5,7 @@
 package cli
 
 import (
-	"encoding/base64"
+	"encoding/hex"
 	"os"
 	"strconv"
 
@@ -95,7 +95,10 @@ func GetCmdPayToAddress(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			hash, err := base64.StdEncoding.DecodeString(args[3])
+			hash, err := hex.DecodeString(args[3])
+			if err != nil {
+				return err
+			}
 
 			index, err := strconv.ParseInt(args[4], 10, 32)
 			if err != nil {

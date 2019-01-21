@@ -5,12 +5,29 @@
 package utxo
 
 import (
+	"encoding/hex"
+	"encoding/json"
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// Hash represents a transaction or account output ID.
+type Hash []byte
+
+// MarshalJSON marshals to JSON using Bech32.
+func (h Hash) MarshalJSON() ([]byte, error) {
+	return json.Marshal(h.String())
+}
+
+// String implements the Stringer interface.
+func (h Hash) String() string {
+	return strings.ToUpper(hex.EncodeToString(h))
+}
+
 // AccOutput represents an account based output birth record.
 type AccOutput struct {
-	ID      []byte
+	ID      Hash
 	Value   uint64
 	Address sdk.AccAddress
 	Block   int64
@@ -21,7 +38,7 @@ type AccOutput struct {
 // Index = -1 indicates Hash refers to an account based output birth record.
 // Index = -2 indicates Hash refers to a voucher based output birth record.
 type OutPoint struct {
-	Hash  []byte
+	Hash  Hash
 	Index int32
 }
 
@@ -63,7 +80,7 @@ type Tx struct {
 
 // OutPointVal is an outpoint and it's value.
 type OutPointVal struct {
-	Hash  []byte
+	Hash  Hash
 	Index int32
 	Value uint64
 }
