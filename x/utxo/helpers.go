@@ -21,6 +21,7 @@ func GenAccOutput(ctx sdk.Context, keeper Keeper, msg MsgBirthAccOutput) (AccOut
 	}
 
 	hash := sha256.New()
+	hash.Write([]byte(ctx.ChainID()))
 	hash.Write(msg.Address)
 	hash.Write([]byte(msg.Amount.String()))
 	hash.Write(utils.UInt64ToBytes(sequence))
@@ -48,8 +49,6 @@ func GetTxOutValue(outputs []TxOut) uint64 {
 
 // GenTxHash generates a transaction hash.
 func GenTxHash(keeper Keeper, tx Tx) []byte {
-	// TODO(ashwin): Sort inputs/outputs in canonical order.
-
 	first := sha256.New()
 	first.Write(keeper.cdc.MustMarshalBinaryBare(tx))
 	firstHash := first.Sum(nil)

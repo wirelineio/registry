@@ -51,6 +51,10 @@ func handleMsgBirthAccOutput(ctx sdk.Context, keeper Keeper, msg MsgBirthAccOutp
 // Handle MsgTx.
 func handleMsgTx(ctx sdk.Context, keeper Keeper, msg MsgTx) sdk.Result {
 
+	// Inputs and outputs need to be in canonical order.
+	SortTxInputs(&msg.Tx)
+	SortTxOutputs(&msg.Tx)
+
 	// Supports only 1 input, for now.
 	if len(msg.Tx.TxIn) != 1 {
 		return sdk.ErrInternal("Multiple inputs not yet supported.").Result()
