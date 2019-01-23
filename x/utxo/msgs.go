@@ -103,9 +103,16 @@ func (msg MsgTx) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }
 
-// NewMsgPayToAddress creates a transaction to pay to an address.
-func NewMsgPayToAddress(cdc *codec.Codec, hash []byte, index int32, amount uint64, change uint64, from sdk.AccAddress, to sdk.AccAddress) MsgTx {
+// NewMsgTx creates a new transaction message.
+func NewMsgTx(tx Tx, signer sdk.AccAddress) MsgTx {
+	return MsgTx{
+		Signer: signer,
+		Tx:     tx,
+	}
+}
 
+// NewTxPayToAddress creates a transaction payload to pay to an address.
+func NewTxPayToAddress(cdc *codec.Codec, sig []byte, hash []byte, index int32, amount uint64, change uint64, from sdk.AccAddress, to sdk.AccAddress) Tx {
 	tx := Tx{
 		TxIn: []TxIn{
 			TxIn{
@@ -113,7 +120,7 @@ func NewMsgPayToAddress(cdc *codec.Codec, hash []byte, index int32, amount uint6
 					Hash:  hash,
 					Index: index,
 				},
-				// Witness: from.Bytes(),
+				Witness: sig,
 			},
 		},
 		TxOut: []TxOut{
@@ -135,10 +142,7 @@ func NewMsgPayToAddress(cdc *codec.Codec, hash []byte, index int32, amount uint6
 	SortTxInputs(&tx)
 	SortTxOutputs(&tx)
 
-	return MsgTx{
-		Signer: from,
-		Tx:     tx,
-	}
+	return tx
 }
 
 // SortTxInputs sorts transaction inputs (canonical ordering).

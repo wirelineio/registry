@@ -97,7 +97,7 @@ func handleMsgTx(ctx sdk.Context, keeper Keeper, msg MsgTx) sdk.Result {
 	}
 
 	// Save Tx.
-	txHash := GenTxHash(keeper, msg.Tx)
+	txHash := GenTxHash(keeper.cdc, msg.Tx)
 	keeper.PutTx(ctx, txHash, msg.Tx)
 
 	// Delete old UTXO.

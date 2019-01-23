@@ -7,6 +7,8 @@ package utils
 import (
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/hex"
+	"strings"
 )
 
 // UInt64ToBytes converts a unint64 into a byte array.
@@ -28,4 +30,9 @@ func Int64ToBytes(n int64) []byte {
 // BytesToBase64 encodes a byte array as a base64 string.
 func BytesToBase64(bytes []byte) string {
 	return base64.StdEncoding.EncodeToString(bytes)
+}
+
+// BytesToHex encodes a byte array as an upper case hex string.
+func BytesToHex(bytes []byte) string {
+	return strings.ToUpper(hex.EncodeToString(bytes))
 }

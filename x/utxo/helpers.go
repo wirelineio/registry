@@ -7,9 +7,9 @@ package utxo
 import (
 	"crypto/sha256"
 
-	"github.com/wirelineio/wirechain/x/utxo/utils"
-
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/wirelineio/wirechain/x/utxo/utils"
 )
 
 // GenAccOutput creates an AccOutput from MsgBirthAccOutput info.
@@ -48,9 +48,9 @@ func GetTxOutValue(outputs []TxOut) uint64 {
 }
 
 // GenTxHash generates a transaction hash.
-func GenTxHash(keeper Keeper, tx Tx) []byte {
+func GenTxHash(cdc *codec.Codec, tx Tx) []byte {
 	first := sha256.New()
-	first.Write(keeper.cdc.MustMarshalBinaryBare(tx))
+	first.Write(cdc.MustMarshalBinaryBare(tx))
 	firstHash := first.Sum(nil)
 
 	second := sha256.New()
