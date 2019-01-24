@@ -21,7 +21,9 @@ func GetTxSignature(cdc *codec.Codec, tx Tx, name string) ([]byte, error) {
 		return nil, err
 	}
 
-	sigBytes, _, err := keybase.Sign(name, passphrase, GenTxHash(cdc, tx))
+	txHash := GenTxHash(cdc, tx)
+
+	sigBytes, _, err := keybase.Sign(name, passphrase, txHash)
 	if err != nil {
 		return nil, err
 	}

@@ -61,6 +61,7 @@ func handleMsgTx(ctx sdk.Context, keeper Keeper, msg MsgTx) sdk.Result {
 	}
 
 	input := msg.Tx.TxIn[0].Input
+	witness := msg.Tx.TxIn[0].Witness
 
 	// Check that the input outpoint is in the UTXO list.
 	if !keeper.HasOutPoint(ctx, input) {
@@ -88,16 +89,19 @@ func handleMsgTx(ctx sdk.Context, keeper Keeper, msg MsgTx) sdk.Result {
 	}
 
 	if inputValue != outputValue {
-		fmt.Println("input output", inputValue, outputValue)
 		return sdk.ErrUnauthorized("Mismatch between input and output values.").Result()
 	}
 
-	if !redeemAddress.Equals(msg.Signer) {
-		return sdk.ErrUnauthorized("OutPoint not spendable by message signer.").Result()
+	txHash := GenTxHash(keeper.cdc, msg.Tx)
+	account := keeper.accountKeeper.GetAccount(ctx, redeemAddress)
+	pubKey := account.GetPubKey()
+	verified := pubKey.VerifyBytes(txHash, witness)
+
+	if !verified {
+		return sdk.ErrUnauthorized("OutPoint not spendable by witness.").Result()
 	}
 
 	// Save Tx.
-	txHash := GenTxHash(keeper.cdc, msg.Tx)
 	keeper.PutTx(ctx, txHash, msg.Tx)
 
 	// Delete old UTXO.

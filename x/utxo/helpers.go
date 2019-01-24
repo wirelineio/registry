@@ -50,7 +50,17 @@ func GetTxOutValue(outputs []TxOut) uint64 {
 // GenTxHash generates a transaction hash.
 func GenTxHash(cdc *codec.Codec, tx Tx) []byte {
 	first := sha256.New()
-	first.Write(cdc.MustMarshalBinaryBare(tx))
+
+	first.Write(cdc.MustMarshalBinaryBare(tx.LockTime))
+	for _, txIn := range tx.TxIn {
+		first.Write(cdc.MustMarshalBinaryBare(txIn.Input))
+		first.Write(cdc.MustMarshalBinaryBare(txIn.Sequence))
+	}
+
+	for _, txOut := range tx.TxOut {
+		first.Write(cdc.MustMarshalBinaryBare(txOut))
+	}
+
 	firstHash := first.Sum(nil)
 
 	second := sha256.New()
