@@ -80,6 +80,73 @@ $ wirechaind start
 
 Run the following commands in another terminal.
 
+## UTXO module
+
+Birth UTXO from account funds.
+
+```
+wirecli tx utxo birth 100wire --from alice --chain-id=wireline
+```
+
+Pay to an address from the UTXO (Account Output).
+
+```
+# Note the outpoint hash.
+wirecli query utxo ls-account-outputs --chain-id=wireline
+
+# Sign but don't broadcast.
+wirecli tx utxo pay --from alice --chain-id=wireline $(wirecli keys show alice --address) $(wirecli keys show bob --address) 40 60 A447DEF319B76E111FA557BD6777B86486DAF180973A7842FB25D98A1891AC24 x CAFE --sign-only
+
+# Broadcast with the signature from the previous step.
+wirecli tx utxo pay --from alice --chain-id=wireline $(wirecli keys show alice --address) $(wirecli keys show bob --address) 40 60 A447DEF319B76E111FA557BD6777B86486DAF180973A7842FB25D98A1891AC24 x 8AA8B6335F9FB51BA798EBB44B0B4CF25CA279A77C79D306AD4FC34B73406356024B8390F6C0EDD16ED62BB6336526FFAC088D003FE9B9C4A64935FB4B3FBAC8
+```
+
+Pay to an address from the newly generated UTXOs.
+
+```
+# Sign offline.
+wirecli tx utxo pay --from bob --chain-id=wireline $(wirecli keys show bob --address) $(wirecli keys show alice --address) 10 30 FD1B20785812C1D1D8B776DB424ED79C8CD5A68AC94ED0C26AA8E191A78522CD 0 CAFE --sign-only
+
+# Broadcast with signature from previous step.
+wirecli tx utxo pay --from bob --chain-id=wireline $(wirecli keys show bob --address) $(wirecli keys show alice --address) 10 30 FD1B20785812C1D1D8B776DB424ED79C8CD5A68AC94ED0C26AA8E191A78522CD 0 5A8350C473BBC066A9B87F715408BC57EFB8868B816FBF43E262DCC1EB6996A533E5E270C3D56CF507AF65A2864DCDB74275BFA42FF9DF1E62F0CC529C026644 
+
+# Sign only.
+wirecli tx utxo pay --from alice --chain-id=wireline $(wirecli keys show alice --address) $(wirecli keys show bob --address) 40 20 FD1B20785812C1D1D8B776DB424ED79C8CD5A68AC94ED0C26AA8E191A78522CD 1 CAFE --sign-only
+
+# Broadcast with signature from previous step.
+# Note: Anyone can broadcast the Cosmos SDK transaction. It's the witness/signature in the payload Tx that counts.
+wirecli tx utxo pay --from bob --chain-id=wireline $(wirecli keys show alice --address) $(wirecli keys show bob --address) 40 20 FD1B20785812C1D1D8B776DB424ED79C8CD5A68AC94ED0C26AA8E191A78522CD 1 B3EDC33220D37BC477758068471E1E23F5417E473F6C3194C6EE2EAF9A5FAA7E59B0BFE2DD1A5784F866715453DC2CE40C30F065E9FE6BC18A5B997E998FE8A4
+
+```
+
+List UTXO/Account Outputs.
+
+```
+wirecli query utxo ls-account-outputs --chain-id=wireline
+wirecli query utxo ls --chain-id=wireline
+```
+
+List transactions.
+
+```
+wirecli query utxo ls-tx --chain-id=wireline
+wirecli query utxo get-tx --chain-id=wireline 40154BD90424E96506B172489DC569E2657ECD7A5F145E6D8A1BE5B1F062C2FE 
+```
+
+View wallet balance and UTXOs.
+
+```
+wirecli query utxo balance --chain-id=wireline $(wirecli keys show alice --address)
+wirecli query utxo balance --chain-id=wireline $(wirecli keys show bob --address)
+```
+
+Generate transaction graph.
+
+```
+wirecli query utxo graph --chain-id=wireline | dot -Tpng  > test.png && eog test.png
+```
+
+
 ## HTLC module
 
 ### Redeem Flow
