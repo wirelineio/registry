@@ -23,6 +23,7 @@ Generate certificates for btcd (if required).
 ```bash
 cd $GOPATH/src/github.com/wirelineio/wirechain/env/local/btcd
 gencerts --host="*" --directory=./rpc --force
+# Use -H to add additional host names (e.g. on EC2).
 ```
 
 ## Initialize Services
@@ -46,10 +47,12 @@ cd lnd2
 ./run.sh
 ```
 
+Use `--local` for local instances or `--dev` to connect to the instances on EC2.
+
 Create wallet for lnd #1 and lnd #2.
 
 ```bash
-./wallet_create.sh 1
+./wallet_create.sh --local 1
 Input wallet password:
 Confirm wallet password:
 
@@ -64,13 +67,13 @@ lnd successfully initialized!
 ```
 
 ```bash
-./wallet_create.sh 2
+./wallet_create.sh --local 2
 ```
 
 Create new address for lnd #1.
 
 ```bash
-./wallet_new_address.sh 1
+./wallet_new_address.sh --local 1
 {
     "address": "rc3AKE1i7kdNCCZD2MWQTrJ3wMXXNpSsS2"
 }
@@ -86,14 +89,13 @@ MINING_ADDRESS=rc3AKE1i7kdNCCZD2MWQTrJ3wMXXNpSsS2 ./run.sh
 Generate 400 blocks (we need at least "100 >=" blocks because of coinbase block maturity and "300 ~=" in order to activate segwit):
 
 ```bash
-cd btcd
-./init.sh
+./btcd_init.sh --local
 ```
 
 Check wallet balance. You might have to restart lnd and unlock the wallet using ```./wallet_unlock.sh 1``` for the balance to show correctly.
 
 ```bash
-./wallet_balance.sh 1
+./wallet_balance.sh --local 1
 {
     "total_balance": "1505000000000",
     "confirmed_balance": "1505000000000",
@@ -106,7 +108,7 @@ Check wallet balance. You might have to restart lnd and unlock the wallet using 
 Get identity pubkey of lnd #2.
 
 ```bash
-./ln_get_info.sh 2
+./ln_get_info.sh --local 2
 {
     "version": "0.5.1-beta commit=v0.5.1-beta-509-gecd5541d55fbf1218662d0d95b220411f25415ed",
     "identity_pubkey": "0393cc3fa60704da2568216d0609938e1cf1820cf0e53738fd3b66b02ec40fbdb2",
@@ -135,9 +137,9 @@ Get identity pubkey of lnd #2.
 Connect lnd #1 to lnd #2 using the URI in the output.
 
 ```bash
-./ln_connect.sh 1 0393cc3fa60704da2568216d0609938e1cf1820cf0e53738fd3b66b02ec40fbdb2@127.0.0.1:9835
+./ln_connect.sh --local 1 0393cc3fa60704da2568216d0609938e1cf1820cf0e53738fd3b66b02ec40fbdb2@127.0.0.1:9835
 
-./ln_list_peer.sh 1
+./ln_list_peer.sh --local 1
 {
     "peers": [
         {
@@ -159,7 +161,7 @@ Connect lnd #1 to lnd #2 using the URI in the output.
 Open channel from lnd #1 to #2.
 
 ```bash
-./ln_open_chan.sh 1 0393cc3fa60704da2568216d0609938e1cf1820cf0e53738fd3b66b02ec40fbdb2
+./ln_open_chan.sh --local 1 0393cc3fa60704da2568216d0609938e1cf1820cf0e53738fd3b66b02ec40fbdb2
 {
     "funding_txid": "e32aa05b200b77e29123fd5df76c2867f078a59a03622318118e94b75d8b0aa3"
 }
@@ -169,7 +171,7 @@ Include funding transaction in a block thereby opening the channel.
 
 ```bash
 cd btcd
-./blocks.sh
+./btcd_blocks.sh --local
 [
   "351676ac207bf57e6ff74f25bab31f5ff448ddd45cf264c8aa44cf34dc1d53e6",
   "0dfcad26e3feb21ea47cbdce01b6ae8973024d23cbf6d82e6866c6cd34b6c413",
@@ -180,7 +182,7 @@ cd btcd
 List channels.
 
 ```bash
-./ln_list_chan.sh 1
+./ln_list_chan.sh --local 1
 {
     "channels": [
         {
@@ -213,7 +215,7 @@ List channels.
 Add invoice on lnd #2.
 
 ```bash
-./ln_add_invoice.sh 2
+./ln_add_invoice.sh --local 2
 {
     "r_hash": "d5d3afc2aba122b2319547b0e4b70f95043fd6a3fc56dd75eb34521afa2ec954",
     "pay_req": "lnsb100u1pwykxe8pp56hf6ls4t5y3tyvv4g7cwfdc0j5zrl44rl3td6a0tx3fp473we92qdqqcqzyshx23aw889jufgpye4nrzcaqtqq5ey4njq84wwws0xe2hjjeqnqlzkakyya76j2qmcw5qj0xmj9z2rarlx8tdgwtec9mxapjvst7gx6cpzpmclj",
@@ -224,7 +226,7 @@ Add invoice on lnd #2.
 Pay invoice from lnd #1.
 
 ```bash
-./ln_pay_invoice.sh 1 lnsb100u1pwykxe8pp56hf6ls4t5y3tyvv4g7cwfdc0j5zrl44rl3td6a0tx3fp473we92qdqqcqzyshx23aw889jufgpye4nrzcaqtqq5ey4njq84wwws0xe2hjjeqnqlzkakyya76j2qmcw5qj0xmj9z2rarlx8tdgwtec9mxapjvst7gx6cpzpmclj
+./ln_pay_invoice.sh --local 1 lnsb100u1pwykxe8pp56hf6ls4t5y3tyvv4g7cwfdc0j5zrl44rl3td6a0tx3fp473we92qdqqcqzyshx23aw889jufgpye4nrzcaqtqq5ey4njq84wwws0xe2hjjeqnqlzkakyya76j2qmcw5qj0xmj9z2rarlx8tdgwtec9mxapjvst7gx6cpzpmclj
 Description:
 Amount (in satoshis): 10000
 Destination: 0393cc3fa60704da2568216d0609938e1cf1820cf0e53738fd3b66b02ec40fbdb2
@@ -253,13 +255,13 @@ Confirm payment (yes/no): yes
 Check channel balances.
 
 ```bash
-./ln_chan_balance.sh 1
+./ln_chan_balance.sh --local 1
 {
     "balance": "980950",
     "pending_open_balance": "0"
 }
 
-./ln_chan_balance.sh 2
+./ln_chan_balance.sh --local 2
 {
     "balance": "10000",
     "pending_open_balance": "0"
@@ -271,7 +273,7 @@ Check channel balances.
 Get the funding tx outpoint.
 
 ```bash
-./ln_list_chan.sh 1
+./ln_list_chan.sh --local 1
 {
     "channels": [
         {
@@ -302,7 +304,7 @@ Get the funding tx outpoint.
 Note: "channel_point": "e32aa05b200b77e29123fd5df76c2867f078a59a03622318118e94b75d8b0aa3:0"
 
 ```bash
-./ln_close_chan.sh 1 e32aa05b200b77e29123fd5df76c2867f078a59a03622318118e94b75d8b0aa3 0
+./ln_close_chan.sh --local 1 e32aa05b200b77e29123fd5df76c2867f078a59a03622318118e94b75d8b0aa3 0
 {
     "closing_txid": "f526bc7c4a603450d186e378819e00d301279ac0d098c9eb938e86e220fef4f8"
 }
@@ -312,7 +314,7 @@ Include close transaction in a block thereby closing the channel.
 
 ```bash
 cd btcd
-./blocks.sh
+./btcd_blocks.sh --local
 [
   "61a9fe6496bce13579dc9056a8eeb6291487dfa14db07c9a6b4b3ba90a43d915",
   "254f107099bcb5fcb4fdd28f94505f60b5595a05dc956ff5114b4b9262bf07a7",
@@ -323,14 +325,14 @@ cd btcd
 Check wallet balances.
 
 ```bash
-./wallet_balance.sh 1
+./wallet_balance.sh --local 1
 {
     "total_balance": "1534999972163",
     "confirmed_balance": "1534999972163",
     "unconfirmed_balance": "0"
 }
 
-./wallet_balance.sh 2
+./wallet_balance.sh --local 2
 {
     "total_balance": "10000",
     "confirmed_balance": "10000",
