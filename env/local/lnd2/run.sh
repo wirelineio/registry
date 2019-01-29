@@ -1,2 +1,2 @@
 #!/bin/bash
-lnd --configfile ./lnd2.conf
+lnd --configfile ./lnd.conf
