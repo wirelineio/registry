@@ -18,10 +18,10 @@ cd $GOPATH/src/github.com/btcsuite/btcd
 GO111MODULE=on go install -v . ./cmd/...
 ```
 
-Generate certificates for btcd (if required).
+Generate certificates for btcd, if required. Note: You don't need this for `--local` mode.
 
 ```bash
-cd $GOPATH/src/github.com/wirelineio/wirechain/env/local/btcd
+cd $GOPATH/src/github.com/wirelineio/wirechain/env/dev/btcd
 gencerts --host="*" --directory=./rpc --force
 # Use -H to add additional host names (e.g. on EC2).
 ```
