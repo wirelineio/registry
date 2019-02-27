@@ -9,6 +9,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/emicklei/dot"
+	"github.com/golang-collections/collections/stack"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -71,6 +72,34 @@ func getResource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 // nolint: unparam
 func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 	g := dot.NewGraph(dot.Directed)
+	g.Attr("rankdir", "LR")
+
+	if len(path) == 0 {
+		resources := keeper.ListResources(ctx)
+		for _, r := range resources {
+			GraphResourceNode(g, r)
+		}
+	} else {
+		pending := stack.New()
+		done := make(map[string]bool)
+		pending.Push(path[0])
+
+		for pending.Len() > 0 {
+			id := pending.Pop().(string)
+
+			if _, exists := done[id]; !exists {
+				r := keeper.GetResource(ctx, ID(id))
+				GraphResourceNode(g, r)
+
+				for link := range r.Links {
+					pending.Push(link)
+				}
+			}
+
+			done[id] = true
+		}
+
+	}
 
 	return []byte(g.String()), nil
 }

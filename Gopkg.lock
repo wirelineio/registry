@@ -200,6 +200,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:4a8ed9b8cf22bd03bee5d74179fa06a282e4a73b6de949f7a865ff56cd2537e0"
+  name = "github.com/golang-collections/collections"
+  packages = ["stack"]
+  pruneopts = "UT"
+  revision = "604e922904d35e97f98a774db7881f049cd8d970"
+
+[[projects]]
   digest = "1:17fe264ee908afc795734e8c4e63db2accabaf57326dbf21763a7d6b86096260"
   name = "github.com/golang/protobuf"
   packages = [
@@ -757,12 +765,12 @@
     "github.com/cosmos/cosmos-sdk/x/stake",
     "github.com/emicklei/dot",
     "github.com/ghodss/yaml",
+    "github.com/golang-collections/collections/stack",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
     "github.com/tendermint/go-amino",
     "github.com/tendermint/tendermint/abci/types",
     "github.com/tendermint/tendermint/config",
-    "github.com/tendermint/tendermint/crypto",
     "github.com/tendermint/tendermint/libs/cli",
     "github.com/tendermint/tendermint/libs/common",
     "github.com/tendermint/tendermint/libs/db",

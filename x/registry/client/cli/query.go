@@ -6,6 +6,7 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -63,11 +64,16 @@ func GetCmdGraph(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "graph",
 		Short: "Generate dot graph.",
-		Args:  cobra.ExactArgs(0),
+		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/graph", queryRoute), nil)
+			path := fmt.Sprintf("custom/%s/graph", queryRoute)
+			if len(args) == 1 {
+				path = strings.Join([]string{path, args[0]}, "/")
+			}
+
+			res, err := cliCtx.QueryWithData(path, nil)
 			if err != nil {
 				fmt.Println("{}")
 				return nil
