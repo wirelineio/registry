@@ -5,7 +5,8 @@
 package registry
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
+	"encoding/json"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/emicklei/dot"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -16,6 +17,7 @@ const (
 	ListResources = "list"
 	GetResource   = "get"
 	GetGraph      = "graph"
+	GetTest       = "test"
 )
 
 // NewQuerier is the module level router for state queries
@@ -28,6 +30,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return getResource(ctx, path[1:], req, keeper)
 		case GetGraph:
 			return getGraph(ctx, path[1:], req, keeper)
+		case GetTest:
+			return getTest(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("Unknown utxo query endpoint.")
 		}
@@ -38,7 +42,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 func listResources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 	records := keeper.ListResources(ctx)
 
-	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, records)
+	bz, err2 := json.MarshalIndent(records, "", " ")
 	if err2 != nil {
 		panic("Could not marshal result to JSON.")
 	}
@@ -56,7 +60,7 @@ func getResource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 
 	record := keeper.GetResource(ctx, id)
 
-	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, record)
+	bz, err2 := json.MarshalIndent(record, "", " ")
 	if err2 != nil {
 		panic("Could not marshal result to JSON.")
 	}
@@ -69,4 +73,10 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 	g := dot.NewGraph(dot.Directed)
 
 	return []byte(g.String()), nil
+}
+
+// nolint: unparam
+func getTest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
+
+	return []byte("test"), nil
 }

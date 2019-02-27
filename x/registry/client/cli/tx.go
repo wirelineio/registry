@@ -5,13 +5,14 @@
 package cli
 
 import (
-	"os"
+	"io/ioutil"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
 	"github.com/wirelineio/wirechain/x/registry"
 )
@@ -31,26 +32,30 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			// TODO(ashwin): Read file and construct payload.
-			// filePath := args[0]
-			payload := registry.Payload{}
+			filePath := args[0]
+			data, err := ioutil.ReadFile(filePath)
+			if err != nil {
+				return err
+			}
+
+			var payloadYaml registry.PayloadYaml
+			err = yaml.Unmarshal(data, &payloadYaml)
+			if err != nil {
+				return err
+			}
 
 			signer, err := cliCtx.GetFromAddress()
 			if err != nil {
 				return err
 			}
 
-			msg := registry.NewMsgSetResource(payload, signer)
+			msg := registry.NewMsgSetResource(registry.PayloadYamlToPayload(payloadYaml), signer)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
 
 			cliCtx.PrintResponse = true
-
-			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []sdk.Msg{msg}, false)
-			}
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},

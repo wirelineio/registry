@@ -30,9 +30,9 @@ func NewKeeper(accountKeeper auth.AccountKeeper, coinKeeper bank.Keeper, resourc
 }
 
 // PutResource - saves a resource to the store.
-func (k Keeper) PutResource(ctx sdk.Context, resource Resource) {
+func (k Keeper) PutResource(ctx sdk.Context, resource ResourceYaml) {
 	store := ctx.KVStore(k.resourceStoreKey)
-	store.Set([]byte(resource.ID), k.cdc.MustMarshalBinaryBare(resource))
+	store.Set([]byte(resource.ID), k.cdc.MustMarshalBinaryBare(ResourceYamlToResource(resource)))
 }
 
 // HasResource - checks if a resource by the given ID exists.
@@ -42,19 +42,19 @@ func (k Keeper) HasResource(ctx sdk.Context, id ID) bool {
 }
 
 // GetResource - gets a resource from the store.
-func (k Keeper) GetResource(ctx sdk.Context, id ID) Resource {
+func (k Keeper) GetResource(ctx sdk.Context, id ID) ResourceYaml {
 	store := ctx.KVStore(k.resourceStoreKey)
 
 	bz := store.Get([]byte(id))
 	var obj Resource
 	k.cdc.MustUnmarshalBinaryBare(bz, &obj)
 
-	return obj
+	return ResourceToResourceYaml(obj)
 }
 
 // ListResources - get all resource records.
-func (k Keeper) ListResources(ctx sdk.Context) []Resource {
-	var records []Resource
+func (k Keeper) ListResources(ctx sdk.Context) []ResourceYaml {
+	var records []ResourceYaml
 
 	store := ctx.KVStore(k.resourceStoreKey)
 	itr := store.Iterator(nil, nil)
@@ -64,7 +64,7 @@ func (k Keeper) ListResources(ctx sdk.Context) []Resource {
 		if bz != nil {
 			var obj Resource
 			k.cdc.MustUnmarshalBinaryBare(bz, &obj)
-			records = append(records, obj)
+			records = append(records, ResourceToResourceYaml(obj))
 		}
 	}
 

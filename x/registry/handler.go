@@ -5,6 +5,7 @@
 package registry
 
 import (
+	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,6 +27,20 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // Handle MsgSetResource.
 func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sdk.Result {
 	fmt.Println("---------------------------- handleMsgSetResource -----------------------------")
+
+	payload := PayloadToPayloadYaml(msg.Payload)
+	resource := payload.Resource
+
+	exists := keeper.HasResource(ctx, resource.ID)
+
+	if exists {
+		// TODO(ashwin): Check ownership.
+	}
+
+	keeper.PutResource(ctx, payload.Resource)
+
+	bytes, _ := json.MarshalIndent(payload, "", "  ")
+	fmt.Println(string(bytes))
 
 	return sdk.Result{}
 }

@@ -33,6 +33,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		regcmd.GetCmdGetResource("registry", mc.cdc),
 		regcmd.GetCmdList("registry", mc.cdc),
 		regcmd.GetCmdGraph("registry", mc.cdc),
+		regcmd.GetCmdTest("registry", mc.cdc),
 	)...)
 
 	return regQueryCmd
