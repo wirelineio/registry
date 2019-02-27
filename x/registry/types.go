@@ -6,8 +6,6 @@ package registry
 
 import (
 	"encoding/json"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // ID for resources.
@@ -17,8 +15,8 @@ type ID string
 type Owner struct {
 	// If ID is populated, that will be used (ID of Owner resource record). Else, Address will be used.
 	// One of the two MUST be populated.
-	ID      ID             `json:"id"`
-	Address sdk.AccAddress `json:"address"`
+	ID      ID     `json:"id"`
+	Address string `json:"address"`
 }
 
 // ResourceYaml represents a registry record that can be serialized from/to YAML.

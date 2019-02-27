@@ -37,6 +37,11 @@ func (msg MsgSetResource) ValidateBasic() sdk.Error {
 		return sdk.ErrInvalidAddress(msg.Signer.String())
 	}
 
+	owner := msg.Payload.Resource.Owner
+	if owner.Address == "" && owner.ID == "" {
+		return sdk.ErrInternal("Resource owner not set.")
+	}
+
 	return nil
 }
 

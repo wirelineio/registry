@@ -34,7 +34,13 @@ func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sd
 	exists := keeper.HasResource(ctx, resource.ID)
 
 	if exists {
-		// TODO(ashwin): Check ownership.
+		// Check ownership.
+		existingResource := keeper.GetResource(ctx, resource.ID)
+		fmt.Println("Existing owner", existingResource.Owner.Address)
+		fmt.Println("Signer", msg.Signer.String())
+		if msg.Signer.String() != existingResource.Owner.Address {
+			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
+		}
 	}
 
 	keeper.PutResource(ctx, payload.Resource)
