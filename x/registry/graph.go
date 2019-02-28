@@ -6,13 +6,21 @@ package registry
 
 import (
 	"fmt"
+	"hash/fnv"
 
 	"github.com/emicklei/dot"
 )
 
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
+}
+
 // GraphResourceNode creates a node for a resource.
 func GraphResourceNode(g *dot.Graph, r ResourceYaml) dot.Node {
-	node := g.Node(string(r.ID)).Attr("shape", "record").Attr("style", "").Attr("color", "red")
+	color := fmt.Sprintf("#%x", hash(r.Type)&0x00FFFFFF)
+	node := g.Node(string(r.ID)).Attr("shape", "record").Attr("style", "").Attr("color", color)
 
 	nodeLabel := fmt.Sprintf("%s | %s", string(r.ID)[:18], r.Type)
 	if resourceLabel, ok := r.Attributes["label"].(string); ok {
