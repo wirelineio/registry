@@ -8,6 +8,9 @@ import (
 	"encoding/json"
 )
 
+// WirelineChainID is the Cosmos SDK chain ID.
+const WirelineChainID = "wireline"
+
 // ID for resources.
 type ID string
 

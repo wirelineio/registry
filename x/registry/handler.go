@@ -5,10 +5,10 @@
 package registry
 
 import (
-	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	cryptoAmino "github.com/tendermint/tendermint/crypto/encoding/amino"
 )
 
 // NewHandler returns a handler for "utxo" type messages.
@@ -26,8 +26,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // Handle MsgSetResource.
 func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sdk.Result {
-	fmt.Println("---------------------------- handleMsgSetResource -----------------------------")
-
 	payload := PayloadToPayloadYaml(msg.Payload)
 	resource := payload.Resource
 
@@ -36,17 +34,45 @@ func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sd
 	if exists {
 		// Check ownership.
 		existingResource := keeper.GetResource(ctx, resource.ID)
-		fmt.Println("Existing owner", existingResource.Owner.Address)
-		fmt.Println("Signer", msg.Signer.String())
-		if msg.Signer.String() != existingResource.Owner.Address {
+
+		allow := checkAccess(existingResource, payload.Signatures)
+		if !allow {
 			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
 		}
 	}
 
 	keeper.PutResource(ctx, payload.Resource)
 
-	bytes, _ := json.MarshalIndent(payload, "", "  ")
-	fmt.Println(string(bytes))
-
 	return sdk.Result{}
+}
+
+func checkAccess(resource ResourceYaml, signatures []Signature) bool {
+	addresses := make(map[string]bool)
+
+	// Check signatures.
+	resourceSignBytes := GenResourceHash(resource)
+	for _, sig := range signatures {
+		pubKey, err := cryptoAmino.PubKeyFromBytes(BytesFromBase64(sig.PubKey))
+		if err != nil {
+			fmt.Println("Error decoding pubKey from bytes.")
+			return false
+		}
+
+		addresses[GetAddressFromPubKey(pubKey)] = true
+
+		allow := pubKey.VerifyBytes(resourceSignBytes, BytesFromBase64(sig.Signature))
+		if !allow {
+			fmt.Println("Signature mismatch: ", sig.PubKey)
+
+			return false
+		}
+	}
+
+	// Check one of the addresses matches the owner.
+	_, ok := addresses[resource.Owner.Address]
+	if !ok {
+		return false
+	}
+
+	return true
 }

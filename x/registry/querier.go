@@ -43,7 +43,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 func listResources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 	records := keeper.ListResources(ctx)
 
-	bz, err2 := json.MarshalIndent(records, "", " ")
+	bz, err2 := json.MarshalIndent(records, "", "  ")
 	if err2 != nil {
 		panic("Could not marshal result to JSON.")
 	}
@@ -61,7 +61,7 @@ func getResource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 
 	record := keeper.GetResource(ctx, id)
 
-	bz, err2 := json.MarshalIndent(record, "", " ")
+	bz, err2 := json.MarshalIndent(record, "", "  ")
 	if err2 != nil {
 		panic("Could not marshal result to JSON.")
 	}
