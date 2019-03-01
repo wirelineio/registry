@@ -116,11 +116,8 @@ func GetCmdKey(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 			pubKey := info.GetPubKey()
 
-			fmt.Println("Address:")
-			fmt.Println(registry.GetAddressFromPubKey(pubKey))
-
-			fmt.Println("PubKey:")
-			fmt.Println(registry.BytesToBase64(pubKey.Bytes()))
+			fmt.Println("Address   :", registry.GetAddressFromPubKey(pubKey))
+			fmt.Println("PubKey    :", registry.BytesToBase64(pubKey.Bytes()))
 
 			return nil
 		},

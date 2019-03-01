@@ -62,6 +62,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 
 	// BaseApp handles interactions with Tendermint through the ABCI protocol
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc))
+	bApp.SetMinimumFees(sdk.Coins{sdk.NewInt64Coin("wire", 1)})
 
 	// Here you initialize your application with the store keys it requires
 	var app = &wirechainApp{
@@ -126,6 +127,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		app.keyMain,
 		app.keyAccount,
 		app.keyTxStore,
+		app.keyFeeCollection,
 
 		app.keyHtlcStore,
 		app.keyMultisigStore,

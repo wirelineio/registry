@@ -22,7 +22,7 @@ import (
 // GetCmdSetResource is the CLI command for sending a BirthOutput transaction.
 func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "set [resource file path]",
+		Use:   "set [payload file path]",
 		Short: "Set resource.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -54,14 +54,9 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				fmt.Println("Address:")
-				fmt.Println(registry.GetAddressFromPubKey(pubKey))
-
-				fmt.Println("PubKey:")
-				fmt.Println(registry.BytesToBase64(pubKey.Bytes()))
-
-				fmt.Println("Signature:")
-				fmt.Println(registry.BytesToBase64(sigBytes))
+				fmt.Println("Address   :", registry.GetAddressFromPubKey(pubKey))
+				fmt.Println("PubKey    :", registry.BytesToBase64(pubKey.Bytes()))
+				fmt.Println("Signature :", registry.BytesToBase64(sigBytes))
 
 				return nil
 			}
