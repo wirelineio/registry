@@ -36,8 +36,8 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var payloadYaml registry.PayloadYaml
-			err = yaml.Unmarshal(data, &payloadYaml)
+			var payload registry.Payload
+			err = yaml.Unmarshal(data, &payload)
 			if err != nil {
 				return err
 			}
@@ -49,7 +49,7 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 			if signOnly {
 				name := viper.GetString("from")
 
-				sigBytes, pubKey, err := registry.GetResourceSignature(payloadYaml.Resource, name)
+				sigBytes, pubKey, err := registry.GetResourceSignature(payload.Resource, name)
 				if err != nil {
 					return err
 				}
@@ -66,7 +66,7 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := registry.NewMsgSetResource(registry.PayloadYamlToPayload(payloadYaml), signer)
+			msg := registry.NewMsgSetResource(registry.PayloadToPayloadObj(payload), signer)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

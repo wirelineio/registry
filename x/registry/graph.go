@@ -18,7 +18,7 @@ func hash(s string) uint32 {
 }
 
 // GraphResourceNode creates a node for a resource.
-func GraphResourceNode(g *dot.Graph, r ResourceYaml) dot.Node {
+func GraphResourceNode(g *dot.Graph, r Resource) dot.Node {
 	color := fmt.Sprintf("#%x", hash(r.Type)&0x00FFFFFF)
 	node := g.Node(string(r.ID)).Attr("shape", "record").Attr("style", "").Attr("color", color)
 

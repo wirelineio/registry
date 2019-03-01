@@ -12,12 +12,12 @@ import (
 
 // MsgSetResource defines a SetResource message.
 type MsgSetResource struct {
-	Payload Payload
+	Payload PayloadObj
 	Signer  sdk.AccAddress
 }
 
 // NewMsgSetResource is the constructor function for MsgSetResource.
-func NewMsgSetResource(payload Payload, signer sdk.AccAddress) MsgSetResource {
+func NewMsgSetResource(payload PayloadObj, signer sdk.AccAddress) MsgSetResource {
 	return MsgSetResource{
 		Payload: payload,
 		Signer:  signer,

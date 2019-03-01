@@ -15,7 +15,7 @@ import (
 )
 
 // GenResourceHash generates a transaction hash.
-func GenResourceHash(r ResourceYaml) []byte {
+func GenResourceHash(r Resource) []byte {
 	first := sha256.New()
 
 	bytes, err := json.MarshalIndent(r, "", "  ")

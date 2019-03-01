@@ -26,7 +26,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // Handle MsgSetResource.
 func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sdk.Result {
-	payload := PayloadToPayloadYaml(msg.Payload)
+	payload := PayloadObjToPayload(msg.Payload)
 	resource := payload.Resource
 
 	exists := keeper.HasResource(ctx, resource.ID)
@@ -46,7 +46,7 @@ func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sd
 	return sdk.Result{}
 }
 
-func checkAccess(resource ResourceYaml, signatures []Signature) bool {
+func checkAccess(resource Resource, signatures []Signature) bool {
 	addresses := make(map[string]bool)
 
 	// Check signatures.

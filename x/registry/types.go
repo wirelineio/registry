@@ -22,8 +22,8 @@ type Owner struct {
 	Address string `json:"address"`
 }
 
-// ResourceYaml represents a registry record that can be serialized from/to YAML.
-type ResourceYaml struct {
+// Resource represents a registry record that can be serialized from/to YAML.
+type Resource struct {
 	ID               ID                     `json:"id"`
 	Type             string                 `json:"type"`
 	Owner            Owner                  `json:"owner"`
@@ -38,14 +38,14 @@ type Signature struct {
 	Signature string `json:"sig"`
 }
 
-// Payload represents a signed resource payload.
-type Payload struct {
-	Resource   Resource    `json:"resource"`
+// PayloadObj represents a signed resource payload.
+type PayloadObj struct {
+	Resource   ResourceObj `json:"resource"`
 	Signatures []Signature `json:"signatures"`
 }
 
-// Resource represents a registry record.
-type Resource struct {
+// ResourceObj represents a registry record.
+type ResourceObj struct {
 	ID               ID     `json:"id"`
 	Type             string `json:"type"`
 	Owner            Owner  `json:"owner"`
@@ -54,36 +54,36 @@ type Resource struct {
 	Links            []byte `json:"links"`
 }
 
-// PayloadYaml represents a signed resource payload that can be serialized from/to YAML.
-type PayloadYaml struct {
-	Resource   ResourceYaml `json:"resource"`
-	Signatures []Signature  `json:"signatures"`
+// Payload represents a signed resource payload that can be serialized from/to YAML.
+type Payload struct {
+	Resource   Resource    `json:"resource"`
+	Signatures []Signature `json:"signatures"`
 }
 
-// ResourceYamlToResource convers ResourceYaml to Resource.
+// ResourceToResourceObj convers Resource to ResourceObj.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func ResourceYamlToResource(resourceYaml ResourceYaml) Resource {
-	var resource Resource
+func ResourceToResourceObj(resource Resource) ResourceObj {
+	var resourceObj ResourceObj
 
-	resource.ID = resourceYaml.ID
-	resource.Type = resourceYaml.Type
-	resource.Owner = resourceYaml.Owner
-	resource.SystemAttributes = MarshalToJSONBytes(resourceYaml.SystemAttributes)
-	resource.Attributes = MarshalToJSONBytes(resourceYaml.Attributes)
-	resource.Links = MarshalToJSONBytes(resourceYaml.Links)
+	resourceObj.ID = resource.ID
+	resourceObj.Type = resource.Type
+	resourceObj.Owner = resource.Owner
+	resourceObj.SystemAttributes = MarshalToJSONBytes(resource.SystemAttributes)
+	resourceObj.Attributes = MarshalToJSONBytes(resource.Attributes)
+	resourceObj.Links = MarshalToJSONBytes(resource.Links)
 
-	return resource
+	return resourceObj
 }
 
-// PayloadYamlToPayload converts PayloadYaml to Payload object.
+// PayloadToPayloadObj converts Payload to PayloadObj object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func PayloadYamlToPayload(payloadYaml PayloadYaml) Payload {
-	var payload Payload
+func PayloadToPayloadObj(payload Payload) PayloadObj {
+	var payloadObj PayloadObj
 
-	payload.Resource = ResourceYamlToResource(payloadYaml.Resource)
-	payload.Signatures = payloadYaml.Signatures
+	payloadObj.Resource = ResourceToResourceObj(payload.Resource)
+	payloadObj.Signatures = payload.Signatures
 
-	return payload
+	return payloadObj
 }
 
 // MarshalToJSONBytes converts map[string]interface{} to bytes.
@@ -108,28 +108,28 @@ func UnMarshalJSONBytes(bytes []byte) map[string]interface{} {
 	return val
 }
 
-// ResourceToResourceYaml convers Resource to ResourceYaml.
+// ResourceObjToResource convers ResourceObj to Resource.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func ResourceToResourceYaml(resource Resource) ResourceYaml {
-	var resourceYaml ResourceYaml
+func ResourceObjToResource(resourceObj ResourceObj) Resource {
+	var resource Resource
 
-	resourceYaml.ID = resource.ID
-	resourceYaml.Type = resource.Type
-	resourceYaml.Owner = resource.Owner
-	resourceYaml.SystemAttributes = UnMarshalJSONBytes(resource.SystemAttributes)
-	resourceYaml.Attributes = UnMarshalJSONBytes(resource.Attributes)
-	resourceYaml.Links = UnMarshalJSONBytes(resource.Links)
+	resource.ID = resourceObj.ID
+	resource.Type = resourceObj.Type
+	resource.Owner = resourceObj.Owner
+	resource.SystemAttributes = UnMarshalJSONBytes(resourceObj.SystemAttributes)
+	resource.Attributes = UnMarshalJSONBytes(resourceObj.Attributes)
+	resource.Links = UnMarshalJSONBytes(resourceObj.Links)
 
-	return resourceYaml
+	return resource
 }
 
-// PayloadToPayloadYaml converts PayloadYaml to Payload object.
+// PayloadObjToPayload converts Payload to PayloadObj object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func PayloadToPayloadYaml(payload Payload) PayloadYaml {
-	var payloadYaml PayloadYaml
+func PayloadObjToPayload(payloadObj PayloadObj) Payload {
+	var payload Payload
 
-	payloadYaml.Resource = ResourceToResourceYaml(payload.Resource)
-	payloadYaml.Signatures = payload.Signatures
+	payload.Resource = ResourceObjToResource(payloadObj.Resource)
+	payload.Signatures = payloadObj.Signatures
 
-	return payloadYaml
+	return payload
 }
