@@ -19,7 +19,7 @@ import (
 	"github.com/wirelineio/wirechain/x/registry"
 )
 
-// GetCmdSetResource is the CLI command for sending a BirthOutput transaction.
+// GetCmdSetResource is the CLI command for creating/updating a resource.
 func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set [payload file path]",
@@ -30,14 +30,7 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 
 			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc).WithChainID(registry.WirelineChainID)
 
-			filePath := args[0]
-			data, err := ioutil.ReadFile(filePath)
-			if err != nil {
-				return err
-			}
-
-			var payload registry.Payload
-			err = yaml.Unmarshal(data, &payload)
+			payload, err := getPayloadFromFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -45,20 +38,8 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 			cliCtx.PrintResponse = true
 
 			signOnly := viper.GetBool("sign-only")
-
 			if signOnly {
-				name := viper.GetString("from")
-
-				sigBytes, pubKey, err := registry.GetResourceSignature(payload.Resource, name)
-				if err != nil {
-					return err
-				}
-
-				fmt.Println("Address   :", registry.GetAddressFromPubKey(pubKey))
-				fmt.Println("PubKey    :", registry.BytesToBase64(pubKey.Bytes()))
-				fmt.Println("Signature :", registry.BytesToBase64(sigBytes))
-
-				return nil
+				return signResource(payload)
 			}
 
 			signer, err := cliCtx.GetFromAddress()
@@ -79,4 +60,80 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Bool("sign-only", false, "Only sign the transaction payload.")
 
 	return cmd
+}
+
+// GetCmdDeleteResource is the CLI command for deleting a resource.
+func GetCmdDeleteResource(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "delete [payload file path]",
+		Short: "Delete resource.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+
+			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc).WithChainID(registry.WirelineChainID)
+
+			payload, err := getPayloadFromFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			cliCtx.PrintResponse = true
+
+			signOnly := viper.GetBool("sign-only")
+			if signOnly {
+				return signResource(payload)
+			}
+
+			signer, err := cliCtx.GetFromAddress()
+			if err != nil {
+				return err
+			}
+
+			msg := registry.NewMsgDeleteResource(registry.PayloadToPayloadObj(payload), signer)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+		},
+	}
+
+	cmd.Flags().Bool("sign-only", false, "Only sign the transaction payload.")
+
+	return cmd
+}
+
+// Load payload object from YAML file.
+func getPayloadFromFile(filePath string) (registry.Payload, error) {
+	var payload registry.Payload
+
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return payload, err
+	}
+
+	err = yaml.Unmarshal(data, &payload)
+	if err != nil {
+		return payload, err
+	}
+
+	return payload, nil
+}
+
+// Sign payload object.
+func signResource(payload registry.Payload) error {
+	name := viper.GetString("from")
+
+	sigBytes, pubKey, err := registry.GetResourceSignature(payload.Resource, name)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Address   :", registry.GetAddressFromPubKey(pubKey))
+	fmt.Println("PubKey    :", registry.BytesToBase64(pubKey.Bytes()))
+	fmt.Println("Signature :", registry.BytesToBase64(sigBytes))
+
+	return nil
 }

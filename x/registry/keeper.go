@@ -70,3 +70,9 @@ func (k Keeper) ListResources(ctx sdk.Context) []Resource {
 
 	return records
 }
+
+// DeleteResource - deletes a resource from the store.
+func (k Keeper) DeleteResource(ctx sdk.Context, id ID) {
+	store := ctx.KVStore(k.resourceStoreKey)
+	store.Delete([]byte(id))
+}

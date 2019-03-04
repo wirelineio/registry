@@ -17,6 +17,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		switch msg := msg.(type) {
 		case MsgSetResource:
 			return handleMsgSetResource(ctx, keeper, msg)
+		case MsgDeleteResource:
+			return handleMsgDeleteResource(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized registry Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -29,9 +31,7 @@ func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sd
 	payload := PayloadObjToPayload(msg.Payload)
 	resource := payload.Resource
 
-	exists := keeper.HasResource(ctx, resource.ID)
-
-	if exists {
+	if exists := keeper.HasResource(ctx, resource.ID); exists {
 		// Check ownership.
 		existingResource := keeper.GetResource(ctx, resource.ID)
 
@@ -44,6 +44,28 @@ func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sd
 	keeper.PutResource(ctx, payload.Resource)
 
 	return sdk.Result{}
+}
+
+// Handle MsgDeleteResource.
+func handleMsgDeleteResource(ctx sdk.Context, keeper Keeper, msg MsgDeleteResource) sdk.Result {
+	payload := PayloadObjToPayload(msg.Payload)
+	resource := payload.Resource
+
+	if exists := keeper.HasResource(ctx, resource.ID); exists {
+		// Check ownership.
+		existingResource := keeper.GetResource(ctx, resource.ID)
+
+		allow := checkAccess(existingResource, payload.Signatures)
+		if !allow {
+			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
+		}
+
+		keeper.DeleteResource(ctx, payload.Resource.ID)
+
+		return sdk.Result{}
+	}
+
+	return sdk.ErrInternal("Resource not found.").Result()
 }
 
 func checkAccess(resource Resource, signatures []Signature) bool {

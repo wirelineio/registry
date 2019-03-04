@@ -125,31 +125,37 @@ signatures:
 Save record record (will fail as we're not providing fees).
 
 ```
-wirecli tx registry set service1.yml --from alice
+$ wirecli tx registry set service1.yml --from alice
 ```
 
 Save resource record, with fees.
 
 ```
-wirecli tx registry set service1.yml --from alice --fee 201wire
+$ wirecli tx registry set service1.yml --from alice --fee 201wire
 ```
 
 Get resource record by ID.
 
 ```
-wirecli query registry get 05013527-30ef-4aee-85d5-a71e1722f255
+$ wirecli query registry get 05013527-30ef-4aee-85d5-a71e1722f255
 ```
 
 List resource records.
 
 ```
-wirecli query registry list
+$ wirecli query registry list
 ```
 
 Generate resource graph.
 
 ```
-wirecli query registry graph | dot -Tpng  > test.png && eog test.png
+$ wirecli query registry graph | dot -Tpng  > test.png && eog test.png
+```
+
+Delete a resource.
+
+```
+$ wirecli tx registry delete service1.yml --from alice --fee 201wire
 ```
 
 ## UTXO module

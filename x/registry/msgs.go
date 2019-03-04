@@ -58,3 +58,52 @@ func (msg MsgSetResource) GetSignBytes() []byte {
 func (msg MsgSetResource) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }
+
+// MsgDeleteResource defines a DeleteResource message.
+type MsgDeleteResource struct {
+	Payload PayloadObj
+	Signer  sdk.AccAddress
+}
+
+// NewMsgDeleteResource is the constructor function for MsgDeleteResource.
+func NewMsgDeleteResource(payload PayloadObj, signer sdk.AccAddress) MsgDeleteResource {
+	return MsgDeleteResource{
+		Payload: payload,
+		Signer:  signer,
+	}
+}
+
+// Route Implements Msg.
+func (msg MsgDeleteResource) Route() string { return "registry" }
+
+// Type Implements Msg.
+func (msg MsgDeleteResource) Type() string { return "delete" }
+
+// ValidateBasic Implements Msg.
+func (msg MsgDeleteResource) ValidateBasic() sdk.Error {
+
+	if msg.Signer.Empty() {
+		return sdk.ErrInvalidAddress(msg.Signer.String())
+	}
+
+	owner := msg.Payload.Resource.Owner
+	if owner.Address == "" && owner.ID == "" {
+		return sdk.ErrInternal("Resource owner not set.")
+	}
+
+	return nil
+}
+
+// GetSignBytes Implements Msg.
+func (msg MsgDeleteResource) GetSignBytes() []byte {
+	b, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}
+
+// GetSigners Implements Msg.
+func (msg MsgDeleteResource) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Signer}
+}

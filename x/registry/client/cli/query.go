@@ -29,8 +29,7 @@ func GetCmdList(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/list", queryRoute), nil)
 			if err != nil {
-				fmt.Println("{}")
-				return nil
+				return err
 			}
 
 			fmt.Println(string(res))
@@ -54,8 +53,7 @@ func GetCmdGetResource(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get/%s", queryRoute, id), nil)
 			if err != nil {
-				fmt.Println("{}")
-				return nil
+				return err
 			}
 
 			fmt.Println(string(res))
@@ -82,8 +80,7 @@ func GetCmdGraph(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 			res, err := cliCtx.QueryWithData(path, nil)
 			if err != nil {
-				fmt.Println("{}")
-				return nil
+				return err
 			}
 
 			fmt.Println(string(res))
@@ -136,8 +133,7 @@ func GetCmdTest(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/test", queryRoute), nil)
 			if err != nil {
-				fmt.Println("{}")
-				return nil
+				return err
 			}
 
 			fmt.Println(string(res))
