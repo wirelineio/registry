@@ -105,6 +105,7 @@ Update the resource payload (e.g. service1.yml) with Bob's address, public key a
 * Set signature `pubKey` and `sig` using output from the previous command.
 
 ```yaml
+# service1.yml
 resource:
   id: 05013527-30ef-4aee-85d5-a71e1722f255
   type: Service
@@ -122,7 +123,7 @@ signatures:
     sig: iYlLCgiqNL1vsm+3u7alGFNzZJD+u/vlM/YwdJfYAfZAwtChAOUQK3pWlIBIDsmqqwuqV5tK5pDrDcA5zT0swQ==
 ```
 
-Save record record (will fail as we're not providing fees).
+Save resource record (will fail as we're not providing fees).
 
 ```
 $ wirecli tx registry set service1.yml --from alice
@@ -132,6 +133,12 @@ Save resource record, with fees.
 
 ```
 $ wirecli tx registry set service1.yml --from alice --fee 201wire
+```
+
+Verify that the fees have been deducted from Alice's account.
+
+```
+$ wirecli query account $(wirecli keys show alice --address) --indent --chain-id=wireline
 ```
 
 Get resource record by ID.
@@ -152,10 +159,16 @@ Generate resource graph.
 $ wirecli query registry graph | dot -Tpng  > test.png && eog test.png
 ```
 
-Delete a resource.
+Delete resource record.
 
 ```
 $ wirecli tx registry delete service1.yml --from alice --fee 201wire
+```
+
+Clear all resource records (Warning: This bypasses all access checks and is for local testing purposes only).
+
+```
+$ wirecli tx registry clear --from alice --fee 201wire
 ```
 
 ## UTXO module

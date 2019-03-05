@@ -107,3 +107,45 @@ func (msg MsgDeleteResource) GetSignBytes() []byte {
 func (msg MsgDeleteResource) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }
+
+// MsgClearResources defines a MsgClearResources message.
+type MsgClearResources struct {
+	Signer sdk.AccAddress
+}
+
+// NewMsgClearResources is the constructor function for MsgClearResources.
+func NewMsgClearResources(signer sdk.AccAddress) MsgClearResources {
+	return MsgClearResources{
+		Signer: signer,
+	}
+}
+
+// Route Implements Msg.
+func (msg MsgClearResources) Route() string { return "registry" }
+
+// Type Implements Msg.
+func (msg MsgClearResources) Type() string { return "clear" }
+
+// ValidateBasic Implements Msg.
+func (msg MsgClearResources) ValidateBasic() sdk.Error {
+
+	if msg.Signer.Empty() {
+		return sdk.ErrInvalidAddress(msg.Signer.String())
+	}
+
+	return nil
+}
+
+// GetSignBytes Implements Msg.
+func (msg MsgClearResources) GetSignBytes() []byte {
+	b, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}
+
+// GetSigners Implements Msg.
+func (msg MsgClearResources) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Signer}
+}

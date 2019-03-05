@@ -50,6 +50,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 	regTxCmd.AddCommand(client.PostCommands(
 		regcmd.GetCmdSetResource(mc.cdc),
 		regcmd.GetCmdDeleteResource(mc.cdc),
+		regcmd.GetCmdClearResources(mc.cdc),
 	)...)
 
 	return regTxCmd

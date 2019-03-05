@@ -12,4 +12,5 @@ import (
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgSetResource{}, "registry/SetResource", nil)
 	cdc.RegisterConcrete(MsgDeleteResource{}, "registry/DeleteResource", nil)
+	cdc.RegisterConcrete(MsgClearResources{}, "registry/ClearResources", nil)
 }

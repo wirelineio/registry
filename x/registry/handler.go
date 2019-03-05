@@ -19,6 +19,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgSetResource(ctx, keeper, msg)
 		case MsgDeleteResource:
 			return handleMsgDeleteResource(ctx, keeper, msg)
+		case MsgClearResources:
+			return handleMsgClearResources(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized registry Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -66,6 +68,13 @@ func handleMsgDeleteResource(ctx sdk.Context, keeper Keeper, msg MsgDeleteResour
 	}
 
 	return sdk.ErrInternal("Resource not found.").Result()
+}
+
+// Handle MsgClearResources.
+func handleMsgClearResources(ctx sdk.Context, keeper Keeper, msg MsgClearResources) sdk.Result {
+	keeper.ClearResources(ctx)
+
+	return sdk.Result{}
 }
 
 func checkAccess(resource Resource, signatures []Signature) bool {

@@ -105,6 +105,38 @@ func GetCmdDeleteResource(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
+// GetCmdClearResources is the CLI command for clearing all resources.
+// NOTE: FOR LOCAL TESTING PURPOSES ONLY!
+func GetCmdClearResources(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "clear",
+		Short: "Clear resources.",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+
+			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc).WithChainID(registry.WirelineChainID)
+
+			cliCtx.PrintResponse = true
+
+			signer, err := cliCtx.GetFromAddress()
+			if err != nil {
+				return err
+			}
+
+			msg := registry.NewMsgClearResources(signer)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+		},
+	}
+
+	return cmd
+}
+
 // Load payload object from YAML file.
 func getPayloadFromFile(filePath string) (registry.Payload, error) {
 	var payload registry.Payload

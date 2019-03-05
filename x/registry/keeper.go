@@ -76,3 +76,14 @@ func (k Keeper) DeleteResource(ctx sdk.Context, id ID) {
 	store := ctx.KVStore(k.resourceStoreKey)
 	store.Delete([]byte(id))
 }
+
+// ClearResources - Deletes all resources.
+// NOTE: FOR LOCAL TESTING PURPOSES ONLY!
+func (k Keeper) ClearResources(ctx sdk.Context) {
+	store := ctx.KVStore(k.resourceStoreKey)
+	itr := store.Iterator(nil, nil)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		store.Delete(itr.Key())
+	}
+}
