@@ -91,8 +91,13 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 				r := keeper.GetResource(ctx, ID(id))
 				GraphResourceNode(g, r)
 
-				for link := range r.Links {
-					pending.Push(link)
+				for _, linkData := range r.Links {
+					if linkAttrs, ok := linkData.(map[string]interface{}); ok {
+						if idAttr, ok := linkAttrs["id"].(string); ok {
+							pending.Push(idAttr)
+						}
+					}
+
 				}
 			}
 
