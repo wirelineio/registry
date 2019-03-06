@@ -29,7 +29,7 @@ type Resource struct {
 	Owner            Owner                  `json:"owner"`
 	SystemAttributes map[string]interface{} `json:"systemAttributes"`
 	Attributes       map[string]interface{} `json:"attributes"`
-	Links            map[string]interface{} `json:"links"`
+	Links            []interface{}          `json:"links"`
 }
 
 // Signature represents a resource signature.
@@ -68,9 +68,9 @@ func ResourceToResourceObj(resource Resource) ResourceObj {
 	resourceObj.ID = resource.ID
 	resourceObj.Type = resource.Type
 	resourceObj.Owner = resource.Owner
-	resourceObj.SystemAttributes = MarshalToJSONBytes(resource.SystemAttributes)
-	resourceObj.Attributes = MarshalToJSONBytes(resource.Attributes)
-	resourceObj.Links = MarshalToJSONBytes(resource.Links)
+	resourceObj.SystemAttributes = MarshalMapToJSONBytes(resource.SystemAttributes)
+	resourceObj.Attributes = MarshalMapToJSONBytes(resource.Attributes)
+	resourceObj.Links = MarshalSliceToJSONBytes(resource.Links)
 
 	return resourceObj
 }
@@ -86,8 +86,8 @@ func PayloadToPayloadObj(payload Payload) PayloadObj {
 	return payloadObj
 }
 
-// MarshalToJSONBytes converts map[string]interface{} to bytes.
-func MarshalToJSONBytes(val map[string]interface{}) (bytes []byte) {
+// MarshalMapToJSONBytes converts map[string]interface{} to bytes.
+func MarshalMapToJSONBytes(val map[string]interface{}) (bytes []byte) {
 	bytes, err := json.Marshal(val)
 	if err != nil {
 		panic("Marshal error.")
@@ -96,9 +96,31 @@ func MarshalToJSONBytes(val map[string]interface{}) (bytes []byte) {
 	return
 }
 
-// UnMarshalJSONBytes converts bytes to map[string]interface{}.
-func UnMarshalJSONBytes(bytes []byte) map[string]interface{} {
+// MarshalSliceToJSONBytes converts map[string]interface{} to bytes.
+func MarshalSliceToJSONBytes(val []interface{}) (bytes []byte) {
+	bytes, err := json.Marshal(val)
+	if err != nil {
+		panic("Marshal error.")
+	}
+
+	return
+}
+
+// UnMarshalMapFromJSONBytes converts bytes to map[string]interface{}.
+func UnMarshalMapFromJSONBytes(bytes []byte) map[string]interface{} {
 	var val map[string]interface{}
+	err := json.Unmarshal(bytes, &val)
+
+	if err != nil {
+		panic("Marshal error.")
+	}
+
+	return val
+}
+
+// UnMarshalSliceFromJSONBytes converts bytes to map[string]interface{}.
+func UnMarshalSliceFromJSONBytes(bytes []byte) []interface{} {
+	var val []interface{}
 	err := json.Unmarshal(bytes, &val)
 
 	if err != nil {
@@ -116,9 +138,9 @@ func ResourceObjToResource(resourceObj ResourceObj) Resource {
 	resource.ID = resourceObj.ID
 	resource.Type = resourceObj.Type
 	resource.Owner = resourceObj.Owner
-	resource.SystemAttributes = UnMarshalJSONBytes(resourceObj.SystemAttributes)
-	resource.Attributes = UnMarshalJSONBytes(resourceObj.Attributes)
-	resource.Links = UnMarshalJSONBytes(resourceObj.Links)
+	resource.SystemAttributes = UnMarshalMapFromJSONBytes(resourceObj.SystemAttributes)
+	resource.Attributes = UnMarshalMapFromJSONBytes(resourceObj.Attributes)
+	resource.Links = UnMarshalSliceFromJSONBytes(resourceObj.Links)
 
 	return resource
 }

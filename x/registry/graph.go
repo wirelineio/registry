@@ -29,19 +29,27 @@ func GraphResourceNode(g *dot.Graph, r Resource) dot.Node {
 
 	node.Attr("label", nodeLabel)
 
-	for linkID, linkData := range r.Links {
+	for _, linkData := range r.Links {
+		linkID := ""
 		linkLabel := ""
+
 		if linkAttrs, ok := linkData.(map[string]interface{}); ok {
+			if idAttr, ok := linkAttrs["id"].(string); ok {
+				linkID = idAttr
+			}
+
 			if labelAttr, ok := linkAttrs["label"].(string); ok {
 				linkLabel = labelAttr
 			}
 		}
 
-		g.Edge(
-			g.Node(string(r.ID)),
-			g.Node(string(linkID)),
-			linkLabel,
-		)
+		if linkID != "" {
+			g.Edge(
+				g.Node(string(r.ID)),
+				g.Node(string(linkID)),
+				linkLabel,
+			)
+		}
 	}
 
 	return node
