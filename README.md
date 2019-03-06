@@ -159,6 +159,12 @@ Generate resource graph.
 $ wirecli query registry graph | dot -Tpng  > test.png && eog test.png
 ```
 
+Generate graph, starting from a particular resource.
+
+```
+$ wirecli query registry graph f9557e0b-fde4-48ce-923f-7288268473c1 | dot -Tpng  > test.png && eog test.png
+```
+
 Delete resource record.
 
 ```
