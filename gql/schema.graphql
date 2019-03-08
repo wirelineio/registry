@@ -1,0 +1,7 @@
+type Resource {
+  id: String!
+}
+
+type Query {
+  listResources: [Resource]
+}
