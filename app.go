@@ -23,6 +23,8 @@ import (
 	msighandler "github.com/wirelineio/wirechain/x/multisig/handlers"
 	"github.com/wirelineio/wirechain/x/registry"
 	"github.com/wirelineio/wirechain/x/utxo"
+
+	"github.com/wirelineio/wirechain/gql"
 )
 
 const (
@@ -140,6 +142,8 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 	if err != nil {
 		cmn.Exit(err.Error())
 	}
+
+	go gql.Server(app.BaseApp, app.regKeeper)
 
 	return app
 }

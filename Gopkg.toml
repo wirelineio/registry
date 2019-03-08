@@ -73,3 +73,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/golang-collections/collections"
+
+[[constraint]]
+  name = "github.com/99designs/gqlgen"
+  version = "0.8.1"
