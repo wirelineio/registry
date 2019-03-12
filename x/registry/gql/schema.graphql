@@ -30,11 +30,28 @@ type Account {
   coins: [Coin!]
 }
 
+type Invitable implements Resource {
+  name: String!
+  dsinvite: String
+}
+
+type Pseudonym implements Invitable {
+
+}
+
+type Bot implements Invitable {
+
+}
+
 type Query {
 
   getAccounts(addresses: [String!]): [Account]
 
   getResources(ids: [String!]): [Resource]
+
+  getBots(name: [String!]): [Bot]
+
+  getPseudonyms(name: [String!]): [Pseudonym]
 
   listResources: [Resource]
 
