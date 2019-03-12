@@ -18,5 +18,8 @@ type Link {
 }
 
 type Query {
+
+  getResource(id: String!): Resource
+
   listResources: [Resource]
 }

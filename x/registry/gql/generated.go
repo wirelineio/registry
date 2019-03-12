@@ -51,6 +51,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GetResource   func(childComplexity int, id string) int
 		ListResources func(childComplexity int) int
 	}
 
@@ -65,6 +66,7 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
+	GetResource(ctx context.Context, id string) (*Resource, error)
 	ListResources(ctx context.Context) ([]*Resource, error)
 }
 
@@ -110,6 +112,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Owner.Address(childComplexity), true
+
+	case "Query.GetResource":
+		if e.complexity.Query.GetResource == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getResource_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetResource(childComplexity, args["id"].(string)), true
 
 	case "Query.ListResources":
 		if e.complexity.Query.ListResources == nil {
@@ -244,6 +258,9 @@ type Link {
 }
 
 type Query {
+
+  getResource(id: String!): Resource
+
   listResources: [Resource]
 }
 `},
@@ -264,6 +281,20 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getResource_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -394,6 +425,36 @@ func (ec *executionContext) _Owner_address(ctx context.Context, field graphql.Co
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_getResource(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getResource_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetResource(rctx, args["id"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Resource)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_listResources(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -414,7 +475,7 @@ func (ec *executionContext) _Query_listResources(ctx context.Context, field grap
 	res := resTmp.([]*Resource)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐResource(ctx, field.Selections, res)
+	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -545,7 +606,7 @@ func (ec *executionContext) _Resource_owner(ctx context.Context, field graphql.C
 	res := resTmp.(Owner)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNOwner2githubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐOwner(ctx, field.Selections, res)
+	return ec.marshalNOwner2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐOwner(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Resource_systemAttributes(ctx context.Context, field graphql.CollectedField, obj *Resource) graphql.Marshaler {
@@ -614,7 +675,7 @@ func (ec *executionContext) _Resource_links(ctx context.Context, field graphql.C
 	res := resTmp.([]Link)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐLink(ctx, field.Selections, res)
+	return ec.marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) graphql.Marshaler {
@@ -1494,6 +1555,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "getResource":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getResource(ctx, field)
+				return res
+			})
 		case "listResources":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -1816,11 +1888,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return graphql.MarshalBoolean(v)
 }
 
-func (ec *executionContext) marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v Link) graphql.Marshaler {
+func (ec *executionContext) marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v Link) graphql.Marshaler {
 	return ec._Link(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOwner2githubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐOwner(ctx context.Context, sel ast.SelectionSet, v Owner) graphql.Marshaler {
+func (ec *executionContext) marshalNOwner2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐOwner(ctx context.Context, sel ast.SelectionSet, v Owner) graphql.Marshaler {
 	return ec._Owner(ctx, sel, &v)
 }
 
@@ -2069,7 +2141,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v []Link) graphql.Marshaler {
+func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v []Link) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2093,7 +2165,7 @@ func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐLink(ctx, sel, v[i])
+			ret[i] = ec.marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2106,11 +2178,11 @@ func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 	return ret
 }
 
-func (ec *executionContext) marshalOResource2githubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v Resource) graphql.Marshaler {
+func (ec *executionContext) marshalOResource2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v Resource) graphql.Marshaler {
 	return ec._Resource(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v []*Resource) graphql.Marshaler {
+func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v []*Resource) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2134,7 +2206,7 @@ func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋw
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐResource(ctx, sel, v[i])
+			ret[i] = ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2147,7 +2219,7 @@ func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋw
 	return ret
 }
 
-func (ec *executionContext) marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v *Resource) graphql.Marshaler {
+func (ec *executionContext) marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v *Resource) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
