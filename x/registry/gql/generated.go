@@ -64,8 +64,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetAccount    func(childComplexity int, address string) int
-		GetResource   func(childComplexity int, id string) int
+		GetAccounts   func(childComplexity int, addresses []string) int
+		GetResources  func(childComplexity int, ids []string) int
 		ListResources func(childComplexity int) int
 	}
 
@@ -80,8 +80,8 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	GetAccount(ctx context.Context, address string) (*Account, error)
-	GetResource(ctx context.Context, id string) (*Resource, error)
+	GetAccounts(ctx context.Context, addresses []string) ([]*Account, error)
+	GetResources(ctx context.Context, ids []string) ([]*Resource, error)
 	ListResources(ctx context.Context) ([]*Resource, error)
 }
 
@@ -177,29 +177,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Owner.Address(childComplexity), true
 
-	case "Query.GetAccount":
-		if e.complexity.Query.GetAccount == nil {
+	case "Query.GetAccounts":
+		if e.complexity.Query.GetAccounts == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getAccount_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_getAccounts_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetAccount(childComplexity, args["address"].(string)), true
+		return e.complexity.Query.GetAccounts(childComplexity, args["addresses"].([]string)), true
 
-	case "Query.GetResource":
-		if e.complexity.Query.GetResource == nil {
+	case "Query.GetResources":
+		if e.complexity.Query.GetResources == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getResource_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_getResources_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetResource(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.GetResources(childComplexity, args["ids"].([]string)), true
 
 	case "Query.ListResources":
 		if e.complexity.Query.ListResources == nil {
@@ -348,9 +348,9 @@ type Account {
 
 type Query {
 
-  getAccount(address: String!): Account
+  getAccounts(addresses: [String!]): [Account]
 
-  getResource(id: String!): Resource
+  getResources(ids: [String!]): [Resource]
 
   listResources: [Resource]
 
@@ -376,31 +376,31 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getAccounts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["address"]; ok {
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 []string
+	if tmp, ok := rawArgs["addresses"]; ok {
+		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["address"] = arg0
+	args["addresses"] = arg0
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getResource_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getResources_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 []string
+	if tmp, ok := rawArgs["ids"]; ok {
+		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["ids"] = arg0
 	return args, nil
 }
 
@@ -707,7 +707,7 @@ func (ec *executionContext) _Owner_address(ctx context.Context, field graphql.Co
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getAccount(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_getAccounts(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -717,7 +717,7 @@ func (ec *executionContext) _Query_getAccount(ctx context.Context, field graphql
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getAccount_args(ctx, rawArgs)
+	args, err := ec.field_Query_getAccounts_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -726,18 +726,18 @@ func (ec *executionContext) _Query_getAccount(ctx context.Context, field graphql
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetAccount(rctx, args["address"].(string))
+		return ec.resolvers.Query().GetAccounts(rctx, args["addresses"].([]string))
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*Account)
+	res := resTmp.([]*Account)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx, field.Selections, res)
+	return ec.marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getResource(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_getResources(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -747,7 +747,7 @@ func (ec *executionContext) _Query_getResource(ctx context.Context, field graphq
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getResource_args(ctx, rawArgs)
+	args, err := ec.field_Query_getResources_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -756,15 +756,15 @@ func (ec *executionContext) _Query_getResource(ctx context.Context, field graphq
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetResource(rctx, args["id"].(string))
+		return ec.resolvers.Query().GetResources(rctx, args["ids"].([]string))
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*Resource)
+	res := resTmp.([]*Resource)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_listResources(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1940,7 +1940,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "getAccount":
+		case "getAccounts":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1948,10 +1948,10 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getAccount(ctx, field)
+				res = ec._Query_getAccounts(ctx, field)
 				return res
 			})
-		case "getResource":
+		case "getResources":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -1959,7 +1959,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getResource(ctx, field)
+				res = ec._Query_getResources(ctx, field)
 				return res
 			})
 		case "listResources":
@@ -2530,6 +2530,43 @@ func (ec *executionContext) marshalOAccount2githubᚗcomᚋwirelineioᚋwirechai
 	return ec._Account(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v []*Account) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v *Account) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -2688,6 +2725,35 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
