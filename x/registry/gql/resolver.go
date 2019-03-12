@@ -26,6 +26,34 @@ func (r *Resolver) Query() QueryResolver {
 
 type queryResolver struct{ *Resolver }
 
+func (r *queryResolver) GetAccounts(ctx context.Context, addresses []string) ([]*Account, error) {
+	accounts := make([]*Account, len(addresses))
+	for index, address := range addresses {
+		account, err := r.GetAccount(ctx, address)
+		if err != nil {
+			return nil, err
+		}
+
+		accounts[index] = account
+	}
+
+	return accounts, nil
+}
+
+func (r *queryResolver) GetResources(ctx context.Context, ids []string) ([]*Resource, error) {
+	resources := make([]*Resource, len(ids))
+	for index, id := range ids {
+		resource, err := r.GetResource(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+
+		resources[index] = resource
+	}
+
+	return resources, nil
+}
+
 func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Account, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 

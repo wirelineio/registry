@@ -32,9 +32,9 @@ type Account {
 
 type Query {
 
-  getAccount(address: String!): Account
+  getAccounts(addresses: [String!]): [Account]
 
-  getResource(id: String!): Resource
+  getResources(ids: [String!]): [Resource]
 
   listResources: [Resource]
 
