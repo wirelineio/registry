@@ -177,6 +177,16 @@ Clear all resource records (Warning: This bypasses all access checks and is for 
 $ wirecli tx registry clear --from alice --fee 201wire
 ```
 
+### GQL Server API
+
+The GQL server is controlled using the following `wirechaind` flags:
+
+* `--gql-server` - Enable GQL server.
+* `--gql-playground` - Enable GQL playground app (Available at http://localhost:8080/).
+* `--gql-port` - Port to run the GQL server on (default 8080).
+
+See `wirechaind/x/registry/gql/schema.graphql` for the GQL schema.
+
 ## UTXO module
 
 Birth UTXO from account funds.
