@@ -2,17 +2,21 @@ package gql
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/wirelineio/wirechain/x/registry"
 )
 
 // Resolver is the GQL query resolver.
 type Resolver struct {
-	baseApp *bam.BaseApp
-	keeper  registry.Keeper
+	baseApp       *bam.BaseApp
+	keeper        registry.Keeper
+	accountKeeper auth.AccountKeeper
 }
 
 // Query is the entry point to query execution.
@@ -21,6 +25,39 @@ func (r *Resolver) Query() QueryResolver {
 }
 
 type queryResolver struct{ *Resolver }
+
+func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Account, error) {
+	sdkContext := r.baseApp.NewContext(true, abci.Header{})
+
+	addr, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return nil, err
+	}
+
+	account := r.accountKeeper.GetAccount(sdkContext, addr)
+	if account == nil {
+		return nil, nil
+	}
+
+	pubKey := base64.StdEncoding.EncodeToString(account.GetPubKey().Bytes())
+
+	coins := []sdk.Coin(account.GetCoins())
+	gqlCoins := make([]Coin, len(coins))
+	for index, coin := range account.GetCoins() {
+		gqlCoins[index] = Coin{
+			Denom:  coin.Denom,
+			Amount: int(coin.Amount.Int64()),
+		}
+	}
+
+	return &Account{
+		Address: address,
+		Num:     int(account.GetAccountNumber()),
+		Seq:     int(account.GetSequence()),
+		PubKey:  &pubKey,
+		Coins:   gqlCoins,
+	}, nil
+}
 
 func (r *queryResolver) GetResource(ctx context.Context, id string) (*Resource, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})

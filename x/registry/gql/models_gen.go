@@ -2,6 +2,19 @@
 
 package gql
 
+type Account struct {
+	Address string  `json:"address"`
+	PubKey  *string `json:"pubKey"`
+	Num     int     `json:"num"`
+	Seq     int     `json:"seq"`
+	Coins   []Coin  `json:"coins"`
+}
+
+type Coin struct {
+	Denom  string `json:"denom"`
+	Amount int    `json:"amount"`
+}
+
 type Link struct {
 	ID         string  `json:"id"`
 	Attributes *string `json:"attributes"`

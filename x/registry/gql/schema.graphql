@@ -17,9 +17,25 @@ type Link {
   attributes: String
 }
 
+type Coin {
+  denom: String!
+  amount: Int!
+}
+
+type Account {
+  address: String!
+  pubKey: String
+  num: Int!
+  seq: Int!
+  coins: [Coin!]
+}
+
 type Query {
+
+  getAccount(address: String!): Account
 
   getResource(id: String!): Resource
 
   listResources: [Resource]
+
 }
