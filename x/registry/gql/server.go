@@ -20,7 +20,10 @@ func Server(baseApp *bam.BaseApp, keeper registry.Keeper) {
 			port = defaultPort
 		}
 
-		http.Handle("/", handler.Playground("GraphQL playground", "/query"))
+		if viper.GetBool("gql-playground") {
+			http.Handle("/", handler.Playground("GraphQL playground", "/query"))
+		}
+
 		http.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{baseApp: baseApp, keeper: keeper}})))
 		http.ListenAndServe(":"+port, nil)
 	}

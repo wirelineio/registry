@@ -74,7 +74,7 @@ $ wirechaind add-genesis-account $(wirecli keys show bob --address) 1000000wire
 Start the blockchain. You should see blocks being created every few seconds.
 
 ```
-$ wirechaind start
+$ wirechaind start --gql-server --gql-playground
 ```
 
 Run the following commands in another terminal.
