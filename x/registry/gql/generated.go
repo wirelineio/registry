@@ -40,6 +40,19 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Account struct {
+		Address func(childComplexity int) int
+		PubKey  func(childComplexity int) int
+		Num     func(childComplexity int) int
+		Seq     func(childComplexity int) int
+		Coins   func(childComplexity int) int
+	}
+
+	Coin struct {
+		Denom  func(childComplexity int) int
+		Amount func(childComplexity int) int
+	}
+
 	Link struct {
 		ID         func(childComplexity int) int
 		Attributes func(childComplexity int) int
@@ -51,6 +64,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GetAccount    func(childComplexity int, address string) int
 		GetResource   func(childComplexity int, id string) int
 		ListResources func(childComplexity int) int
 	}
@@ -66,6 +80,7 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
+	GetAccount(ctx context.Context, address string) (*Account, error)
 	GetResource(ctx context.Context, id string) (*Resource, error)
 	ListResources(ctx context.Context) ([]*Resource, error)
 }
@@ -84,6 +99,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Account.Address":
+		if e.complexity.Account.Address == nil {
+			break
+		}
+
+		return e.complexity.Account.Address(childComplexity), true
+
+	case "Account.PubKey":
+		if e.complexity.Account.PubKey == nil {
+			break
+		}
+
+		return e.complexity.Account.PubKey(childComplexity), true
+
+	case "Account.Num":
+		if e.complexity.Account.Num == nil {
+			break
+		}
+
+		return e.complexity.Account.Num(childComplexity), true
+
+	case "Account.Seq":
+		if e.complexity.Account.Seq == nil {
+			break
+		}
+
+		return e.complexity.Account.Seq(childComplexity), true
+
+	case "Account.Coins":
+		if e.complexity.Account.Coins == nil {
+			break
+		}
+
+		return e.complexity.Account.Coins(childComplexity), true
+
+	case "Coin.Denom":
+		if e.complexity.Coin.Denom == nil {
+			break
+		}
+
+		return e.complexity.Coin.Denom(childComplexity), true
+
+	case "Coin.Amount":
+		if e.complexity.Coin.Amount == nil {
+			break
+		}
+
+		return e.complexity.Coin.Amount(childComplexity), true
 
 	case "Link.ID":
 		if e.complexity.Link.ID == nil {
@@ -112,6 +176,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Owner.Address(childComplexity), true
+
+	case "Query.GetAccount":
+		if e.complexity.Query.GetAccount == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAccount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAccount(childComplexity, args["address"].(string)), true
 
 	case "Query.GetResource":
 		if e.complexity.Query.GetResource == nil {
@@ -257,11 +333,27 @@ type Link {
   attributes: String
 }
 
+type Coin {
+  denom: String!
+  amount: Int!
+}
+
+type Account {
+  address: String!
+  pubKey: String
+  num: Int!
+  seq: Int!
+  coins: [Coin!]
+}
+
 type Query {
+
+  getAccount(address: String!): Account
 
   getResource(id: String!): Resource
 
   listResources: [Resource]
+
 }
 `},
 )
@@ -281,6 +373,20 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["address"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["address"] = arg0
 	return args, nil
 }
 
@@ -329,6 +435,182 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ***************************** args.gotpl *****************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Account_address(ctx context.Context, field graphql.CollectedField, obj *Account) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Account",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Account_pubKey(ctx context.Context, field graphql.CollectedField, obj *Account) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Account",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PubKey, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Account_num(ctx context.Context, field graphql.CollectedField, obj *Account) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Account",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Num, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Account_seq(ctx context.Context, field graphql.CollectedField, obj *Account) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Account",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Seq, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Account_coins(ctx context.Context, field graphql.CollectedField, obj *Account) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Account",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coins, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]Coin)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Coin_denom(ctx context.Context, field graphql.CollectedField, obj *Coin) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Coin",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Denom, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Coin_amount(ctx context.Context, field graphql.CollectedField, obj *Coin) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Coin",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Amount, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Link_id(ctx context.Context, field graphql.CollectedField, obj *Link) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
@@ -423,6 +705,36 @@ func (ec *executionContext) _Owner_address(ctx context.Context, field graphql.Co
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getAccount(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getAccount_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetAccount(rctx, args["address"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Account)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getResource(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1485,6 +1797,79 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** object.gotpl ****************************
 
+var accountImplementors = []string{"Account"}
+
+func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, obj *Account) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, accountImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Account")
+		case "address":
+			out.Values[i] = ec._Account_address(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "pubKey":
+			out.Values[i] = ec._Account_pubKey(ctx, field, obj)
+		case "num":
+			out.Values[i] = ec._Account_num(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "seq":
+			out.Values[i] = ec._Account_seq(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "coins":
+			out.Values[i] = ec._Account_coins(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+var coinImplementors = []string{"Coin"}
+
+func (ec *executionContext) _Coin(ctx context.Context, sel ast.SelectionSet, obj *Coin) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, coinImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Coin")
+		case "denom":
+			out.Values[i] = ec._Coin_denom(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "amount":
+			out.Values[i] = ec._Coin_amount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
 var linkImplementors = []string{"Link"}
 
 func (ec *executionContext) _Link(ctx context.Context, sel ast.SelectionSet, obj *Link) graphql.Marshaler {
@@ -1555,6 +1940,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "getAccount":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getAccount(ctx, field)
+				return res
+			})
 		case "getResource":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -1888,6 +2284,18 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return graphql.MarshalBoolean(v)
 }
 
+func (ec *executionContext) marshalNCoin2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v Coin) graphql.Marshaler {
+	return ec._Coin(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	return graphql.UnmarshalInt(v)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	return graphql.MarshalInt(v)
+}
+
 func (ec *executionContext) marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v Link) graphql.Marshaler {
 	return ec._Link(ctx, sel, &v)
 }
@@ -2118,6 +2526,17 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return graphql.MarshalString(v)
 }
 
+func (ec *executionContext) marshalOAccount2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v Account) graphql.Marshaler {
+	return ec._Account(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v *Account) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Account(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	return graphql.UnmarshalBoolean(v)
 }
@@ -2139,6 +2558,43 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v []Coin) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCoin2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v []Link) graphql.Marshaler {

@@ -143,7 +143,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 		cmn.Exit(err.Error())
 	}
 
-	go gql.Server(app.BaseApp, app.regKeeper)
+	go gql.Server(app.BaseApp, app.regKeeper, app.accountKeeper)
 
 	return app
 }
