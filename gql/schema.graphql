@@ -1,5 +1,20 @@
 type Resource {
   id: String!
+  type: String!
+  owner: Owner!
+  systemAttributes: String
+  attributes: String
+  links: [Link!]
+}
+
+type Owner {
+  id: String
+  address: String
+}
+
+type Link {
+  id: String!
+  attributes: String
 }
 
 type Query {

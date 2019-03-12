@@ -24,12 +24,12 @@ type Owner struct {
 
 // Resource represents a registry record that can be serialized from/to YAML.
 type Resource struct {
-	ID               ID                     `json:"id"`
-	Type             string                 `json:"type"`
-	Owner            Owner                  `json:"owner"`
-	SystemAttributes map[string]interface{} `json:"systemAttributes"`
-	Attributes       map[string]interface{} `json:"attributes"`
-	Links            []interface{}          `json:"links"`
+	ID               ID                       `json:"id"`
+	Type             string                   `json:"type"`
+	Owner            Owner                    `json:"owner"`
+	SystemAttributes map[string]interface{}   `json:"systemAttributes"`
+	Attributes       map[string]interface{}   `json:"attributes"`
+	Links            []map[string]interface{} `json:"links"`
 }
 
 // Signature represents a resource signature.
@@ -70,9 +70,32 @@ func ResourceToResourceObj(resource Resource) ResourceObj {
 	resourceObj.Owner = resource.Owner
 	resourceObj.SystemAttributes = MarshalMapToJSONBytes(resource.SystemAttributes)
 	resourceObj.Attributes = MarshalMapToJSONBytes(resource.Attributes)
-	resourceObj.Links = MarshalSliceToJSONBytes(resource.Links)
+
+	resourceObj.Links = MarshalLinksToJSONBytes(resource.Links)
 
 	return resourceObj
+}
+
+// MarshalLinksToJSONBytes converts []map[string]interface{} to bytes.
+func MarshalLinksToJSONBytes(val []map[string]interface{}) (bytes []byte) {
+	bytes, err := json.Marshal(val)
+	if err != nil {
+		panic("Marshal error.")
+	}
+
+	return
+}
+
+// UnMarshalLinksFromJSONBytes converts bytes to []map[string]interface{}.
+func UnMarshalLinksFromJSONBytes(bytes []byte) []map[string]interface{} {
+	var val []map[string]interface{}
+	err := json.Unmarshal(bytes, &val)
+
+	if err != nil {
+		panic("Marshal error.")
+	}
+
+	return val
 }
 
 // PayloadToPayloadObj converts Payload to PayloadObj object.
@@ -140,7 +163,7 @@ func ResourceObjToResource(resourceObj ResourceObj) Resource {
 	resource.Owner = resourceObj.Owner
 	resource.SystemAttributes = UnMarshalMapFromJSONBytes(resourceObj.SystemAttributes)
 	resource.Attributes = UnMarshalMapFromJSONBytes(resourceObj.Attributes)
-	resource.Links = UnMarshalSliceFromJSONBytes(resourceObj.Links)
+	resource.Links = UnMarshalLinksFromJSONBytes(resourceObj.Links)
 
 	return resource
 }
