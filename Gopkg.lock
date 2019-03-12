@@ -185,6 +185,14 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:1c70b4d7285f792bd387c1adac08825715147fa210b3d2826ffd2bf56be9455b"
+  name = "github.com/go-chi/chi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "da24bba8dcd4021cafac38724bf10dccc97c3e36"
+  version = "v4.0.2"
+
+[[projects]]
   digest = "1:fdf5169073fb0ad6dc12a70c249145e30f4058647bea25f0abd48b6d9f228a11"
   name = "github.com/go-kit/kit"
   packages = [
@@ -857,7 +865,9 @@
     "github.com/cosmos/cosmos-sdk/x/stake",
     "github.com/emicklei/dot",
     "github.com/ghodss/yaml",
+    "github.com/go-chi/chi",
     "github.com/golang-collections/collections/stack",
+    "github.com/rs/cors",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
     "github.com/tendermint/go-amino",

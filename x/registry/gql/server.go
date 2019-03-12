@@ -9,6 +9,9 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/wirelineio/wirechain/x/registry"
+
+	"github.com/go-chi/chi"
+	"github.com/rs/cors"
 )
 
 const defaultPort = "8080"
@@ -21,16 +24,28 @@ func Server(baseApp *bam.BaseApp, keeper registry.Keeper, accountKeeper auth.Acc
 			port = defaultPort
 		}
 
+		router := chi.NewRouter()
+
+		// Add CORS middleware around every request
+		// See https://github.com/rs/cors for full option listing
+		router.Use(cors.New(cors.Options{
+			AllowedOrigins: []string{"*"},
+			Debug:          true,
+		}).Handler)
+
 		if viper.GetBool("gql-playground") {
-			http.Handle("/", handler.Playground("GraphQL playground", "/query"))
+			router.Handle("/", handler.Playground("Wireline Registry", "/query"))
 		}
 
-		http.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{
+		router.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{
 			baseApp:       baseApp,
 			keeper:        keeper,
 			accountKeeper: accountKeeper,
 		}})))
 
-		http.ListenAndServe(":"+port, nil)
+		err := http.ListenAndServe(":"+port, router)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
