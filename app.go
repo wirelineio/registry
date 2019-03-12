@@ -24,7 +24,7 @@ import (
 	"github.com/wirelineio/wirechain/x/registry"
 	"github.com/wirelineio/wirechain/x/utxo"
 
-	"github.com/wirelineio/wirechain/gql"
+	"github.com/wirelineio/wirechain/x/registry/gql"
 )
 
 const (
