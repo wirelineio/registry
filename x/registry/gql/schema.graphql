@@ -31,16 +31,15 @@ type Account {
 }
 
 type Invitable implements Resource {
-  name: String!
   dsinvite: String
 }
 
 type Pseudonym implements Invitable {
-
+  name: String!
 }
 
 type Bot implements Invitable {
-
+  name: String!
 }
 
 type Query {
