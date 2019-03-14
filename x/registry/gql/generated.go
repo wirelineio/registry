@@ -33,6 +33,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Mutation() MutationResolver
 	Query() QueryResolver
 }
 
@@ -58,6 +59,10 @@ type ComplexityRoot struct {
 		Attributes func(childComplexity int) int
 	}
 
+	Mutation struct {
+		BroadcastTxCommit func(childComplexity int, tx string) int
+	}
+
 	Owner struct {
 		ID      func(childComplexity int) int
 		Address func(childComplexity int) int
@@ -79,6 +84,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type MutationResolver interface {
+	BroadcastTxCommit(ctx context.Context, tx string) (*string, error)
+}
 type QueryResolver interface {
 	GetAccounts(ctx context.Context, addresses []string) ([]*Account, error)
 	GetResources(ctx context.Context, ids []string) ([]*Resource, error)
@@ -162,6 +170,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Link.Attributes(childComplexity), true
+
+	case "Mutation.BroadcastTxCommit":
+		if e.complexity.Mutation.BroadcastTxCommit == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_broadcastTxCommit_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.BroadcastTxCommit(childComplexity, args["tx"].(string)), true
 
 	case "Owner.ID":
 		if e.complexity.Owner.ID == nil {
@@ -272,7 +292,20 @@ func (e *executableSchema) Query(ctx context.Context, op *ast.OperationDefinitio
 }
 
 func (e *executableSchema) Mutation(ctx context.Context, op *ast.OperationDefinition) *graphql.Response {
-	return graphql.ErrorResponse(ctx, "mutations are not supported")
+	ec := executionContext{graphql.GetRequestContext(ctx), e}
+
+	buf := ec.RequestMiddleware(ctx, func(ctx context.Context) []byte {
+		data := ec._Mutation(ctx, op.SelectionSet)
+		var buf bytes.Buffer
+		data.MarshalGQL(&buf)
+		return buf.Bytes()
+	})
+
+	return &graphql.Response{
+		Data:       buf,
+		Errors:     ec.Errors,
+		Extensions: ec.Extensions,
+	}
 }
 
 func (e *executableSchema) Subscription(ctx context.Context, op *ast.OperationDefinition) func() *graphql.Response {
@@ -355,12 +388,32 @@ type Query {
   listResources: [Resource]
 
 }
+
+type Mutation {
+
+  # Tx methods roughly correspond to those in https://github.com/tendermint/tendermint/blob/master/rpc/core/mempool.go
+  broadcastTxCommit(tx: String!): String
+}
 `},
 )
 
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_broadcastTxCommit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["tx"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tx"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -651,6 +704,36 @@ func (ec *executionContext) _Link_attributes(ctx context.Context, field graphql.
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_broadcastTxCommit(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_broadcastTxCommit_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().BroadcastTxCommit(rctx, args["tx"].(string))
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -1888,6 +1971,34 @@ func (ec *executionContext) _Link(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "attributes":
 			out.Values[i] = ec._Link_attributes(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+var mutationImplementors = []string{"Mutation"}
+
+func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, mutationImplementors)
+
+	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
+		Object: "Mutation",
+	})
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Mutation")
+		case "broadcastTxCommit":
+			out.Values[i] = ec._Mutation_broadcastTxCommit(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

@@ -39,3 +39,9 @@ type Query {
   listResources: [Resource]
 
 }
+
+type Mutation {
+
+  # Tx methods roughly correspond to those in https://github.com/tendermint/tendermint/blob/master/rpc/core/mempool.go
+  broadcastTxCommit(tx: String!): String
+}

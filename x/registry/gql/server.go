@@ -7,6 +7,7 @@ import (
 
 	"github.com/99designs/gqlgen/handler"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/wirelineio/wirechain/x/registry"
 
@@ -17,7 +18,7 @@ import (
 const defaultPort = "8080"
 
 // Server configures and starts the GQL server.
-func Server(baseApp *bam.BaseApp, keeper registry.Keeper, accountKeeper auth.AccountKeeper) {
+func Server(baseApp *bam.BaseApp, cdc *codec.Codec, keeper registry.Keeper, accountKeeper auth.AccountKeeper) {
 	if viper.GetBool("gql-server") {
 		port := viper.GetString("gql-port")
 		if port == "" {
@@ -39,6 +40,7 @@ func Server(baseApp *bam.BaseApp, keeper registry.Keeper, accountKeeper auth.Acc
 
 		router.Handle("/query", handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{
 			baseApp:       baseApp,
+			codec:         cdc,
 			keeper:        keeper,
 			accountKeeper: accountKeeper,
 		}})))
