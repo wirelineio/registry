@@ -13,7 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
-	"github.com/wirelineio/wirechain/x/multisig/msgs"
+	"github.com/wirelineio/registry/x/multisig/msgs"
 )
 
 // GetCmdInitMultiSig is the CLI command for sending a InitMultiSig transaction.

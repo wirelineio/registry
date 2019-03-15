@@ -14,7 +14,7 @@ import (
 	cryptoAmino "github.com/tendermint/tendermint/crypto/encoding/amino"
 	"github.com/tendermint/tendermint/rpc/core"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/wirelineio/wirechain/x/registry"
+	"github.com/wirelineio/registry/x/registry"
 )
 
 // Resolver is the GQL query resolver.

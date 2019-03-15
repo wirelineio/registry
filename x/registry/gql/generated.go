@@ -475,14 +475,25 @@ type Bot {
 
 type Query {
 
+  #
+  # Wallet API.
+  #
+
   getAccounts(addresses: [String!]): [Account]
 
+  #
   # Low layer API, works with bare resources.
+  #
+
   getResources(ids: [String!]): [Resource]
 
   listResources: [Resource]
 
+
+  #
   # High layer API, works with types.
+  #
+
   getBots(name: [String!]): [Bot]
 
   getPseudonyms(name: [String!]): [Pseudonym]
@@ -738,7 +749,7 @@ func (ec *executionContext) _Account_coins(ctx context.Context, field graphql.Co
 	res := resTmp.([]Coin)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx, field.Selections, res)
+	return ec.marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐCoin(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Bot_resource(ctx context.Context, field graphql.CollectedField, obj *Bot) graphql.Marshaler {
@@ -761,7 +772,7 @@ func (ec *executionContext) _Bot_resource(ctx context.Context, field graphql.Col
 	res := resTmp.(*Resource)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Bot_name(ctx context.Context, field graphql.CollectedField, obj *Bot) graphql.Marshaler {
@@ -1010,7 +1021,7 @@ func (ec *executionContext) _Pseudonym_resource(ctx context.Context, field graph
 	res := resTmp.(*Resource)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pseudonym_name(ctx context.Context, field graphql.CollectedField, obj *Pseudonym) graphql.Marshaler {
@@ -1089,7 +1100,7 @@ func (ec *executionContext) _Query_getAccounts(ctx context.Context, field graphq
 	res := resTmp.([]*Account)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx, field.Selections, res)
+	return ec.marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐAccount(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getResources(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1119,7 +1130,7 @@ func (ec *executionContext) _Query_getResources(ctx context.Context, field graph
 	res := resTmp.([]*Resource)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_listResources(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1142,7 +1153,7 @@ func (ec *executionContext) _Query_listResources(ctx context.Context, field grap
 	res := resTmp.([]*Resource)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getBots(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1172,7 +1183,7 @@ func (ec *executionContext) _Query_getBots(ctx context.Context, field graphql.Co
 	res := resTmp.([]*Bot)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx, field.Selections, res)
+	return ec.marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐBot(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getPseudonyms(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1202,7 +1213,7 @@ func (ec *executionContext) _Query_getPseudonyms(ctx context.Context, field grap
 	res := resTmp.([]*Pseudonym)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx, field.Selections, res)
+	return ec.marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐPseudonym(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1232,7 +1243,7 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1255,7 +1266,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Schema2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+	return ec.marshalO__Schema2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Resource_id(ctx context.Context, field graphql.CollectedField, obj *Resource) graphql.Marshaler {
@@ -1333,7 +1344,7 @@ func (ec *executionContext) _Resource_owner(ctx context.Context, field graphql.C
 	res := resTmp.(Owner)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNOwner2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐOwner(ctx, field.Selections, res)
+	return ec.marshalNOwner2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐOwner(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Resource_systemAttributes(ctx context.Context, field graphql.CollectedField, obj *Resource) graphql.Marshaler {
@@ -1402,7 +1413,7 @@ func (ec *executionContext) _Resource_links(ctx context.Context, field graphql.C
 	res := resTmp.([]Link)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx, field.Selections, res)
+	return ec.marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐLink(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) graphql.Marshaler {
@@ -1503,7 +1514,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 	res := resTmp.([]introspection.InputValue)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, field.Selections, res)
+	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql.CollectedField, obj *introspection.EnumValue) graphql.Marshaler {
@@ -1676,7 +1687,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 	res := resTmp.([]introspection.InputValue)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, field.Selections, res)
+	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.CollectedField, obj *introspection.Field) graphql.Marshaler {
@@ -1702,7 +1713,7 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field graphql.CollectedField, obj *introspection.Field) graphql.Marshaler {
@@ -1826,7 +1837,7 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) graphql.Marshaler {
@@ -1875,7 +1886,7 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 	res := resTmp.([]introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__Type2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalN__Type2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) graphql.Marshaler {
@@ -1901,7 +1912,7 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) graphql.Marshaler {
@@ -1924,7 +1935,7 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) graphql.Marshaler {
@@ -1947,7 +1958,7 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Schema_directives(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) graphql.Marshaler {
@@ -1973,7 +1984,7 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 	res := resTmp.([]introspection.Directive)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalN__Directive2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx, field.Selections, res)
+	return ec.marshalN__Directive2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) graphql.Marshaler {
@@ -2075,7 +2086,7 @@ func (ec *executionContext) ___Type_fields(ctx context.Context, field graphql.Co
 	res := resTmp.([]introspection.Field)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Field2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx, field.Selections, res)
+	return ec.marshalO__Field2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) graphql.Marshaler {
@@ -2098,7 +2109,7 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 	res := resTmp.([]introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) graphql.Marshaler {
@@ -2121,7 +2132,7 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 	res := resTmp.([]introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Type_enumValues(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) graphql.Marshaler {
@@ -2151,7 +2162,7 @@ func (ec *executionContext) ___Type_enumValues(ctx context.Context, field graphq
 	res := resTmp.([]introspection.EnumValue)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__EnumValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx, field.Selections, res)
+	return ec.marshalO__EnumValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) graphql.Marshaler {
@@ -2174,7 +2185,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 	res := resTmp.([]introspection.InputValue)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__InputValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, field.Selections, res)
+	return ec.marshalO__InputValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) graphql.Marshaler {
@@ -2197,7 +2208,7 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 	res := resTmp.(*introspection.Type)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
+	return ec.marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
 // endregion **************************** field.gotpl *****************************
@@ -2811,7 +2822,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return graphql.MarshalBoolean(v)
 }
 
-func (ec *executionContext) marshalNCoin2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v Coin) graphql.Marshaler {
+func (ec *executionContext) marshalNCoin2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v Coin) graphql.Marshaler {
 	return ec._Coin(ctx, sel, &v)
 }
 
@@ -2823,11 +2834,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return graphql.MarshalInt(v)
 }
 
-func (ec *executionContext) marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v Link) graphql.Marshaler {
+func (ec *executionContext) marshalNLink2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v Link) graphql.Marshaler {
 	return ec._Link(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOwner2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐOwner(ctx context.Context, sel ast.SelectionSet, v Owner) graphql.Marshaler {
+func (ec *executionContext) marshalNOwner2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐOwner(ctx context.Context, sel ast.SelectionSet, v Owner) graphql.Marshaler {
 	return ec._Owner(ctx, sel, &v)
 }
 
@@ -2839,11 +2850,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return graphql.MarshalString(v)
 }
 
-func (ec *executionContext) marshalN__Directive2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
+func (ec *executionContext) marshalN__Directive2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
 	return ec.___Directive(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v []introspection.Directive) graphql.Marshaler {
+func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v []introspection.Directive) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2867,7 +2878,7 @@ func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋwirelineioᚋw
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__Directive2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx, sel, v[i])
+			ret[i] = ec.marshalN__Directive2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2945,19 +2956,19 @@ func (ec *executionContext) marshalN__DirectiveLocation2ᚕstring(ctx context.Co
 	return ret
 }
 
-func (ec *executionContext) marshalN__EnumValue2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx context.Context, sel ast.SelectionSet, v introspection.EnumValue) graphql.Marshaler {
+func (ec *executionContext) marshalN__EnumValue2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx context.Context, sel ast.SelectionSet, v introspection.EnumValue) graphql.Marshaler {
 	return ec.___EnumValue(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalN__Field2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx context.Context, sel ast.SelectionSet, v introspection.Field) graphql.Marshaler {
+func (ec *executionContext) marshalN__Field2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx context.Context, sel ast.SelectionSet, v introspection.Field) graphql.Marshaler {
 	return ec.___Field(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalN__InputValue2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx context.Context, sel ast.SelectionSet, v introspection.InputValue) graphql.Marshaler {
+func (ec *executionContext) marshalN__InputValue2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx context.Context, sel ast.SelectionSet, v introspection.InputValue) graphql.Marshaler {
 	return ec.___InputValue(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx context.Context, sel ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
+func (ec *executionContext) marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx context.Context, sel ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2981,7 +2992,7 @@ func (ec *executionContext) marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__InputValue2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
+			ret[i] = ec.marshalN__InputValue2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2994,11 +3005,11 @@ func (ec *executionContext) marshalN__InputValue2ᚕgithubᚗcomᚋwirelineioᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalN__Type2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
+func (ec *executionContext) marshalN__Type2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
 	return ec.___Type(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
+func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3022,7 +3033,7 @@ func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋwirelineioᚋwirech
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__Type2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
+			ret[i] = ec.marshalN__Type2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3035,7 +3046,7 @@ func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋwirelineioᚋwirech
 	return ret
 }
 
-func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v *introspection.Type) graphql.Marshaler {
+func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v *introspection.Type) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3053,11 +3064,11 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return graphql.MarshalString(v)
 }
 
-func (ec *executionContext) marshalOAccount2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v Account) graphql.Marshaler {
+func (ec *executionContext) marshalOAccount2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v Account) graphql.Marshaler {
 	return ec._Account(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v []*Account) graphql.Marshaler {
+func (ec *executionContext) marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v []*Account) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3081,7 +3092,7 @@ func (ec *executionContext) marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋwi
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx, sel, v[i])
+			ret[i] = ec.marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐAccount(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3094,7 +3105,7 @@ func (ec *executionContext) marshalOAccount2ᚕᚖgithubᚗcomᚋwirelineioᚋwi
 	return ret
 }
 
-func (ec *executionContext) marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v *Account) graphql.Marshaler {
+func (ec *executionContext) marshalOAccount2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐAccount(ctx context.Context, sel ast.SelectionSet, v *Account) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -3124,11 +3135,11 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOBot2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v Bot) graphql.Marshaler {
+func (ec *executionContext) marshalOBot2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v Bot) graphql.Marshaler {
 	return ec._Bot(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v []*Bot) graphql.Marshaler {
+func (ec *executionContext) marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v []*Bot) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3152,7 +3163,7 @@ func (ec *executionContext) marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋwirech
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOBot2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx, sel, v[i])
+			ret[i] = ec.marshalOBot2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐBot(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3165,14 +3176,14 @@ func (ec *executionContext) marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋwirech
 	return ret
 }
 
-func (ec *executionContext) marshalOBot2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v *Bot) graphql.Marshaler {
+func (ec *executionContext) marshalOBot2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v *Bot) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Bot(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v []Coin) graphql.Marshaler {
+func (ec *executionContext) marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v []Coin) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3196,7 +3207,7 @@ func (ec *executionContext) marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCoin2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx, sel, v[i])
+			ret[i] = ec.marshalNCoin2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐCoin(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3209,7 +3220,7 @@ func (ec *executionContext) marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 	return ret
 }
 
-func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v []Link) graphql.Marshaler {
+func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐLink(ctx context.Context, sel ast.SelectionSet, v []Link) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3233,7 +3244,7 @@ func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNLink2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐLink(ctx, sel, v[i])
+			ret[i] = ec.marshalNLink2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐLink(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3246,11 +3257,11 @@ func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 	return ret
 }
 
-func (ec *executionContext) marshalOPseudonym2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v Pseudonym) graphql.Marshaler {
+func (ec *executionContext) marshalOPseudonym2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v Pseudonym) graphql.Marshaler {
 	return ec._Pseudonym(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v []*Pseudonym) graphql.Marshaler {
+func (ec *executionContext) marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v []*Pseudonym) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3274,7 +3285,7 @@ func (ec *executionContext) marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOPseudonym2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx, sel, v[i])
+			ret[i] = ec.marshalOPseudonym2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐPseudonym(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3287,18 +3298,18 @@ func (ec *executionContext) marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalOPseudonym2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v *Pseudonym) graphql.Marshaler {
+func (ec *executionContext) marshalOPseudonym2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v *Pseudonym) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Pseudonym(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOResource2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v Resource) graphql.Marshaler {
+func (ec *executionContext) marshalOResource2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v Resource) graphql.Marshaler {
 	return ec._Resource(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v []*Resource) graphql.Marshaler {
+func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v []*Resource) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3322,7 +3333,7 @@ func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋw
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, sel, v[i])
+			ret[i] = ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3335,7 +3346,7 @@ func (ec *executionContext) marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋw
 	return ret
 }
 
-func (ec *executionContext) marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v *Resource) graphql.Marshaler {
+func (ec *executionContext) marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v *Resource) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -3394,7 +3405,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return ec.marshalOString2string(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
+func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3418,7 +3429,7 @@ func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋwirelineioᚋw
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__EnumValue2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx, sel, v[i])
+			ret[i] = ec.marshalN__EnumValue2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValue(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3431,7 +3442,7 @@ func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋwirelineioᚋw
 	return ret
 }
 
-func (ec *executionContext) marshalO__Field2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx context.Context, sel ast.SelectionSet, v []introspection.Field) graphql.Marshaler {
+func (ec *executionContext) marshalO__Field2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx context.Context, sel ast.SelectionSet, v []introspection.Field) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3455,7 +3466,7 @@ func (ec *executionContext) marshalO__Field2ᚕgithubᚗcomᚋwirelineioᚋwirec
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__Field2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx, sel, v[i])
+			ret[i] = ec.marshalN__Field2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐField(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3468,7 +3479,7 @@ func (ec *executionContext) marshalO__Field2ᚕgithubᚗcomᚋwirelineioᚋwirec
 	return ret
 }
 
-func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx context.Context, sel ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
+func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx context.Context, sel ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3492,7 +3503,7 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋwirelineioᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__InputValue2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
+			ret[i] = ec.marshalN__InputValue2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValue(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3505,22 +3516,22 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋwirelineioᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalO__Schema2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v introspection.Schema) graphql.Marshaler {
+func (ec *executionContext) marshalO__Schema2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v introspection.Schema) graphql.Marshaler {
 	return ec.___Schema(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalO__Schema2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
+func (ec *executionContext) marshalO__Schema2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec.___Schema(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalO__Type2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
+func (ec *executionContext) marshalO__Type2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
 	return ec.___Type(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
+func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3544,7 +3555,7 @@ func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋwirech
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalN__Type2githubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
+			ret[i] = ec.marshalN__Type2githubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3557,7 +3568,7 @@ func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋwirelineioᚋwirech
 	return ret
 }
 
-func (ec *executionContext) marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v *introspection.Type) graphql.Marshaler {
+func (ec *executionContext) marshalO__Type2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋvendorᚋgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v *introspection.Type) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

@@ -9,7 +9,7 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/wirelineio/wirechain/x/registry"
+	"github.com/wirelineio/registry/x/registry"
 
 	"github.com/go-chi/chi"
 	"github.com/rs/cors"

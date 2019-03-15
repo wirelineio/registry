@@ -21,11 +21,11 @@ import (
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-	app "github.com/wirelineio/wirechain"
-	htlcclient "github.com/wirelineio/wirechain/x/htlc/client"
-	msigclient "github.com/wirelineio/wirechain/x/multisig/client"
-	regclient "github.com/wirelineio/wirechain/x/registry/client"
-	utxoclient "github.com/wirelineio/wirechain/x/utxo/client"
+	app "github.com/wirelineio/registry"
+	htlcclient "github.com/wirelineio/registry/x/htlc/client"
+	msigclient "github.com/wirelineio/registry/x/multisig/client"
+	regclient "github.com/wirelineio/registry/x/registry/client"
+	utxoclient "github.com/wirelineio/registry/x/utxo/client"
 )
 
 const (
@@ -33,7 +33,7 @@ const (
 	storeMultisig = "multisig"
 )
 
-var defaultCLIHome = os.ExpandEnv("$HOME/.wirecli")
+var defaultCLIHome = os.ExpandEnv("$HOME/.regcli")
 
 func main() {
 	cobra.EnableCommandSorting = false
@@ -55,8 +55,8 @@ func main() {
 	}
 
 	rootCmd := &cobra.Command{
-		Use:   "wirecli",
-		Short: "wirechain Client",
+		Use:   "regcli",
+		Short: "registry Client",
 	}
 
 	// Construct Root Command

@@ -6,7 +6,7 @@ package multisig
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/wirelineio/wirechain/x/multisig/msgs"
+	"github.com/wirelineio/registry/x/multisig/msgs"
 )
 
 // RegisterCodec registers concrete types on the Amino codec.

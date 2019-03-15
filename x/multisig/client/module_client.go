@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
-	multisigqry "github.com/wirelineio/wirechain/x/multisig/client/cli/query"
-	multisigcmd "github.com/wirelineio/wirechain/x/multisig/client/cli/tx"
+	multisigqry "github.com/wirelineio/registry/x/multisig/client/cli/query"
+	multisigcmd "github.com/wirelineio/registry/x/multisig/client/cli/tx"
 )
 
 // ModuleClient exports all client functionality from this module.

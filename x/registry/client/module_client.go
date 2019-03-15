@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
-	regcmd "github.com/wirelineio/wirechain/x/registry/client/cli"
+	regcmd "github.com/wirelineio/registry/x/registry/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module.
