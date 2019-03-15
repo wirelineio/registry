@@ -35,9 +35,9 @@ func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sd
 
 	if exists := keeper.HasResource(ctx, resource.ID); exists {
 		// Check ownership.
-		existingResource := keeper.GetResource(ctx, resource.ID)
+		owner := keeper.GetResource(ctx, resource.ID).Owner
 
-		allow := checkAccess(existingResource, payload.Signatures)
+		allow := checkAccess(owner, resource, payload.Signatures)
 		if !allow {
 			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
 		}
@@ -55,9 +55,9 @@ func handleMsgDeleteResource(ctx sdk.Context, keeper Keeper, msg MsgDeleteResour
 
 	if exists := keeper.HasResource(ctx, resource.ID); exists {
 		// Check ownership.
-		existingResource := keeper.GetResource(ctx, resource.ID)
+		owner := keeper.GetResource(ctx, resource.ID).Owner
 
-		allow := checkAccess(existingResource, payload.Signatures)
+		allow := checkAccess(owner, resource, payload.Signatures)
 		if !allow {
 			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
 		}
@@ -77,7 +77,7 @@ func handleMsgClearResources(ctx sdk.Context, keeper Keeper, msg MsgClearResourc
 	return sdk.Result{}
 }
 
-func checkAccess(resource Resource, signatures []Signature) bool {
+func checkAccess(owner Owner, resource Resource, signatures []Signature) bool {
 	addresses := make(map[string]bool)
 
 	// Check signatures.
@@ -100,7 +100,7 @@ func checkAccess(resource Resource, signatures []Signature) bool {
 	}
 
 	// Check one of the addresses matches the owner.
-	_, ok := addresses[resource.Owner.Address]
+	_, ok := addresses[owner.Address]
 	if !ok {
 		return false
 	}
