@@ -49,6 +49,12 @@ type ComplexityRoot struct {
 		Coins   func(childComplexity int) int
 	}
 
+	Bot struct {
+		Resource func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Dsinvite func(childComplexity int) int
+	}
+
 	Coin struct {
 		Denom  func(childComplexity int) int
 		Amount func(childComplexity int) int
@@ -68,10 +74,18 @@ type ComplexityRoot struct {
 		Address func(childComplexity int) int
 	}
 
+	Pseudonym struct {
+		Resource func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Dsinvite func(childComplexity int) int
+	}
+
 	Query struct {
 		GetAccounts   func(childComplexity int, addresses []string) int
 		GetResources  func(childComplexity int, ids []string) int
 		ListResources func(childComplexity int) int
+		GetBots       func(childComplexity int, name []string) int
+		GetPseudonyms func(childComplexity int, name []string) int
 	}
 
 	Resource struct {
@@ -91,6 +105,8 @@ type QueryResolver interface {
 	GetAccounts(ctx context.Context, addresses []string) ([]*Account, error)
 	GetResources(ctx context.Context, ids []string) ([]*Resource, error)
 	ListResources(ctx context.Context) ([]*Resource, error)
+	GetBots(ctx context.Context, name []string) ([]*Bot, error)
+	GetPseudonyms(ctx context.Context, name []string) ([]*Pseudonym, error)
 }
 
 type executableSchema struct {
@@ -142,6 +158,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Account.Coins(childComplexity), true
+
+	case "Bot.Resource":
+		if e.complexity.Bot.Resource == nil {
+			break
+		}
+
+		return e.complexity.Bot.Resource(childComplexity), true
+
+	case "Bot.Name":
+		if e.complexity.Bot.Name == nil {
+			break
+		}
+
+		return e.complexity.Bot.Name(childComplexity), true
+
+	case "Bot.Dsinvite":
+		if e.complexity.Bot.Dsinvite == nil {
+			break
+		}
+
+		return e.complexity.Bot.Dsinvite(childComplexity), true
 
 	case "Coin.Denom":
 		if e.complexity.Coin.Denom == nil {
@@ -197,6 +234,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Owner.Address(childComplexity), true
 
+	case "Pseudonym.Resource":
+		if e.complexity.Pseudonym.Resource == nil {
+			break
+		}
+
+		return e.complexity.Pseudonym.Resource(childComplexity), true
+
+	case "Pseudonym.Name":
+		if e.complexity.Pseudonym.Name == nil {
+			break
+		}
+
+		return e.complexity.Pseudonym.Name(childComplexity), true
+
+	case "Pseudonym.Dsinvite":
+		if e.complexity.Pseudonym.Dsinvite == nil {
+			break
+		}
+
+		return e.complexity.Pseudonym.Dsinvite(childComplexity), true
+
 	case "Query.GetAccounts":
 		if e.complexity.Query.GetAccounts == nil {
 			break
@@ -227,6 +285,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ListResources(childComplexity), true
+
+	case "Query.GetBots":
+		if e.complexity.Query.GetBots == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getBots_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetBots(childComplexity, args["name"].([]string)), true
+
+	case "Query.GetPseudonyms":
+		if e.complexity.Query.GetPseudonyms == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getPseudonyms_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetPseudonyms(childComplexity, args["name"].([]string)), true
 
 	case "Resource.ID":
 		if e.complexity.Resource.ID == nil {
@@ -379,13 +461,31 @@ type Account {
   coins: [Coin!]
 }
 
+type Pseudonym {
+  resource: Resource
+  name: String!
+  dsinvite: String
+}
+
+type Bot {
+  resource: Resource
+  name: String!
+  dsinvite: String
+}
+
 type Query {
 
   getAccounts(addresses: [String!]): [Account]
 
+  # Low layer API, works with bare resources.
   getResources(ids: [String!]): [Resource]
 
   listResources: [Resource]
+
+  # High layer API, works with types.
+  getBots(name: [String!]): [Bot]
+
+  getPseudonyms(name: [String!]): [Pseudonym]
 
 }
 
@@ -440,6 +540,34 @@ func (ec *executionContext) field_Query_getAccounts_args(ctx context.Context, ra
 		}
 	}
 	args["addresses"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getBots_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["name"]; ok {
+		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getPseudonyms_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["name"]; ok {
+		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg0
 	return args, nil
 }
 
@@ -611,6 +739,78 @@ func (ec *executionContext) _Account_coins(ctx context.Context, field graphql.Co
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Bot_resource(ctx context.Context, field graphql.CollectedField, obj *Bot) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Bot",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Resource, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Resource)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Bot_name(ctx context.Context, field graphql.CollectedField, obj *Bot) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Bot",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Bot_dsinvite(ctx context.Context, field graphql.CollectedField, obj *Bot) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Bot",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Dsinvite, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Coin_denom(ctx context.Context, field graphql.CollectedField, obj *Coin) graphql.Marshaler {
@@ -790,6 +990,78 @@ func (ec *executionContext) _Owner_address(ctx context.Context, field graphql.Co
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Pseudonym_resource(ctx context.Context, field graphql.CollectedField, obj *Pseudonym) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Pseudonym",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Resource, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Resource)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOResource2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pseudonym_name(ctx context.Context, field graphql.CollectedField, obj *Pseudonym) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Pseudonym",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pseudonym_dsinvite(ctx context.Context, field graphql.CollectedField, obj *Pseudonym) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Pseudonym",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Dsinvite, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_getAccounts(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -871,6 +1143,66 @@ func (ec *executionContext) _Query_listResources(ctx context.Context, field grap
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOResource2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getBots(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getBots_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetBots(rctx, args["name"].([]string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*Bot)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getPseudonyms(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getPseudonyms_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetPseudonyms(rctx, args["name"].([]string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*Pseudonym)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -1921,6 +2253,37 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var botImplementors = []string{"Bot"}
+
+func (ec *executionContext) _Bot(ctx context.Context, sel ast.SelectionSet, obj *Bot) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, botImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Bot")
+		case "resource":
+			out.Values[i] = ec._Bot_resource(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._Bot_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dsinvite":
+			out.Values[i] = ec._Bot_dsinvite(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
 var coinImplementors = []string{"Coin"}
 
 func (ec *executionContext) _Coin(ctx context.Context, sel ast.SelectionSet, obj *Coin) graphql.Marshaler {
@@ -2036,6 +2399,37 @@ func (ec *executionContext) _Owner(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var pseudonymImplementors = []string{"Pseudonym"}
+
+func (ec *executionContext) _Pseudonym(ctx context.Context, sel ast.SelectionSet, obj *Pseudonym) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, pseudonymImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Pseudonym")
+		case "resource":
+			out.Values[i] = ec._Pseudonym_resource(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._Pseudonym_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dsinvite":
+			out.Values[i] = ec._Pseudonym_dsinvite(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2082,6 +2476,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_listResources(ctx, field)
+				return res
+			})
+		case "getBots":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getBots(ctx, field)
+				return res
+			})
+		case "getPseudonyms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getPseudonyms(ctx, field)
 				return res
 			})
 		case "__type":
@@ -2708,6 +3124,54 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
 }
 
+func (ec *executionContext) marshalOBot2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v Bot) graphql.Marshaler {
+	return ec._Bot(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOBot2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v []*Bot) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOBot2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOBot2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐBot(ctx context.Context, sel ast.SelectionSet, v *Bot) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Bot(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOCoin2ᚕgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v []Coin) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -2780,6 +3244,54 @@ func (ec *executionContext) marshalOLink2ᚕgithubᚗcomᚋwirelineioᚋwirechai
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOPseudonym2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v Pseudonym) graphql.Marshaler {
+	return ec._Pseudonym(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOPseudonym2ᚕᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v []*Pseudonym) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPseudonym2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOPseudonym2ᚖgithubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐPseudonym(ctx context.Context, sel ast.SelectionSet, v *Pseudonym) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Pseudonym(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOResource2githubᚗcomᚋwirelineioᚋwirechainᚋxᚋregistryᚋgqlᚐResource(ctx context.Context, sel ast.SelectionSet, v Resource) graphql.Marshaler {
