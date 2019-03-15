@@ -30,15 +30,15 @@ type Account {
   coins: [Coin!]
 }
 
-type Invitable implements Resource {
+type Pseudonym {
+  resource: Resource
   dsinvite: String
-}
-
-type Pseudonym implements Invitable {
   name: String!
 }
 
-type Bot implements Invitable {
+type Bot {
+  resource: Resource
+  dsinvite: String
   name: String!
 }
 
@@ -46,13 +46,15 @@ type Query {
 
   getAccounts(addresses: [String!]): [Account]
 
+  # Low layer API, works with bare resources.
   getResources(ids: [String!]): [Resource]
 
+  listResources: [Resource]
+
+  # High layer API, works with types.
   getBots(name: [String!]): [Bot]
 
   getPseudonyms(name: [String!]): [Pseudonym]
-
-  listResources: [Resource]
 
 }
 
