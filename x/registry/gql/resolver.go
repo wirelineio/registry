@@ -316,3 +316,98 @@ func broadcastTx(r *mutationResolver, stdTx *auth.StdTx) (*ctypes.ResultBroadcas
 
 	return res, nil
 }
+
+func (r *queryResolver) GetBots(ctx context.Context, name []string) ([]*Bot, error) {
+	bots := []*Bot{}
+
+	sdkContext := r.baseApp.NewContext(true, abci.Header{})
+
+	resources := r.keeper.ListResources(sdkContext)
+	for _, resource := range resources {
+		if resource.Type == "Bot" && resource.Attributes != nil {
+			// Name is mandatory.
+			if resName, ok := resource.Attributes["name"].(string); ok {
+				res, err := getGQLResource(resource)
+				if err != nil {
+					return nil, err
+				}
+
+				// dsinvite is optional.
+				var dsinviteVal *string
+				dsinvite, dsinviteOk := resource.Attributes["dsinvite"].(string)
+				if dsinviteOk {
+					dsinviteVal = &dsinvite
+				}
+
+				// Check for match if any names are passed as input, else return all.
+				if len(name) > 0 {
+					for _, iterName := range name {
+						if iterName == resName {
+							bots = append(bots, &Bot{
+								Resource: res,
+								Name:     resName,
+								Dsinvite: dsinviteVal,
+							})
+						}
+					}
+				} else {
+					bots = append(bots, &Bot{
+						Resource: res,
+						Name:     resName,
+						Dsinvite: dsinviteVal,
+					})
+				}
+			}
+		}
+	}
+
+	return bots, nil
+
+}
+
+func (r *queryResolver) GetPseudonyms(ctx context.Context, name []string) ([]*Pseudonym, error) {
+	pseudonyms := []*Pseudonym{}
+
+	sdkContext := r.baseApp.NewContext(true, abci.Header{})
+
+	resources := r.keeper.ListResources(sdkContext)
+	for _, resource := range resources {
+		if resource.Type == "Pseudonym" && resource.Attributes != nil {
+			// Name is mandatory.
+			if resName, ok := resource.Attributes["name"].(string); ok {
+				res, err := getGQLResource(resource)
+				if err != nil {
+					return nil, err
+				}
+
+				// dsinvite is optional.
+				var dsinviteVal *string
+				dsinvite, dsinviteOk := resource.Attributes["dsinvite"].(string)
+				if dsinviteOk {
+					dsinviteVal = &dsinvite
+				}
+
+				// Check for match if any names are passed as input, else return all.
+				if len(name) > 0 {
+					for _, iterName := range name {
+						if iterName == resName {
+							pseudonyms = append(pseudonyms, &Pseudonym{
+								Resource: res,
+								Name:     resName,
+								Dsinvite: dsinviteVal,
+							})
+						}
+					}
+				} else {
+					pseudonyms = append(pseudonyms, &Pseudonym{
+						Resource: res,
+						Name:     resName,
+						Dsinvite: dsinviteVal,
+					})
+				}
+			}
+		}
+	}
+
+	return pseudonyms, nil
+}

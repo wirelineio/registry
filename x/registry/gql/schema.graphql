@@ -32,26 +32,37 @@ type Account {
 
 type Pseudonym {
   resource: Resource
-  dsinvite: String
   name: String!
+  dsinvite: String
 }
 
 type Bot {
   resource: Resource
-  dsinvite: String
   name: String!
+  dsinvite: String
 }
 
 type Query {
 
+  #
+  # Wallet API.
+  #
+
   getAccounts(addresses: [String!]): [Account]
 
+  #
   # Low layer API, works with bare resources.
+  #
+
   getResources(ids: [String!]): [Resource]
 
   listResources: [Resource]
 
+
+  #
   # High layer API, works with types.
+  #
+
   getBots(name: [String!]): [Bot]
 
   getPseudonyms(name: [String!]): [Pseudonym]

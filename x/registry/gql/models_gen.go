@@ -10,6 +10,12 @@ type Account struct {
 	Coins   []Coin  `json:"coins"`
 }
 
+type Bot struct {
+	Resource *Resource `json:"resource"`
+	Name     string    `json:"name"`
+	Dsinvite *string   `json:"dsinvite"`
+}
+
 type Coin struct {
 	Denom  string `json:"denom"`
 	Amount int    `json:"amount"`
@@ -23,6 +29,12 @@ type Link struct {
 type Owner struct {
 	ID      *string `json:"id"`
 	Address *string `json:"address"`
+}
+
+type Pseudonym struct {
+	Resource *Resource `json:"resource"`
+	Name     string    `json:"name"`
+	Dsinvite *string   `json:"dsinvite"`
 }
 
 type Resource struct {
