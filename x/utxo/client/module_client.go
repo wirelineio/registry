@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
-	utxocmd "github.com/wirelineio/wirechain/x/utxo/client/cli"
+	utxocmd "github.com/wirelineio/registry/x/utxo/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module.

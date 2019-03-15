@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/wirelineio/wirechain/x/multisig/msgs"
+	"github.com/wirelineio/registry/x/multisig/msgs"
 )
 
 // NewHandler returns a handler for "multisig" type messages.

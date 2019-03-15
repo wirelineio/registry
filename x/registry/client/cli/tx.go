@@ -16,7 +16,7 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/wirelineio/wirechain/x/registry"
+	"github.com/wirelineio/registry/x/registry"
 )
 
 // GetCmdSetResource is the CLI command for creating/updating a resource.

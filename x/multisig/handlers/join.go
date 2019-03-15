@@ -6,7 +6,7 @@ package handlers
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/wirelineio/wirechain/x/multisig/msgs"
+	"github.com/wirelineio/registry/x/multisig/msgs"
 )
 
 // Handle MsgJoinMultiSig.

@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/wirelineio/wirechain/x/registry"
+	"github.com/wirelineio/registry/x/registry"
 )
 
 // GetCmdList queries all resources.

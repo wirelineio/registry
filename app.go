@@ -18,20 +18,20 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
-	"github.com/wirelineio/wirechain/x/htlc"
-	"github.com/wirelineio/wirechain/x/multisig"
-	msighandler "github.com/wirelineio/wirechain/x/multisig/handlers"
-	"github.com/wirelineio/wirechain/x/registry"
-	"github.com/wirelineio/wirechain/x/utxo"
+	"github.com/wirelineio/registry/x/htlc"
+	"github.com/wirelineio/registry/x/multisig"
+	msighandler "github.com/wirelineio/registry/x/multisig/handlers"
+	"github.com/wirelineio/registry/x/registry"
+	"github.com/wirelineio/registry/x/utxo"
 
-	"github.com/wirelineio/wirechain/x/registry/gql"
+	"github.com/wirelineio/registry/x/registry/gql"
 )
 
 const (
-	appName = "wirechain"
+	appName = "registry"
 )
 
-type wirechainApp struct {
+type registryApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -56,8 +56,8 @@ type wirechainApp struct {
 	regKeeper      registry.Keeper
 }
 
-// NewWirechainApp is a constructor function for wirechainApp
-func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
+// NewRegistryApp is a constructor function for registryApp
+func NewRegistryApp(logger log.Logger, db dbm.DB) *registryApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -67,7 +67,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 	bApp.SetMinimumFees(sdk.Coins{sdk.NewInt64Coin("wire", 1)})
 
 	// Here you initialize your application with the store keys it requires
-	var app = &wirechainApp{
+	var app = &registryApp{
 		BaseApp: bApp,
 		cdc:     cdc,
 
@@ -108,7 +108,7 @@ func NewWirechainApp(logger log.Logger, db dbm.DB) *wirechainApp {
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
 	// The app.Router is the main transaction router where each module registers its routes
-	// Register the bank and wirechain routes here
+	// Register the bank and registry routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
 		AddRoute("htlc", htlc.NewHandler(app.htlcKeeper)).
@@ -153,7 +153,7 @@ type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
 }
 
-func (app *wirechainApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *registryApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(GenesisState)
@@ -171,7 +171,7 @@ func (app *wirechainApp) initChainer(ctx sdk.Context, req abci.RequestInitChain)
 }
 
 // ExportAppStateAndValidators does the things
-func (app *wirechainApp) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
+func (app *registryApp) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abci.Header{})
 	accounts := []*auth.BaseAccount{}
 

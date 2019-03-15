@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/wirelineio/wirechain/x/utxo/utils"
+	"github.com/wirelineio/registry/x/utxo/utils"
 )
 
 // GenAccOutput creates an AccOutput from MsgBirthAccOutput info.

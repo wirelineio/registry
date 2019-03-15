@@ -21,7 +21,7 @@ GO111MODULE=on go install -v . ./cmd/...
 Generate certificates for btcd, if required. Note: You don't need this for `--local` mode.
 
 ```bash
-cd $GOPATH/src/github.com/wirelineio/wirechain/env/dev/btcd
+cd $GOPATH/src/github.com/wirelineio/registry/env/dev/btcd
 gencerts --host="*" --directory=./rpc --force
 # Use -H to add additional host names (e.g. on EC2).
 ```
@@ -59,7 +59,7 @@ Confirm wallet password:
 Do you have an existing cipher seed mnemonic you want to use? (Enter y/n): n
 
 Your cipher seed can optionally be encrypted.
-Input your passphrase if you wish to encrypt it (or press enter to proceed without a cipher seed passphrase): 
+Input your passphrase if you wish to encrypt it (or press enter to proceed without a cipher seed passphrase):
 
 Generating fresh cipher seed...
 

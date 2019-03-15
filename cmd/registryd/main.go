@@ -28,11 +28,11 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
-	app "github.com/wirelineio/wirechain"
+	app "github.com/wirelineio/registry"
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
-var DefaultNodeHome = os.ExpandEnv("$HOME/.wirechaind")
+var DefaultNodeHome = os.ExpandEnv("$HOME/.registryd")
 
 const (
 	flagOverwrite = "overwrite"
@@ -45,8 +45,8 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "wirechaind",
-		Short:             "wirechain App Daemon (server)",
+		Use:               "registryd",
+		Short:             "registry App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
@@ -70,12 +70,12 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewWirechainApp(logger, db)
+	return app.NewRegistryApp(logger, db)
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool) (
 	json.RawMessage, []tmtypes.GenesisValidator, error) {
-	dapp := app.NewWirechainApp(logger, db)
+	dapp := app.NewRegistryApp(logger, db)
 	return dapp.ExportAppStateAndValidators()
 }
 
@@ -123,7 +123,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 			cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
-			fmt.Printf("Initialized wirechaind configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
+			fmt.Printf("Initialized registryd configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
 			return nil
 		},
 	}
@@ -144,7 +144,7 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 		Long: strings.TrimSpace(`
 Adds accounts to the genesis file so that you can start a chain with coins in the CLI:
 
-$ wirechaind add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAKE,1000mycoin
+$ registryd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAKE,1000mycoin
 `),
 		RunE: func(_ *cobra.Command, args []string) error {
 			addr, err := sdk.AccAddressFromBech32(args[0])

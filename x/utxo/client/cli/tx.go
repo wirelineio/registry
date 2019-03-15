@@ -18,8 +18,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
-	"github.com/wirelineio/wirechain/x/utxo"
-	utxoutils "github.com/wirelineio/wirechain/x/utxo/utils"
+	"github.com/wirelineio/registry/x/utxo"
+	utxoutils "github.com/wirelineio/registry/x/utxo/utils"
 )
 
 // GetCmdBirthOutput is the CLI command for sending a BirthOutput transaction.
