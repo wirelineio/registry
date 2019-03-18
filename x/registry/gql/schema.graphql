@@ -1,3 +1,7 @@
+#
+#  Copyright 2019 Wireline, Inc.
+#
+
 type Resource {
   id: String!
   type: String!

@@ -53,21 +53,18 @@ Initialize the chain.
 $ registryd init --chain-id wireline
 ```
 
-Setup accounts/keys for Alice, Bob & Charlie. Enter a passphrase for the key when prompted.
+Setup accounts/keys for Alice & Bob. Enter a passphrase for the key when prompted.
 
 ```
 $ regcli keys add alice
 
 $ regcli keys add bob
-
-$ regcli keys add charlie
 ```
 
 Add initial funds to the accounts.
 
 ```
 $ registryd add-genesis-account $(regcli keys show alice --address) 1000000wire
-$ registryd add-genesis-account $(regcli keys show bob --address) 1000000wire
 
 ```
 
@@ -123,22 +120,10 @@ signatures:
     sig: iYlLCgiqNL1vsm+3u7alGFNzZJD+u/vlM/YwdJfYAfZAwtChAOUQK3pWlIBIDsmqqwuqV5tK5pDrDcA5zT0swQ==
 ```
 
-Save resource record (will fail as we're not providing fees).
+Publish resource record.
 
 ```
 $ regcli tx registry set service1.yml --from alice
-```
-
-Save resource record, with fees.
-
-```
-$ regcli tx registry set service1.yml --from alice --fee 201wire
-```
-
-Verify that the fees have been deducted from Alice's account.
-
-```
-$ regcli query account $(regcli keys show alice --address) --indent --chain-id=wireline
 ```
 
 Get resource record by ID.
@@ -168,13 +153,13 @@ $ regcli query registry graph f9557e0b-fde4-48ce-923f-7288268473c1 | dot -Tpng  
 Delete resource record.
 
 ```
-$ regcli tx registry delete service1.yml --from alice --fee 201wire
+$ regcli tx registry delete service1.yml --from alice
 ```
 
 Clear all resource records (Warning: This bypasses all access checks and is for local testing purposes only).
 
 ```
-$ regcli tx registry clear --from alice --fee 201wire
+$ regcli tx registry clear --from alice
 ```
 
 ### GQL Server API
@@ -186,8 +171,6 @@ The GQL server is controlled using the following `registryd` flags:
 * `--gql-port` - Port to run the GQL server on (default 8080).
 
 See `registryd/x/registry/gql/schema.graphql` for the GQL schema.
-
-
 
 ## References
 
