@@ -93,11 +93,15 @@ func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Accoun
 	}
 
 	account := r.accountKeeper.GetAccount(sdkContext, addr)
-	if account == nil || account.GetPubKey() == nil {
+	if account == nil {
 		return nil, nil
 	}
 
-	pubKey := base64.StdEncoding.EncodeToString(account.GetPubKey().Bytes())
+	var pubKey *string
+	if account.GetPubKey() != nil {
+		pubKeyStr := base64.StdEncoding.EncodeToString(account.GetPubKey().Bytes())
+		pubKey = &pubKeyStr
+	}
 
 	coins := []sdk.Coin(account.GetCoins())
 	gqlCoins := make([]Coin, len(coins))
@@ -112,7 +116,7 @@ func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Accoun
 		Address: address,
 		Num:     int(account.GetAccountNumber()),
 		Seq:     int(account.GetSequence()),
-		PubKey:  &pubKey,
+		PubKey:  pubKey,
 		Coins:   gqlCoins,
 	}, nil
 }
