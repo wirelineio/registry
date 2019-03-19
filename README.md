@@ -172,6 +172,26 @@ The GQL server is controlled using the following `registryd` flags:
 
 See `registryd/x/registry/gql/schema.graphql` for the GQL schema.
 
+## Testnets
+
+### Development
+
+Endpoints
+
+* GQL: https://registry-testnet.dev.wireline.ninja/query
+* GQL Playground: https://registry-testnet.dev.wireline.ninja/
+* RPC: tcp://registry-testnet.dev.wireline.ninja:26657
+
+### Production
+
+Endpoints
+
+* GQL: https://registry-testnet.wireline.ninja/query
+* GQL Playground: https://registry-testnet.wireline.ninja/
+* RPC: tcp://registry-testnet.wireline.ninja:26657
+
+Note: The `regcli` command accepts a `--node` flag for the RPC endpoint.
+
 ## References
 
 * https://golang.org/doc/install
