@@ -137,10 +137,10 @@ func (r *queryResolver) GetResource(ctx context.Context, id string) (*Resource, 
 	return nil, nil
 }
 
-func (r *queryResolver) ListResources(ctx context.Context) ([]*Resource, error) {
+func (r *queryResolver) ListResources(ctx context.Context, namespace *string) ([]*Resource, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	resources := r.keeper.ListResources(sdkContext)
+	resources := r.keeper.ListResources(sdkContext, namespace)
 	gqlResponse := make([]*Resource, len(resources))
 
 	for index, resource := range resources {
@@ -325,12 +325,12 @@ func broadcastTx(r *mutationResolver, stdTx *auth.StdTx) (*ctypes.ResultBroadcas
 	return res, nil
 }
 
-func (r *queryResolver) GetBots(ctx context.Context, name []string) ([]*Bot, error) {
+func (r *queryResolver) GetBots(ctx context.Context, namespace *string, name []string) ([]*Bot, error) {
 	bots := []*Bot{}
 
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	resources := r.keeper.ListResources(sdkContext)
+	resources := r.keeper.ListResources(sdkContext, namespace)
 	for _, resource := range resources {
 		if resource.Type == "Bot" && resource.Attributes != nil {
 			// Name is mandatory.
@@ -373,12 +373,12 @@ func (r *queryResolver) GetBots(ctx context.Context, name []string) ([]*Bot, err
 
 }
 
-func (r *queryResolver) GetPseudonyms(ctx context.Context, name []string) ([]*Pseudonym, error) {
+func (r *queryResolver) GetPseudonyms(ctx context.Context, namespace *string, name []string) ([]*Pseudonym, error) {
 	pseudonyms := []*Pseudonym{}
 
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	resources := r.keeper.ListResources(sdkContext)
+	resources := r.keeper.ListResources(sdkContext, namespace)
 	for _, resource := range resources {
 		if resource.Type == "Pseudonym" && resource.Attributes != nil {
 			// Name is mandatory.
