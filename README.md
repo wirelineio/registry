@@ -192,6 +192,21 @@ Endpoints
 
 Note: The `regcli` command accepts a `--node` flag for the RPC endpoint.
 
+## Faucet
+
+The testnets come with a seed account (`alice`) that can be used to transfer funds to a new account. Run these commands locally to restore Alice's keys on your own machine to transfer funds.
+
+```
+$ regcli keys add alice --recover
+
+# Use the following mnemonic for recovery:
+# salad portion potato insect unknown exile lion soft layer evolve flavor hollow emerge celery ankle sponsor easy effort flush furnace life maximum rotate apple
+
+$ regcli tx send --amount 1000wire --to cosmos1lpzffjhasv5qhn7rn6lks9u4dvpzpuj922tdmy --from alice --chain-id=wireline --node tcp://registry-testnet.wireline.ninja:26657
+
+# Replace cosmos1lpzffjhasv5qhn7rn6lks9u4dvpzpuj922tdmy with the address you want to transfer funds to.
+```
+
 ## References
 
 * https://golang.org/doc/install
