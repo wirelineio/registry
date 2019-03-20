@@ -53,7 +53,7 @@ func (k Keeper) GetResource(ctx sdk.Context, id ID) Resource {
 }
 
 // ListResources - get all resource records.
-func (k Keeper) ListResources(ctx sdk.Context) []Resource {
+func (k Keeper) ListResources(ctx sdk.Context, namespace *string) []Resource {
 	var records []Resource
 
 	store := ctx.KVStore(k.resourceStoreKey)
@@ -64,7 +64,13 @@ func (k Keeper) ListResources(ctx sdk.Context) []Resource {
 		if bz != nil {
 			var obj ResourceObj
 			k.cdc.MustUnmarshalBinaryBare(bz, &obj)
-			records = append(records, ResourceObjToResource(obj))
+
+			resource := ResourceObjToResource(obj)
+			if namespace == nil {
+				records = append(records, resource)
+			} else if ns, ok := resource.Attributes["namespace"].(string); ok && *namespace == ns {
+				records = append(records, resource)
+			}
 		}
 	}
 

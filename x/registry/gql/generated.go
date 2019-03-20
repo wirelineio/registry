@@ -83,9 +83,9 @@ type ComplexityRoot struct {
 	Query struct {
 		GetAccounts   func(childComplexity int, addresses []string) int
 		GetResources  func(childComplexity int, ids []string) int
-		ListResources func(childComplexity int) int
-		GetBots       func(childComplexity int, name []string) int
-		GetPseudonyms func(childComplexity int, name []string) int
+		ListResources func(childComplexity int, namespace *string) int
+		GetBots       func(childComplexity int, namespace *string, name []string) int
+		GetPseudonyms func(childComplexity int, namespace *string, name []string) int
 	}
 
 	Resource struct {
@@ -104,9 +104,9 @@ type MutationResolver interface {
 type QueryResolver interface {
 	GetAccounts(ctx context.Context, addresses []string) ([]*Account, error)
 	GetResources(ctx context.Context, ids []string) ([]*Resource, error)
-	ListResources(ctx context.Context) ([]*Resource, error)
-	GetBots(ctx context.Context, name []string) ([]*Bot, error)
-	GetPseudonyms(ctx context.Context, name []string) ([]*Pseudonym, error)
+	ListResources(ctx context.Context, namespace *string) ([]*Resource, error)
+	GetBots(ctx context.Context, namespace *string, name []string) ([]*Bot, error)
+	GetPseudonyms(ctx context.Context, namespace *string, name []string) ([]*Pseudonym, error)
 }
 
 type executableSchema struct {
@@ -284,7 +284,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.ListResources(childComplexity), true
+		args, err := ec.field_Query_listResources_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ListResources(childComplexity, args["namespace"].(*string)), true
 
 	case "Query.GetBots":
 		if e.complexity.Query.GetBots == nil {
@@ -296,7 +301,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetBots(childComplexity, args["name"].([]string)), true
+		return e.complexity.Query.GetBots(childComplexity, args["namespace"].(*string), args["name"].([]string)), true
 
 	case "Query.GetPseudonyms":
 		if e.complexity.Query.GetPseudonyms == nil {
@@ -308,7 +313,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetPseudonyms(childComplexity, args["name"].([]string)), true
+		return e.complexity.Query.GetPseudonyms(childComplexity, args["namespace"].(*string), args["name"].([]string)), true
 
 	case "Resource.ID":
 		if e.complexity.Resource.ID == nil {
@@ -429,7 +434,11 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "schema.graphql", Input: `type Resource {
+	&ast.Source{Name: "schema.graphql", Input: `#
+#  Copyright 2019 Wireline, Inc.
+#
+
+type Resource {
   id: String!
   type: String!
   owner: Owner!
@@ -479,24 +488,36 @@ type Query {
   # Wallet API.
   #
 
-  getAccounts(addresses: [String!]): [Account]
+  getAccounts(
+    addresses: [String!]
+  ): [Account]
 
   #
   # Low layer API, works with bare resources.
   #
 
-  getResources(ids: [String!]): [Resource]
+  getResources(
+    ids: [String!]
+  ): [Resource]
 
-  listResources: [Resource]
+  listResources(
+    namespace: String
+  ): [Resource]
 
 
   #
   # High layer API, works with types.
   #
 
-  getBots(name: [String!]): [Bot]
+  getBots(
+    namespace: String
+    name: [String!]
+  ): [Bot]
 
-  getPseudonyms(name: [String!]): [Pseudonym]
+  getPseudonyms(
+    namespace: String
+    name: [String!]
+  ): [Pseudonym]
 
 }
 
@@ -557,28 +578,44 @@ func (ec *executionContext) field_Query_getAccounts_args(ctx context.Context, ra
 func (ec *executionContext) field_Query_getBots_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["name"]; ok {
-		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
+	var arg0 *string
+	if tmp, ok := rawArgs["namespace"]; ok {
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["name"] = arg0
+	args["namespace"] = arg0
+	var arg1 []string
+	if tmp, ok := rawArgs["name"]; ok {
+		arg1, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg1
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_getPseudonyms_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["name"]; ok {
-		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
+	var arg0 *string
+	if tmp, ok := rawArgs["namespace"]; ok {
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["name"] = arg0
+	args["namespace"] = arg0
+	var arg1 []string
+	if tmp, ok := rawArgs["name"]; ok {
+		arg1, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg1
 	return args, nil
 }
 
@@ -593,6 +630,20 @@ func (ec *executionContext) field_Query_getResources_args(ctx context.Context, r
 		}
 	}
 	args["ids"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_listResources_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["namespace"]; ok {
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["namespace"] = arg0
 	return args, nil
 }
 
@@ -1142,10 +1193,17 @@ func (ec *executionContext) _Query_listResources(ctx context.Context, field grap
 		Args:   nil,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_listResources_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListResources(rctx)
+		return ec.resolvers.Query().ListResources(rctx, args["namespace"].(*string))
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -1175,7 +1233,7 @@ func (ec *executionContext) _Query_getBots(ctx context.Context, field graphql.Co
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetBots(rctx, args["name"].([]string))
+		return ec.resolvers.Query().GetBots(rctx, args["namespace"].(*string), args["name"].([]string))
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -1205,7 +1263,7 @@ func (ec *executionContext) _Query_getPseudonyms(ctx context.Context, field grap
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetPseudonyms(rctx, args["name"].([]string))
+		return ec.resolvers.Query().GetPseudonyms(rctx, args["namespace"].(*string), args["name"].([]string))
 	})
 	if resTmp == nil {
 		return graphql.Null

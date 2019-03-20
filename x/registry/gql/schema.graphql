@@ -52,24 +52,36 @@ type Query {
   # Wallet API.
   #
 
-  getAccounts(addresses: [String!]): [Account]
+  getAccounts(
+    addresses: [String!]
+  ): [Account]
 
   #
   # Low layer API, works with bare resources.
   #
 
-  getResources(ids: [String!]): [Resource]
+  getResources(
+    ids: [String!]
+  ): [Resource]
 
-  listResources: [Resource]
+  listResources(
+    namespace: String
+  ): [Resource]
 
 
   #
   # High layer API, works with types.
   #
 
-  getBots(name: [String!]): [Bot]
+  getBots(
+    namespace: String
+    name: [String!]
+  ): [Bot]
 
-  getPseudonyms(name: [String!]): [Pseudonym]
+  getPseudonyms(
+    namespace: String
+    name: [String!]
+  ): [Pseudonym]
 
 }
 
