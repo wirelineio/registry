@@ -6,6 +6,7 @@ package registry
 
 import (
 	"encoding/json"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/emicklei/dot"
@@ -59,7 +60,7 @@ func listResources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper
 // nolint: unparam
 func getResource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 
-	id := ID(path[0])
+	id := ID(strings.Join(path, "/"))
 	if !keeper.HasResource(ctx, id) {
 		return nil, sdk.ErrInternal("Resource not found.")
 	}
@@ -87,7 +88,8 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 	} else {
 		pending := stack.New()
 		done := make(map[string]bool)
-		pending.Push(path[0])
+		id := strings.Join(path, "/")
+		pending.Push(id)
 
 		for pending.Len() > 0 {
 			id := pending.Pop().(string)
