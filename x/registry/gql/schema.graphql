@@ -37,14 +37,13 @@ type Account {
 type Pseudonym {
   resource: Resource
   name: String!
-  dsinvite: String
+  pubKey: String
 }
 
 type Bot {
   resource: Resource
   name: String!
-  readKey: String
-  discoveryKey: String,
+  pubKey: String
   version: String,
   instanceOf: String,
   description: String,
