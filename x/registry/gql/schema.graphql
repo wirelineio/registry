@@ -1,13 +1,15 @@
 #
-#  Copyright 2019 Wireline, Inc.
+# Copyright 2019 Wireline, Inc.
 #
+
+# TODO(burdon): Comments for everything.
 
 type Resource {
   id: String!
   type: String!
   owner: Owner!
-  systemAttributes: String
-  attributes: String
+  systemAttributes: String    # Is this always going to be an opaque ID?
+  attributes: String          # Same
   links: [Link!]
 }
 
@@ -22,22 +24,22 @@ type Link {
 }
 
 type Coin {
-  denom: String!
+  denom: String!              # denomination?
   amount: Int!
 }
 
 type Account {
   address: String!
   pubKey: String
-  num: Int!
+  num: Int!                   # cosmos specific in GQL API?
   seq: Int!
   coins: [Coin!]
 }
 
-type Pseudonym {
+type Pseudonym {              # what is this? is this a User? pseudonym of what?
   resource: Resource
   name: String!
-  dsinvite: String
+  dsinvite: String            # what is this. DS doesn't mean anything it's a marketing name. invite?
 }
 
 type Bot {
@@ -61,13 +63,12 @@ type Query {
   #
 
   getResources(
-    ids: [String!]
-  ): [Resource]
-
-  listResources(
     namespace: String
-  ): [Resource]
+  ): [Resource]!
 
+  getResourcesById(
+    ids: [String!]
+  ): [Resource]!
 
   #
   # High layer API, works with types.
@@ -82,11 +83,11 @@ type Query {
     namespace: String
     name: [String!]
   ): [Pseudonym]
-
 }
 
 type Mutation {
 
+  # TODO(burdon): Is this always going to be opaque? This is a GQL Registry protocol (leaking implementation details).
   # Tx methods roughly correspond to those in https://github.com/tendermint/tendermint/blob/master/rpc/core/mempool.go
   broadcastTxCommit(tx: String!): String
 }
