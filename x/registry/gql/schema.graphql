@@ -43,7 +43,11 @@ type Pseudonym {
 type Bot {
   resource: Resource
   name: String!
-  dsinvite: String
+  readKey: String
+  version: String,
+  instanceOf: String,
+  description: String,
+  labels: [String!]
 }
 
 type Query {
