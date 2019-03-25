@@ -75,7 +75,7 @@ type Query {
   #
 
   getBots(
-    namespace: String
+    namespace: String     # TODO(burdon): If you query by something IT HAS TO BE INCLUDED IN THE RESPONSE (currently Bot does not have a namespace field)
     name: [String!]
   ): [Bot]
 
