@@ -45,7 +45,7 @@ type Bot {
   name: String!
   pubKey: String
   version: String,
-  instanceOf: String,
+  kind: String,
   description: String,
   labels: [String!]
 }
