@@ -98,26 +98,22 @@ Signature : iYlLCgiqNL1vsm+3u7alGFNzZJD+u/vlM/YwdJfYAfZAwtChAOUQK3pWlIBIDsmqqwuq
 
 Update the resource payload (e.g. service1.yml) with Bob's address, public key and signature.
 
-* Set `resource/owner/address` to Bob's address.
+* Set `resource/owner` to Bob's address.
 * Set signature `pubKey` and `sig` using output from the previous command.
 
 ```yaml
 # service1.yml
-resource:
-  id: 05013527-30ef-4aee-85d5-a71e1722f255
-  type: Service
-  owner:
-    address: 002aee66c9908426658a39d7e95a48646d172d0f
-  systemAttributes:
-    uri: https://api.example.org/service
+record:
+  id: wrn:record:05013527-30ef-4aee-85d5-a71e1722f255
+  type: wrn:registry-type:service
+  owner: 02e840ed2d4c3e0b4e068f0d4be811b095ec78d5
   attributes:
     label: Weather
-  links:
 
 signatures:
   -
-    pubKey: 61rphyED+i6I7SuuyeuX9Zgsww9WnXi3BOpxhyEWpnI4kZEfNGY=
-    sig: iYlLCgiqNL1vsm+3u7alGFNzZJD+u/vlM/YwdJfYAfZAwtChAOUQK3pWlIBIDsmqqwuqV5tK5pDrDcA5zT0swQ==
+    pubKey: 61rphyEDI/Iy96OBr9fn11ADRfDPUgAiEW5MdETVuK9PohsxWMU=
+    sig: r3J9Hi+1nyO86Gbdo0jRuxzU1zHRzEvtK3EqH2x9owQ9NNvzQp7BeBLyInASgwEDHu4Iec21fzRR8klHbDN5Sw==
 ```
 
 Publish resource record.
@@ -129,7 +125,7 @@ $ regcli tx registry set service1.yml --from alice
 Get resource record by ID.
 
 ```
-$ regcli query registry get 05013527-30ef-4aee-85d5-a71e1722f255
+$ regcli query registry get wrn:record:05013527-30ef-4aee-85d5-a71e1722f255
 ```
 
 List resource records.
@@ -147,7 +143,7 @@ $ regcli query registry graph | dot -Tpng  > test.png && eog test.png
 Generate graph, starting from a particular resource.
 
 ```
-$ regcli query registry graph f9557e0b-fde4-48ce-923f-7288268473c1 | dot -Tpng  > test.png && eog test.png
+$ regcli query registry graph wrn:record:05013527-30ef-4aee-85d5-a71e1722f255 | dot -Tpng  > test.png && eog test.png
 ```
 
 Delete resource record.
