@@ -10,43 +10,43 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// MsgSetResource defines a SetResource message.
-type MsgSetResource struct {
+// MsgSetRecord defines a SetResource message.
+type MsgSetRecord struct {
 	Payload PayloadObj
 	Signer  sdk.AccAddress
 }
 
-// NewMsgSetResource is the constructor function for MsgSetResource.
-func NewMsgSetResource(payload PayloadObj, signer sdk.AccAddress) MsgSetResource {
-	return MsgSetResource{
+// NewMsgSetRecord is the constructor function for MsgSetRecord.
+func NewMsgSetRecord(payload PayloadObj, signer sdk.AccAddress) MsgSetRecord {
+	return MsgSetRecord{
 		Payload: payload,
 		Signer:  signer,
 	}
 }
 
 // Route Implements Msg.
-func (msg MsgSetResource) Route() string { return "registry" }
+func (msg MsgSetRecord) Route() string { return "registry" }
 
 // Type Implements Msg.
-func (msg MsgSetResource) Type() string { return "set" }
+func (msg MsgSetRecord) Type() string { return "set" }
 
 // ValidateBasic Implements Msg.
-func (msg MsgSetResource) ValidateBasic() sdk.Error {
+func (msg MsgSetRecord) ValidateBasic() sdk.Error {
 
 	if msg.Signer.Empty() {
 		return sdk.ErrInvalidAddress(msg.Signer.String())
 	}
 
-	owner := msg.Payload.Resource.Owner
-	if owner.Address == "" && owner.ID == "" {
-		return sdk.ErrInternal("Resource owner not set.")
+	owner := msg.Payload.Record.Owner
+	if owner == "" {
+		return sdk.ErrInternal("Record owner not set.")
 	}
 
 	return nil
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgSetResource) GetSignBytes() []byte {
+func (msg MsgSetRecord) GetSignBytes() []byte {
 	b, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -55,47 +55,47 @@ func (msg MsgSetResource) GetSignBytes() []byte {
 }
 
 // GetSigners Implements Msg.
-func (msg MsgSetResource) GetSigners() []sdk.AccAddress {
+func (msg MsgSetRecord) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }
 
-// MsgDeleteResource defines a DeleteResource message.
-type MsgDeleteResource struct {
+// MsgDeleteRecord defines a DeleteResource message.
+type MsgDeleteRecord struct {
 	Payload PayloadObj
 	Signer  sdk.AccAddress
 }
 
-// NewMsgDeleteResource is the constructor function for MsgDeleteResource.
-func NewMsgDeleteResource(payload PayloadObj, signer sdk.AccAddress) MsgDeleteResource {
-	return MsgDeleteResource{
+// NewMsgDeleteRecord is the constructor function for MsgDeleteRecord.
+func NewMsgDeleteRecord(payload PayloadObj, signer sdk.AccAddress) MsgDeleteRecord {
+	return MsgDeleteRecord{
 		Payload: payload,
 		Signer:  signer,
 	}
 }
 
 // Route Implements Msg.
-func (msg MsgDeleteResource) Route() string { return "registry" }
+func (msg MsgDeleteRecord) Route() string { return "registry" }
 
 // Type Implements Msg.
-func (msg MsgDeleteResource) Type() string { return "delete" }
+func (msg MsgDeleteRecord) Type() string { return "delete" }
 
 // ValidateBasic Implements Msg.
-func (msg MsgDeleteResource) ValidateBasic() sdk.Error {
+func (msg MsgDeleteRecord) ValidateBasic() sdk.Error {
 
 	if msg.Signer.Empty() {
 		return sdk.ErrInvalidAddress(msg.Signer.String())
 	}
 
-	owner := msg.Payload.Resource.Owner
-	if owner.Address == "" && owner.ID == "" {
-		return sdk.ErrInternal("Resource owner not set.")
+	owner := msg.Payload.Record.Owner
+	if owner == "" {
+		return sdk.ErrInternal("Record owner not set.")
 	}
 
 	return nil
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgDeleteResource) GetSignBytes() []byte {
+func (msg MsgDeleteRecord) GetSignBytes() []byte {
 	b, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -104,30 +104,30 @@ func (msg MsgDeleteResource) GetSignBytes() []byte {
 }
 
 // GetSigners Implements Msg.
-func (msg MsgDeleteResource) GetSigners() []sdk.AccAddress {
+func (msg MsgDeleteRecord) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }
 
-// MsgClearResources defines a MsgClearResources message.
-type MsgClearResources struct {
+// MsgClearRecords defines a MsgClearRecords message.
+type MsgClearRecords struct {
 	Signer sdk.AccAddress
 }
 
-// NewMsgClearResources is the constructor function for MsgClearResources.
-func NewMsgClearResources(signer sdk.AccAddress) MsgClearResources {
-	return MsgClearResources{
+// NewMsgClearRecords is the constructor function for MsgClearRecords.
+func NewMsgClearRecords(signer sdk.AccAddress) MsgClearRecords {
+	return MsgClearRecords{
 		Signer: signer,
 	}
 }
 
 // Route Implements Msg.
-func (msg MsgClearResources) Route() string { return "registry" }
+func (msg MsgClearRecords) Route() string { return "registry" }
 
 // Type Implements Msg.
-func (msg MsgClearResources) Type() string { return "clear" }
+func (msg MsgClearRecords) Type() string { return "clear" }
 
 // ValidateBasic Implements Msg.
-func (msg MsgClearResources) ValidateBasic() sdk.Error {
+func (msg MsgClearRecords) ValidateBasic() sdk.Error {
 
 	if msg.Signer.Empty() {
 		return sdk.ErrInvalidAddress(msg.Signer.String())
@@ -137,7 +137,7 @@ func (msg MsgClearResources) ValidateBasic() sdk.Error {
 }
 
 // GetSignBytes Implements Msg.
-func (msg MsgClearResources) GetSignBytes() []byte {
+func (msg MsgClearRecords) GetSignBytes() []byte {
 	b, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -146,6 +146,6 @@ func (msg MsgClearResources) GetSignBytes() []byte {
 }
 
 // GetSigners Implements Msg.
-func (msg MsgClearResources) GetSigners() []sdk.AccAddress {
+func (msg MsgClearRecords) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }

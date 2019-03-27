@@ -6,7 +6,7 @@
 type Record {
   id: String!                 # wrn:record:xxxxxxx.
   type: String!               # wrn:registry-type:xxxxxxx.
-  owner: String               # Address of record owner.
+  owner: String!              # Address of record owner.
   attributes: String          # User defined attributes.
 }
 

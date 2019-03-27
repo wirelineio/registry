@@ -16,11 +16,11 @@ import (
 	"github.com/wirelineio/registry/x/registry"
 )
 
-// GetCmdList queries all resources.
+// GetCmdList queries all records.
 func GetCmdList(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
-		Short: "List resources.",
+		Short: "List records.",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			viper.Set("trust-node", true)
@@ -39,11 +39,11 @@ func GetCmdList(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdGetResource queries a resource record.
+// GetCmdGetResource queries a record record.
 func GetCmdGetResource(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "get [ID]",
-		Short: "Get resource record.",
+		Short: "Get record.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			viper.Set("trust-node", true)

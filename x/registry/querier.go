@@ -62,7 +62,7 @@ func getResource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 
 	id := ID(strings.Join(path, "/"))
 	if !keeper.HasResource(ctx, id) {
-		return nil, sdk.ErrInternal("Resource not found.")
+		return nil, sdk.ErrInternal("Record not found.")
 	}
 
 	record := keeper.GetResource(ctx, id)
@@ -81,8 +81,8 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 	g.Attr("rankdir", "LR")
 
 	if len(path) == 0 {
-		resources := keeper.ListResources(ctx, nil)
-		for _, r := range resources {
+		records := keeper.ListResources(ctx, nil)
+		for _, r := range records {
 			GraphResourceNode(g, r)
 		}
 	} else {
@@ -98,12 +98,12 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 				r := keeper.GetResource(ctx, ID(id))
 				GraphResourceNode(g, r)
 
-				for _, link := range r.Links {
-					if idAttr, ok := link["id"].(string); ok {
-						pending.Push(idAttr)
-					}
+				// for _, link := range r.Links {
+				// 	if idAttr, ok := link["id"].(string); ok {
+				// 		pending.Push(idAttr)
+				// 	}
 
-				}
+				// }
 			}
 
 			done[id] = true

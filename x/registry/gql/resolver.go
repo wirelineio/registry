@@ -43,8 +43,7 @@ func (r *Resolver) Query() QueryResolver {
 
 type queryResolver struct{ *Resolver }
 
-func (r *mutationResolver) BroadcastTxCommit(ctx context.Context, tx string) (*string, error) {
-
+func (r *mutationResolver) Submit(ctx context.Context, tx string) (*string, error) {
 	stdTx, err := decodeStdTx(tx)
 	if err != nil {
 		return nil, err
@@ -74,18 +73,18 @@ func (r *queryResolver) GetAccounts(ctx context.Context, addresses []string) ([]
 	return accounts, nil
 }
 
-func (r *queryResolver) GetResources(ctx context.Context, ids []string) ([]*Resource, error) {
-	resources := make([]*Resource, len(ids))
+func (r *queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error) {
+	records := make([]*Record, len(ids))
 	for index, id := range ids {
-		resource, err := r.GetResource(ctx, id)
+		record, err := r.GetResource(ctx, id)
 		if err != nil {
 			return nil, err
 		}
 
-		resources[index] = resource
+		records[index] = record
 	}
 
-	return resources, nil
+	return records, nil
 }
 
 func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Account, error) {
@@ -111,40 +110,40 @@ func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Accoun
 	gqlCoins := make([]Coin, len(coins))
 	for index, coin := range account.GetCoins() {
 		gqlCoins[index] = Coin{
-			Denom:  coin.Denom,
+			Type:   coin.Denom,
 			Amount: int(coin.Amount.Int64()),
 		}
 	}
 
 	return &Account{
-		Address: address,
-		Num:     int(account.GetAccountNumber()),
-		Seq:     int(account.GetSequence()),
-		PubKey:  pubKey,
-		Coins:   gqlCoins,
+		Address:  address,
+		Number:   int(account.GetAccountNumber()),
+		Sequence: int(account.GetSequence()),
+		PubKey:   pubKey,
+		Balance:  gqlCoins,
 	}, nil
 }
 
-func (r *queryResolver) GetResource(ctx context.Context, id string) (*Resource, error) {
+func (r *queryResolver) GetResource(ctx context.Context, id string) (*Record, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
 	dbID := registry.ID(id)
 	if r.keeper.HasResource(sdkContext, dbID) {
-		resource := r.keeper.GetResource(sdkContext, dbID)
-		return getGQLResource(resource)
+		record := r.keeper.GetResource(sdkContext, dbID)
+		return getGQLResource(record)
 	}
 
 	return nil, nil
 }
 
-func (r *queryResolver) ListResources(ctx context.Context, namespace *string) ([]*Resource, error) {
+func (r *queryResolver) GetRecordsByAttributes(ctx context.Context, namespace *string) ([]*Record, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	resources := r.keeper.ListResources(sdkContext, namespace)
-	gqlResponse := make([]*Resource, len(resources))
+	records := r.keeper.ListResources(sdkContext, namespace)
+	gqlResponse := make([]*Record, len(records))
 
-	for index, resource := range resources {
-		gqlResource, err := getGQLResource(resource)
+	for index, record := range records {
+		gqlResource, err := getGQLResource(record)
 		if err != nil {
 			return nil, err
 		}
@@ -155,43 +154,22 @@ func (r *queryResolver) ListResources(ctx context.Context, namespace *string) ([
 	return gqlResponse, nil
 }
 
-func getGQLResource(resource registry.Resource) (*Resource, error) {
-	ownerID := string(resource.Owner.ID)
-	ownerAddress := string(resource.Owner.Address)
+func getGQLResource(record registry.Record) (*Record, error) {
+	// systemAttrs, err := mapToJSONStr(record.SystemAttributes)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	systemAttrs, err := mapToJSONStr(resource.SystemAttributes)
+	attrs, err := mapToJSONStr(record.Attributes)
 	if err != nil {
 		return nil, err
 	}
 
-	attrs, err := mapToJSONStr(resource.Attributes)
-	if err != nil {
-		return nil, err
-	}
-
-	links := make([]Link, len(resource.Links))
-	for linkIndex := range resource.Links {
-		linkAttrs, err := mapToJSONStr(resource.Links[linkIndex])
-		if err != nil {
-			return nil, err
-		}
-
-		links[linkIndex] = Link{
-			ID:         resource.Links[linkIndex]["id"].(string),
-			Attributes: linkAttrs,
-		}
-	}
-
-	return &Resource{
-		ID:   string(resource.ID),
-		Type: resource.Type,
-		Owner: Owner{
-			ID:      &ownerID,
-			Address: &ownerAddress,
-		},
-		SystemAttributes: systemAttrs,
-		Attributes:       attrs,
-		Links:            links,
+	return &Record{
+		ID:         string(record.ID),
+		Type:       record.Type,
+		Owner:      record.Owner,
+		Attributes: attrs,
 	}, nil
 }
 
@@ -224,7 +202,7 @@ func decodeStdTx(tx string) (*auth.StdTx, error) {
 		return nil, err
 	}
 
-	var msg []registry.MsgSetResource
+	var msg []registry.MsgSetRecord
 	err = json.Unmarshal(*objmap["msg"], &msg)
 	if err != nil {
 		return nil, err
@@ -330,21 +308,21 @@ func (r *queryResolver) GetBots(ctx context.Context, namespace *string, name []s
 
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	resources := r.keeper.ListResources(sdkContext, namespace)
-	for _, resource := range resources {
-		if resource.Type == "Bot" && resource.Attributes != nil {
+	records := r.keeper.ListResources(sdkContext, namespace)
+	for _, record := range records {
+		if record.Type == "Bot" && record.Attributes != nil {
 			// Name is mandatory.
-			if resName, ok := resource.Attributes["name"].(string); ok {
-				res, err := getGQLResource(resource)
+			if resName, ok := record.Attributes["name"].(string); ok {
+				res, err := getGQLResource(record)
 				if err != nil {
 					return nil, err
 				}
 
-				// dsinvite is optional.
-				var dsinviteVal *string
-				dsinvite, dsinviteOk := resource.Attributes["dsinvite"].(string)
-				if dsinviteOk {
-					dsinviteVal = &dsinvite
+				// accessKey is optional.
+				var accessKeyVal *string
+				accessKey, accessKeyOk := record.Attributes["accessKey"].(string)
+				if accessKeyOk {
+					accessKeyVal = &accessKey
 				}
 
 				// Check for match if any names are passed as input, else return all.
@@ -352,17 +330,17 @@ func (r *queryResolver) GetBots(ctx context.Context, namespace *string, name []s
 					for _, iterName := range name {
 						if iterName == resName {
 							bots = append(bots, &Bot{
-								Resource: res,
-								Name:     resName,
-								Dsinvite: dsinviteVal,
+								Record:    res,
+								Name:      resName,
+								AccessKey: accessKeyVal,
 							})
 						}
 					}
 				} else {
 					bots = append(bots, &Bot{
-						Resource: res,
-						Name:     resName,
-						Dsinvite: dsinviteVal,
+						Record:    res,
+						Name:      resName,
+						AccessKey: accessKeyVal,
 					})
 				}
 			}
@@ -371,51 +349,4 @@ func (r *queryResolver) GetBots(ctx context.Context, namespace *string, name []s
 
 	return bots, nil
 
-}
-
-func (r *queryResolver) GetPseudonyms(ctx context.Context, namespace *string, name []string) ([]*Pseudonym, error) {
-	pseudonyms := []*Pseudonym{}
-
-	sdkContext := r.baseApp.NewContext(true, abci.Header{})
-
-	resources := r.keeper.ListResources(sdkContext, namespace)
-	for _, resource := range resources {
-		if resource.Type == "Pseudonym" && resource.Attributes != nil {
-			// Name is mandatory.
-			if resName, ok := resource.Attributes["name"].(string); ok {
-				res, err := getGQLResource(resource)
-				if err != nil {
-					return nil, err
-				}
-
-				// dsinvite is optional.
-				var dsinviteVal *string
-				dsinvite, dsinviteOk := resource.Attributes["dsinvite"].(string)
-				if dsinviteOk {
-					dsinviteVal = &dsinvite
-				}
-
-				// Check for match if any names are passed as input, else return all.
-				if len(name) > 0 {
-					for _, iterName := range name {
-						if iterName == resName {
-							pseudonyms = append(pseudonyms, &Pseudonym{
-								Resource: res,
-								Name:     resName,
-								Dsinvite: dsinviteVal,
-							})
-						}
-					}
-				} else {
-					pseudonyms = append(pseudonyms, &Pseudonym{
-						Resource: res,
-						Name:     resName,
-						Dsinvite: dsinviteVal,
-					})
-				}
-			}
-		}
-	}
-
-	return pseudonyms, nil
 }

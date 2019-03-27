@@ -3,45 +3,27 @@
 package gql
 
 type Account struct {
-	Address string  `json:"address"`
-	PubKey  *string `json:"pubKey"`
-	Num     int     `json:"num"`
-	Seq     int     `json:"seq"`
-	Coins   []Coin  `json:"coins"`
+	Address  string  `json:"address"`
+	PubKey   *string `json:"pubKey"`
+	Number   int     `json:"number"`
+	Sequence int     `json:"sequence"`
+	Balance  []Coin  `json:"balance"`
 }
 
 type Bot struct {
-	Resource *Resource `json:"resource"`
-	Name     string    `json:"name"`
-	Dsinvite *string   `json:"dsinvite"`
+	Record    *Record `json:"record"`
+	Name      string  `json:"name"`
+	AccessKey *string `json:"accessKey"`
 }
 
 type Coin struct {
-	Denom  string `json:"denom"`
+	Type   string `json:"type"`
 	Amount int    `json:"amount"`
 }
 
-type Link struct {
+type Record struct {
 	ID         string  `json:"id"`
+	Type       string  `json:"type"`
+	Owner      string  `json:"owner"`
 	Attributes *string `json:"attributes"`
-}
-
-type Owner struct {
-	ID      *string `json:"id"`
-	Address *string `json:"address"`
-}
-
-type Pseudonym struct {
-	Resource *Resource `json:"resource"`
-	Name     string    `json:"name"`
-	Dsinvite *string   `json:"dsinvite"`
-}
-
-type Resource struct {
-	ID               string  `json:"id"`
-	Type             string  `json:"type"`
-	Owner            Owner   `json:"owner"`
-	SystemAttributes *string `json:"systemAttributes"`
-	Attributes       *string `json:"attributes"`
-	Links            []Link  `json:"links"`
 }

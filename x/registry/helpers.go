@@ -14,13 +14,13 @@ import (
 	"golang.org/x/crypto/ripemd160"
 )
 
-// GenResourceHash generates a transaction hash.
-func GenResourceHash(r Resource) []byte {
+// GenRecordHash generates a transaction hash.
+func GenRecordHash(r Record) []byte {
 	first := sha256.New()
 
 	bytes, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
-		panic("Resource marshal error.")
+		panic("Record marshal error.")
 	}
 
 	first.Write(bytes)
