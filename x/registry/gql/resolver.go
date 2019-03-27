@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"strconv"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -29,6 +30,20 @@ type Resolver struct {
 	accountKeeper auth.AccountKeeper
 }
 
+// Account resolver.
+func (r *Resolver) Account() AccountResolver {
+	return &accountResolver{r}
+}
+
+type accountResolver struct{ *Resolver }
+
+// Coin resolver.
+func (r *Resolver) Coin() CoinResolver {
+	return &coinResolver{r}
+}
+
+type coinResolver struct{ *Resolver }
+
 // Mutation is the entry point to tx execution.
 func (r *Resolver) Mutation() MutationResolver {
 	return &mutationResolver{r}
@@ -42,6 +57,24 @@ func (r *Resolver) Query() QueryResolver {
 }
 
 type queryResolver struct{ *Resolver }
+
+// BigUInt represents a 64-bit unsigned integer.
+type BigUInt uint64
+
+func (r *accountResolver) Number(ctx context.Context, obj *Account) (string, error) {
+	val := uint64(obj.Number)
+	return strconv.FormatUint(val, 10), nil
+}
+
+func (r *accountResolver) Sequence(ctx context.Context, obj *Account) (string, error) {
+	val := uint64(obj.Sequence)
+	return strconv.FormatUint(val, 10), nil
+}
+
+func (r *coinResolver) Amount(ctx context.Context, obj *Coin) (string, error) {
+	val := uint64(obj.Amount)
+	return strconv.FormatUint(val, 10), nil
+}
 
 func (r *mutationResolver) Submit(ctx context.Context, tx string) (*string, error) {
 	stdTx, err := decodeStdTx(tx)
@@ -108,17 +141,26 @@ func (r *queryResolver) GetAccount(ctx context.Context, address string) (*Accoun
 
 	coins := []sdk.Coin(account.GetCoins())
 	gqlCoins := make([]Coin, len(coins))
+
 	for index, coin := range account.GetCoins() {
+		amount := coin.Amount.Int64()
+		if amount < 0 {
+			return nil, errors.New("amount cannot be negative")
+		}
+
 		gqlCoins[index] = Coin{
 			Type:   coin.Denom,
-			Amount: int(coin.Amount.Int64()),
+			Amount: BigUInt(amount),
 		}
 	}
 
+	accNum := BigUInt(account.GetAccountNumber())
+	seq := BigUInt(account.GetSequence())
+
 	return &Account{
 		Address:  address,
-		Number:   int(account.GetAccountNumber()),
-		Sequence: int(account.GetSequence()),
+		Number:   accNum,
+		Sequence: seq,
 		PubKey:   pubKey,
 		Balance:  gqlCoins,
 	}, nil

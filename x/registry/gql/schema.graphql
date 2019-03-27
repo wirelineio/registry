@@ -2,6 +2,8 @@
 # Copyright 2019 Wireline, Inc.
 #
 
+scalar BigUInt
+
 # Record is a base object which is used as a mixin for other types within the Registry.
 type Record {
   id: String!                 # wrn:record:xxxxxxx.
@@ -14,7 +16,7 @@ type Record {
 # Used by the wallet to get the account balance for display and mutations.
 type Coin {
   type: String!               # e.g. 'WIRE'
-  amount: Int!                # e.g. 100
+  amount: BigUInt!            # e.g. 1000000
 }
 
 # Represents an account on the blockchain.
@@ -22,8 +24,8 @@ type Coin {
 type Account {
   address: String!            # Blockchain address.
   pubKey: String              # Public key.
-  number: Int!                # Account number.
-  sequence: Int!              # Sequence number used to prevent replays.
+  number: BigUInt!            # Account number.
+  sequence: BigUInt!          # Sequence number used to prevent replays.
   balance: [Coin!]            # Current balance for each coin type.
 }
 
