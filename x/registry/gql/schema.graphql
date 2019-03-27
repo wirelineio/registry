@@ -2,32 +2,18 @@
 # Copyright 2019 Wireline, Inc.
 #
 
-# Resource is a base object which is used as a mixin for other types within the Registry.
-type Resource {
-  id: String!                 # wrn:resource:xxxxxxx.
+# Record is a base object which is used as a mixin for other types within the Registry.
+type Record {
+  id: String!                 # wrn:record:xxxxxxx.
   type: String!               # wrn:registry-type:xxxxxxx.
-  owner: Owner!               # Defines resource ownership.
-  systemAttributes: String    # JSON blob. System defined attributes.
-  attributes: String          # JSON blob. User defined attributes.
-  links: [Link!]              # Links point to other resources in the registry.
-}
-
-# Resource owner, defined via `id` OR `address`.
-type Owner {
-  id: String                  # ID of resource which defines ownership semantics.
-  address: String             # Address of resource owner (public key hash).
-}
-
-# Links point to other resources in the registry.
-type Link {
-  id: String!                 # ID of linked resource.
-  attributes: String          # JSON blob. Custom link metadata.
+  owner: String               # Address of record owner.
+  attributes: String          # User defined attributes.
 }
 
 # Mutations require payment in coins (e.g. 100wire).
 # Used by the wallet to get the account balance for display and mutations.
 type Coin {
-  denomination: String!       # e.g. 'wire'
+  type: String!               # e.g. 'WIRE'
   amount: Int!                # e.g. 100
 }
 
@@ -38,19 +24,12 @@ type Account {
   pubKey: String              # Public key.
   number: Int!                # Account number.
   sequence: Int!              # Sequence number used to prevent replays.
-  coins: [Coin!]              # Current balance for each denomination.
-}
-
-# An alias for a person.
-type Pseudonym {
-  resource: Resource
-  name: String!
-  accessKey: String
+  balance: [Coin!]            # Current balance for each coin type.
 }
 
 # Bots are autonomous agents that interact with users (and other bots).
 type Bot {
-  resource: Resource
+  record: Record
   name: String!
   accessKey: String
 }
@@ -67,18 +46,18 @@ type Query {
   ): [Account]
 
   #
-  # Low layer API, works with bare resources.
+  # Low layer API, works with bare records.
   #
 
-  # Get resources by IDs.
-  getResourcesByIds(
+  # Get records by IDs.
+  getRecordsByIds(
     ids: [String!]
-  ): [Resource]
+  ): [Record]
 
-  # List resources, optionally in a namespace.
-  listResources(
+  # Get records by attributes.
+  getRecordsByAttributes(
     namespace: String
-  ): [Resource]
+  ): [Record]
 
   #
   # High layer API, works with types.
@@ -89,17 +68,11 @@ type Query {
     namespace: String
     name: [String!]
   ): [Bot]
-
-  # Get pseudonyms.
-  getPseudonyms(
-    namespace: String
-    name: [String!]
-  ): [Pseudonym]
 }
 
 type Mutation {
 
-  # Broadcast a signed transaction to the blockchain.
+  # Submit a transaction to the blockchain.
   # `tx` is a blob created by https://github.com/wirelineio/registry-client.
-  broadcastTransaction(tx: String!): String
+  submit(tx: String!): String
 }
