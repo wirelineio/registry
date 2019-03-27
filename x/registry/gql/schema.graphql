@@ -45,14 +45,14 @@ type Account {
 type Pseudonym {
   resource: Resource
   name: String!
-  dsinvite: String
+  accessKey: String
 }
 
 # Bots are autonomous agents that interact with users (and other bots).
 type Bot {
   resource: Resource
   name: String!
-  dsinvite: String
+  accessKey: String
 }
 
 type Query {
