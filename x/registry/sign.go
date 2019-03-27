@@ -10,7 +10,7 @@ import (
 )
 
 // GetResourceSignature returns a cryptographic signature for a transaction.
-func GetResourceSignature(resource Resource, name string) ([]byte, crypto.PubKey, error) {
+func GetResourceSignature(record Record, name string) ([]byte, crypto.PubKey, error) {
 	keybase, err := keys.GetKeyBase()
 	if err != nil {
 		return nil, nil, err
@@ -21,7 +21,7 @@ func GetResourceSignature(resource Resource, name string) ([]byte, crypto.PubKey
 		return nil, nil, err
 	}
 
-	signBytes := GenResourceHash(resource)
+	signBytes := GenRecordHash(record)
 
 	sigBytes, pubKey, err := keybase.Sign(name, passphrase, signBytes)
 	if err != nil {

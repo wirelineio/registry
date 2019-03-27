@@ -10,7 +10,7 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec.
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgSetResource{}, "registry/SetResource", nil)
-	cdc.RegisterConcrete(MsgDeleteResource{}, "registry/DeleteResource", nil)
-	cdc.RegisterConcrete(MsgClearResources{}, "registry/ClearResources", nil)
+	cdc.RegisterConcrete(MsgSetRecord{}, "registry/SetResource", nil)
+	cdc.RegisterConcrete(MsgDeleteRecord{}, "registry/DeleteResource", nil)
+	cdc.RegisterConcrete(MsgClearRecords{}, "registry/ClearResources", nil)
 }

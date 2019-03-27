@@ -11,67 +11,59 @@ import (
 // WirelineChainID is the Cosmos SDK chain ID.
 const WirelineChainID = "wireline"
 
-// ID for resources.
+// ID for records.
 type ID string
 
-// Owner represents a resource owner.
-type Owner struct {
-	// If ID is populated, that will be used (ID of Owner resource record). Else, Address will be used.
-	// One of the two MUST be populated.
-	ID      ID     `json:"id"`
-	Address string `json:"address"`
+// Record represents a registry record that can be serialized from/to YAML.
+type Record struct {
+	ID    ID     `json:"id"`
+	Type  string `json:"type"`
+	Owner string `json:"owner"`
+	// SystemAttributes map[string]interface{}   `json:"systemAttributes"`
+	Attributes map[string]interface{} `json:"attributes"`
+	// Links            []map[string]interface{} `json:"links"`
 }
 
-// Resource represents a registry record that can be serialized from/to YAML.
-type Resource struct {
-	ID               ID                       `json:"id"`
-	Type             string                   `json:"type"`
-	Owner            Owner                    `json:"owner"`
-	SystemAttributes map[string]interface{}   `json:"systemAttributes"`
-	Attributes       map[string]interface{}   `json:"attributes"`
-	Links            []map[string]interface{} `json:"links"`
-}
-
-// Signature represents a resource signature.
+// Signature represents a record signature.
 type Signature struct {
 	PubKey    string `json:"pubKey"`
 	Signature string `json:"sig"`
 }
 
-// PayloadObj represents a signed resource payload.
+// PayloadObj represents a signed record payload.
 type PayloadObj struct {
-	Resource   ResourceObj `json:"resource"`
+	Record     RecordObj   `json:"record"`
 	Signatures []Signature `json:"signatures"`
 }
 
-// ResourceObj represents a registry record.
-type ResourceObj struct {
-	ID               ID     `json:"id"`
-	Type             string `json:"type"`
-	Owner            Owner  `json:"owner"`
-	SystemAttributes []byte `json:"systemAttributes"`
-	Attributes       []byte `json:"attributes"`
-	Links            []byte `json:"links"`
+// RecordObj represents a registry record.
+type RecordObj struct {
+	ID    ID     `json:"id"`
+	Type  string `json:"type"`
+	Owner string `json:"owner"`
+	// SystemAttributes []byte `json:"systemAttributes"`
+	Attributes []byte `json:"attributes"`
+	// Links            []byte `json:"links"`
 }
 
-// Payload represents a signed resource payload that can be serialized from/to YAML.
+// Payload represents a signed record payload that can be serialized from/to YAML.
 type Payload struct {
-	Resource   Resource    `json:"resource"`
+	Record     Record      `json:"record"`
 	Signatures []Signature `json:"signatures"`
 }
 
-// ResourceToResourceObj convers Resource to ResourceObj.
+// RecordToRecordObj convers Record to RecordObj.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func ResourceToResourceObj(resource Resource) ResourceObj {
-	var resourceObj ResourceObj
+func RecordToRecordObj(record Record) RecordObj {
+	var resourceObj RecordObj
 
-	resourceObj.ID = resource.ID
-	resourceObj.Type = resource.Type
-	resourceObj.Owner = resource.Owner
-	resourceObj.SystemAttributes = MarshalMapToJSONBytes(resource.SystemAttributes)
-	resourceObj.Attributes = MarshalMapToJSONBytes(resource.Attributes)
+	resourceObj.ID = record.ID
+	resourceObj.Type = record.Type
+	resourceObj.Owner = record.Owner
+	// resourceObj.SystemAttributes = MarshalMapToJSONBytes(record.SystemAttributes)
+	resourceObj.Attributes = MarshalMapToJSONBytes(record.Attributes)
 
-	resourceObj.Links = MarshalLinksToJSONBytes(resource.Links)
+	// resourceObj.Links = MarshalLinksToJSONBytes(record.Links)
 
 	return resourceObj
 }
@@ -103,7 +95,7 @@ func UnMarshalLinksFromJSONBytes(bytes []byte) []map[string]interface{} {
 func PayloadToPayloadObj(payload Payload) PayloadObj {
 	var payloadObj PayloadObj
 
-	payloadObj.Resource = ResourceToResourceObj(payload.Resource)
+	payloadObj.Record = RecordToRecordObj(payload.Record)
 	payloadObj.Signatures = payload.Signatures
 
 	return payloadObj
@@ -153,19 +145,19 @@ func UnMarshalSliceFromJSONBytes(bytes []byte) []interface{} {
 	return val
 }
 
-// ResourceObjToResource convers ResourceObj to Resource.
+// RecordObjToRecord convers RecordObj to Record.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func ResourceObjToResource(resourceObj ResourceObj) Resource {
-	var resource Resource
+func RecordObjToRecord(resourceObj RecordObj) Record {
+	var record Record
 
-	resource.ID = resourceObj.ID
-	resource.Type = resourceObj.Type
-	resource.Owner = resourceObj.Owner
-	resource.SystemAttributes = UnMarshalMapFromJSONBytes(resourceObj.SystemAttributes)
-	resource.Attributes = UnMarshalMapFromJSONBytes(resourceObj.Attributes)
-	resource.Links = UnMarshalLinksFromJSONBytes(resourceObj.Links)
+	record.ID = resourceObj.ID
+	record.Type = resourceObj.Type
+	record.Owner = resourceObj.Owner
+	// record.SystemAttributes = UnMarshalMapFromJSONBytes(resourceObj.SystemAttributes)
+	record.Attributes = UnMarshalMapFromJSONBytes(resourceObj.Attributes)
+	// record.Links = UnMarshalLinksFromJSONBytes(resourceObj.Links)
 
-	return resource
+	return record
 }
 
 // PayloadObjToPayload converts Payload to PayloadObj object.
@@ -173,7 +165,7 @@ func ResourceObjToResource(resourceObj ResourceObj) Resource {
 func PayloadObjToPayload(payloadObj PayloadObj) Payload {
 	var payload Payload
 
-	payload.Resource = ResourceObjToResource(payloadObj.Resource)
+	payload.Record = RecordObjToRecord(payloadObj.Record)
 	payload.Signatures = payloadObj.Signatures
 
 	return payload

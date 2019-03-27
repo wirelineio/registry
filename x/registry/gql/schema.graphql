@@ -1,49 +1,76 @@
 #
-#  Copyright 2019 Wireline, Inc.
+# Copyright 2019 Wireline, Inc.
 #
 
-type Resource {
-  id: String!
-  type: String!
-  owner: Owner!
-  systemAttributes: String
-  attributes: String
-  links: [Link!]
+# BigUInt is a 64-bit unsigned int.
+scalar BigUInt
+
+# Value of a given type.
+type Value {
+  null:       Boolean
+
+  int:        Int
+  float:      Float
+  string:     String
+  boolean:    Boolean
+
+  values:     [Value]
 }
 
-type Owner {
-  id: String
-  address: String
+# Key/value pair.
+type KeyValue {
+  key:        String!
+  value:      Value!
 }
 
-type Link {
-  id: String!
-  attributes: String
+# Value of a given type used as input to queries.
+input ValueInput {
+  null:       Boolean
+
+  int:        Int
+  float:      Float
+  string:     String
+  boolean:    Boolean
+
+  values:     [ValueInput]
 }
 
+# Key/value pair for inputs.
+input KeyValueInput {
+  key:        String!
+  value:      ValueInput!
+}
+
+# Record is a base object which is used as a mixin for other types within the Registry.
+type Record {
+  id: String!                 # wrn:record:xxxxxxx.
+  type: String!               # wrn:registry-type:xxxxxxx.
+  owner: String!              # Address of record owner.
+  attributes: [KeyValue]      # User defined attributes.
+}
+
+# Mutations require payment in coins (e.g. 100wire).
+# Used by the wallet to get the account balance for display and mutations.
 type Coin {
-  denom: String!
-  amount: Int!
+  type: String!               # e.g. 'WIRE'
+  amount: BigUInt!            # e.g. 1000000
 }
 
+# Represents an account on the blockchain.
+# Mutations have to be signed by a particular account.
 type Account {
-  address: String!
-  pubKey: String
-  num: Int!
-  seq: Int!
-  coins: [Coin!]
+  address: String!            # Blockchain address.
+  pubKey: String              # Public key.
+  number: BigUInt!            # Account number.
+  sequence: BigUInt!          # Sequence number used to prevent replays.
+  balance: [Coin!]            # Current balance for each coin type.
 }
 
-type Pseudonym {
-  resource: Resource
-  name: String!
-  dsinvite: String
-}
-
+# Bots are autonomous agents that interact with users (and other bots).
 type Bot {
-  resource: Resource
+  record: Record
   name: String!
-  dsinvite: String
+  accessKey: String
 }
 
 type Query {
@@ -52,41 +79,38 @@ type Query {
   # Wallet API.
   #
 
+  # Get blockchain accounts.
   getAccounts(
     addresses: [String!]
   ): [Account]
 
   #
-  # Low layer API, works with bare resources.
+  # Low layer API, works with bare records.
   #
 
-  getResources(
+  # Get records by IDs.
+  getRecordsByIds(
     ids: [String!]
-  ): [Resource]
+  ): [Record]
 
-  listResources(
-    namespace: String
-  ): [Resource]
-
+  # Get records by attributes.
+  getRecordsByAttributes(
+    attributes: [KeyValueInput]
+  ): [Record]
 
   #
   # High layer API, works with types.
   #
 
-  getBots(
-    namespace: String
-    name: [String!]
+  # Get bots.
+  getBotsByAttributes(
+    attributes: [KeyValueInput]
   ): [Bot]
-
-  getPseudonyms(
-    namespace: String
-    name: [String!]
-  ): [Pseudonym]
-
 }
 
 type Mutation {
 
-  # Tx methods roughly correspond to those in https://github.com/tendermint/tendermint/blob/master/rpc/core/mempool.go
-  broadcastTxCommit(tx: String!): String
+  # Submit a transaction to the blockchain.
+  # `tx` is a blob created by https://github.com/wirelineio/registry-client.
+  submit(tx: String!): String
 }

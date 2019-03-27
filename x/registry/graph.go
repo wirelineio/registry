@@ -17,8 +17,8 @@ func hash(s string) uint32 {
 	return h.Sum32()
 }
 
-// GraphResourceNode creates a node for a resource.
-func GraphResourceNode(g *dot.Graph, r Resource) dot.Node {
+// GraphResourceNode creates a node for a record.
+func GraphResourceNode(g *dot.Graph, r Record) dot.Node {
 	color := fmt.Sprintf("#%x", hash(r.Type)&0x00FFFFFF)
 	node := g.Node(string(r.ID)).Attr("shape", "record").Attr("style", "").Attr("color", color)
 
@@ -29,26 +29,26 @@ func GraphResourceNode(g *dot.Graph, r Resource) dot.Node {
 
 	node.Attr("label", nodeLabel)
 
-	for _, link := range r.Links {
-		linkID := ""
-		linkLabel := ""
+	// for _, link := range r.Links {
+	// 	linkID := ""
+	// 	linkLabel := ""
 
-		if idAttr, ok := link["id"].(string); ok {
-			linkID = idAttr
-		}
+	// 	if idAttr, ok := link["id"].(string); ok {
+	// 		linkID = idAttr
+	// 	}
 
-		if labelAttr, ok := link["label"].(string); ok {
-			linkLabel = labelAttr
-		}
+	// 	if labelAttr, ok := link["label"].(string); ok {
+	// 		linkLabel = labelAttr
+	// 	}
 
-		if linkID != "" {
-			g.Edge(
-				g.Node(string(r.ID)),
-				g.Node(string(linkID)),
-				linkLabel,
-			)
-		}
-	}
+	// 	if linkID != "" {
+	// 		g.Edge(
+	// 			g.Node(string(r.ID)),
+	// 			g.Node(string(linkID)),
+	// 			linkLabel,
+	// 		)
+	// 	}
+	// }
 
 	return node
 }

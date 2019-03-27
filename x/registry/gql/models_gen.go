@@ -3,45 +3,55 @@
 package gql
 
 type Account struct {
-	Address string  `json:"address"`
-	PubKey  *string `json:"pubKey"`
-	Num     int     `json:"num"`
-	Seq     int     `json:"seq"`
-	Coins   []Coin  `json:"coins"`
+	Address  string  `json:"address"`
+	PubKey   *string `json:"pubKey"`
+	Number   BigUInt `json:"number"`
+	Sequence BigUInt `json:"sequence"`
+	Balance  []Coin  `json:"balance"`
 }
 
 type Bot struct {
-	Resource *Resource `json:"resource"`
-	Name     string    `json:"name"`
-	Dsinvite *string   `json:"dsinvite"`
+	Record    *Record `json:"record"`
+	Name      string  `json:"name"`
+	AccessKey *string `json:"accessKey"`
 }
 
 type Coin struct {
-	Denom  string `json:"denom"`
-	Amount int    `json:"amount"`
+	Type   string  `json:"type"`
+	Amount BigUInt `json:"amount"`
 }
 
-type Link struct {
-	ID         string  `json:"id"`
-	Attributes *string `json:"attributes"`
+type KeyValue struct {
+	Key   string `json:"key"`
+	Value Value  `json:"value"`
 }
 
-type Owner struct {
-	ID      *string `json:"id"`
-	Address *string `json:"address"`
+type KeyValueInput struct {
+	Key   string     `json:"key"`
+	Value ValueInput `json:"value"`
 }
 
-type Pseudonym struct {
-	Resource *Resource `json:"resource"`
-	Name     string    `json:"name"`
-	Dsinvite *string   `json:"dsinvite"`
+type Record struct {
+	ID         string      `json:"id"`
+	Type       string      `json:"type"`
+	Owner      string      `json:"owner"`
+	Attributes []*KeyValue `json:"attributes"`
 }
 
-type Resource struct {
-	ID               string  `json:"id"`
-	Type             string  `json:"type"`
-	Owner            Owner   `json:"owner"`
-	SystemAttributes *string `json:"systemAttributes"`
-	Attributes       *string `json:"attributes"`
-	Links            []Link  `json:"links"`
+type Value struct {
+	Null    *bool    `json:"null"`
+	Int     *int     `json:"int"`
+	Float   *float64 `json:"float"`
+	String  *string  `json:"string"`
+	Boolean *bool    `json:"boolean"`
+	Values  []*Value `json:"values"`
+}
+
+type ValueInput struct {
+	Null    *bool         `json:"null"`
+	Int     *int          `json:"int"`
+	Float   *float64      `json:"float"`
+	String  *string       `json:"string"`
+	Boolean *bool         `json:"boolean"`
+	Values  []*ValueInput `json:"values"`
 }

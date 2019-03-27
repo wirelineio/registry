@@ -15,11 +15,11 @@ import (
 func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case MsgSetResource:
+		case MsgSetRecord:
 			return handleMsgSetResource(ctx, keeper, msg)
-		case MsgDeleteResource:
+		case MsgDeleteRecord:
 			return handleMsgDeleteResource(ctx, keeper, msg)
-		case MsgClearResources:
+		case MsgClearRecords:
 			return handleMsgClearResources(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized registry Msg type: %v", msg.Type())
@@ -28,60 +28,60 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-// Handle MsgSetResource.
-func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetResource) sdk.Result {
+// Handle MsgSetRecord.
+func handleMsgSetResource(ctx sdk.Context, keeper Keeper, msg MsgSetRecord) sdk.Result {
 	payload := PayloadObjToPayload(msg.Payload)
-	resource := payload.Resource
+	record := payload.Record
 
-	if exists := keeper.HasResource(ctx, resource.ID); exists {
+	if exists := keeper.HasResource(ctx, record.ID); exists {
 		// Check ownership.
-		owner := keeper.GetResource(ctx, resource.ID).Owner
+		owner := keeper.GetResource(ctx, record.ID).Owner
 
-		allow := checkAccess(owner, resource, payload.Signatures)
+		allow := checkAccess(owner, record, payload.Signatures)
 		if !allow {
-			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
+			return sdk.ErrUnauthorized("Unauthorized record write.").Result()
 		}
 	}
 
-	keeper.PutResource(ctx, payload.Resource)
+	keeper.PutResource(ctx, payload.Record)
 
 	return sdk.Result{}
 }
 
-// Handle MsgDeleteResource.
-func handleMsgDeleteResource(ctx sdk.Context, keeper Keeper, msg MsgDeleteResource) sdk.Result {
+// Handle MsgDeleteRecord.
+func handleMsgDeleteResource(ctx sdk.Context, keeper Keeper, msg MsgDeleteRecord) sdk.Result {
 	payload := PayloadObjToPayload(msg.Payload)
-	resource := payload.Resource
+	record := payload.Record
 
-	if exists := keeper.HasResource(ctx, resource.ID); exists {
+	if exists := keeper.HasResource(ctx, record.ID); exists {
 		// Check ownership.
-		owner := keeper.GetResource(ctx, resource.ID).Owner
+		owner := keeper.GetResource(ctx, record.ID).Owner
 
-		allow := checkAccess(owner, resource, payload.Signatures)
+		allow := checkAccess(owner, record, payload.Signatures)
 		if !allow {
-			return sdk.ErrUnauthorized("Unauthorized resource write.").Result()
+			return sdk.ErrUnauthorized("Unauthorized record write.").Result()
 		}
 
-		keeper.DeleteResource(ctx, payload.Resource.ID)
+		keeper.DeleteResource(ctx, payload.Record.ID)
 
 		return sdk.Result{}
 	}
 
-	return sdk.ErrInternal("Resource not found.").Result()
+	return sdk.ErrInternal("Record not found.").Result()
 }
 
-// Handle MsgClearResources.
-func handleMsgClearResources(ctx sdk.Context, keeper Keeper, msg MsgClearResources) sdk.Result {
+// Handle MsgClearRecords.
+func handleMsgClearResources(ctx sdk.Context, keeper Keeper, msg MsgClearRecords) sdk.Result {
 	keeper.ClearResources(ctx)
 
 	return sdk.Result{}
 }
 
-func checkAccess(owner Owner, resource Resource, signatures []Signature) bool {
+func checkAccess(owner string, record Record, signatures []Signature) bool {
 	addresses := make(map[string]bool)
 
 	// Check signatures.
-	resourceSignBytes := GenResourceHash(resource)
+	resourceSignBytes := GenRecordHash(record)
 	for _, sig := range signatures {
 		pubKey, err := cryptoAmino.PubKeyFromBytes(BytesFromBase64(sig.PubKey))
 		if err != nil {
@@ -100,7 +100,7 @@ func checkAccess(owner Owner, resource Resource, signatures []Signature) bool {
 	}
 
 	// Check one of the addresses matches the owner.
-	_, ok := addresses[owner.Address]
+	_, ok := addresses[owner]
 	if !ok {
 		return false
 	}

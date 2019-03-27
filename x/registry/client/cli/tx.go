@@ -19,11 +19,11 @@ import (
 	"github.com/wirelineio/registry/x/registry"
 )
 
-// GetCmdSetResource is the CLI command for creating/updating a resource.
+// GetCmdSetResource is the CLI command for creating/updating a record.
 func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set [payload file path]",
-		Short: "Set resource.",
+		Short: "Set record.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -47,7 +47,7 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := registry.NewMsgSetResource(registry.PayloadToPayloadObj(payload), signer)
+			msg := registry.NewMsgSetRecord(registry.PayloadToPayloadObj(payload), signer)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -62,11 +62,11 @@ func GetCmdSetResource(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-// GetCmdDeleteResource is the CLI command for deleting a resource.
+// GetCmdDeleteResource is the CLI command for deleting a record.
 func GetCmdDeleteResource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete [payload file path]",
-		Short: "Delete resource.",
+		Short: "Delete record.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -90,7 +90,7 @@ func GetCmdDeleteResource(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := registry.NewMsgDeleteResource(registry.PayloadToPayloadObj(payload), signer)
+			msg := registry.NewMsgDeleteRecord(registry.PayloadToPayloadObj(payload), signer)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -105,12 +105,12 @@ func GetCmdDeleteResource(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-// GetCmdClearResources is the CLI command for clearing all resources.
+// GetCmdClearResources is the CLI command for clearing all records.
 // NOTE: FOR LOCAL TESTING PURPOSES ONLY!
 func GetCmdClearResources(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "clear",
-		Short: "Clear resources.",
+		Short: "Clear records.",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -124,7 +124,7 @@ func GetCmdClearResources(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := registry.NewMsgClearResources(signer)
+			msg := registry.NewMsgClearRecords(signer)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -158,7 +158,7 @@ func getPayloadFromFile(filePath string) (registry.Payload, error) {
 func signResource(payload registry.Payload) error {
 	name := viper.GetString("from")
 
-	sigBytes, pubKey, err := registry.GetResourceSignature(payload.Resource, name)
+	sigBytes, pubKey, err := registry.GetResourceSignature(payload.Record, name)
 	if err != nil {
 		return err
 	}
