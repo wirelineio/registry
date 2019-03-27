@@ -21,9 +21,37 @@ type Coin struct {
 	Amount BigUInt `json:"amount"`
 }
 
+type KeyValue struct {
+	Key   string `json:"key"`
+	Value Value  `json:"value"`
+}
+
+type KeyValueInput struct {
+	Key   string     `json:"key"`
+	Value ValueInput `json:"value"`
+}
+
 type Record struct {
-	ID         string  `json:"id"`
-	Type       string  `json:"type"`
-	Owner      string  `json:"owner"`
-	Attributes *string `json:"attributes"`
+	ID         string      `json:"id"`
+	Type       string      `json:"type"`
+	Owner      string      `json:"owner"`
+	Attributes []*KeyValue `json:"attributes"`
+}
+
+type Value struct {
+	Null    *bool    `json:"null"`
+	Int     *int     `json:"int"`
+	Float   *float64 `json:"float"`
+	String  *string  `json:"string"`
+	Boolean *bool    `json:"boolean"`
+	Values  []*Value `json:"values"`
+}
+
+type ValueInput struct {
+	Null    *bool         `json:"null"`
+	Int     *int          `json:"int"`
+	Float   *float64      `json:"float"`
+	String  *string       `json:"string"`
+	Boolean *bool         `json:"boolean"`
+	Values  []*ValueInput `json:"values"`
 }

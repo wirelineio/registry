@@ -178,8 +178,11 @@ func (r *queryResolver) GetResource(ctx context.Context, id string) (*Record, er
 	return nil, nil
 }
 
-func (r *queryResolver) GetRecordsByAttributes(ctx context.Context, namespace *string) ([]*Record, error) {
+func (r *queryResolver) GetRecordsByAttributes(ctx context.Context, attributes []*KeyValueInput) ([]*Record, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
+
+	// TODO(ashwin): Fix.
+	var namespace *string
 
 	records := r.keeper.ListResources(sdkContext, namespace)
 	gqlResponse := make([]*Record, len(records))
@@ -202,7 +205,7 @@ func getGQLResource(record registry.Record) (*Record, error) {
 	// 	return nil, err
 	// }
 
-	attrs, err := mapToJSONStr(record.Attributes)
+	attrs, err := mapToKeyValuePairs(record.Attributes)
 	if err != nil {
 		return nil, err
 	}
@@ -213,6 +216,10 @@ func getGQLResource(record registry.Record) (*Record, error) {
 		Owner:      record.Owner,
 		Attributes: attrs,
 	}, nil
+}
+
+func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
+	return []*KeyValue{}, nil
 }
 
 func mapToJSONStr(attrs map[string]interface{}) (*string, error) {
@@ -345,10 +352,13 @@ func broadcastTx(r *mutationResolver, stdTx *auth.StdTx) (*ctypes.ResultBroadcas
 	return res, nil
 }
 
-func (r *queryResolver) GetBots(ctx context.Context, namespace *string, name []string) ([]*Bot, error) {
+func (r *queryResolver) GetBotsByAttributes(ctx context.Context, attributes []*KeyValueInput) ([]*Bot, error) {
 	bots := []*Bot{}
 
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
+
+	// TODO(ashwin): Fix.
+	var namespace *string
 
 	records := r.keeper.ListResources(sdkContext, namespace)
 	for _, record := range records {
@@ -368,23 +378,23 @@ func (r *queryResolver) GetBots(ctx context.Context, namespace *string, name []s
 				}
 
 				// Check for match if any names are passed as input, else return all.
-				if len(name) > 0 {
-					for _, iterName := range name {
-						if iterName == resName {
-							bots = append(bots, &Bot{
-								Record:    res,
-								Name:      resName,
-								AccessKey: accessKeyVal,
-							})
-						}
-					}
-				} else {
-					bots = append(bots, &Bot{
-						Record:    res,
-						Name:      resName,
-						AccessKey: accessKeyVal,
-					})
-				}
+				// if len(name) > 0 {
+				// 	for _, iterName := range name {
+				// 		if iterName == resName {
+				// 			bots = append(bots, &Bot{
+				// 				Record:    res,
+				// 				Name:      resName,
+				// 				AccessKey: accessKeyVal,
+				// 			})
+				// 		}
+				// 	}
+				// } else {
+				bots = append(bots, &Bot{
+					Record:    res,
+					Name:      resName,
+					AccessKey: accessKeyVal,
+				})
+				// }
 			}
 		}
 	}

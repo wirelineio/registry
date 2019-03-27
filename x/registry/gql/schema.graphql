@@ -2,14 +2,51 @@
 # Copyright 2019 Wireline, Inc.
 #
 
+# TODO(ashwin): Comment.
 scalar BigUInt
+
+# TODO(ashwin): Comment.
+type Value {
+  null:       Boolean
+
+  int:        Int
+  float:      Float
+  string:     String
+  boolean:    Boolean
+
+  values:     [Value]
+}
+
+# TODO(ashwin): Comment.
+type KeyValue {
+  key:        String!
+  value:      Value!
+}
+
+# TODO(ashwin): Comment.
+input ValueInput {
+  null:       Boolean
+
+  int:        Int
+  float:      Float
+  string:     String
+  boolean:    Boolean
+
+  values:     [ValueInput]
+}
+
+# TODO(ashwin): Comment.
+input KeyValueInput {
+  key:        String!
+  value:      ValueInput!
+}
 
 # Record is a base object which is used as a mixin for other types within the Registry.
 type Record {
   id: String!                 # wrn:record:xxxxxxx.
   type: String!               # wrn:registry-type:xxxxxxx.
   owner: String!              # Address of record owner.
-  attributes: String          # User defined attributes.
+  attributes: [KeyValue]      # User defined attributes.
 }
 
 # Mutations require payment in coins (e.g. 100wire).
@@ -58,7 +95,7 @@ type Query {
 
   # Get records by attributes.
   getRecordsByAttributes(
-    namespace: String
+    attributes: [KeyValueInput]
   ): [Record]
 
   #
@@ -66,9 +103,8 @@ type Query {
   #
 
   # Get bots.
-  getBots(
-    namespace: String
-    name: [String!]
+  getBotsByAttributes(
+    attributes: [KeyValueInput]
   ): [Bot]
 }
 
