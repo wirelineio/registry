@@ -42,12 +42,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 
 // nolint: unparam
 func listResources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
-	var namespace *string
-	if len(path) > 0 {
-		namespace = &path[0]
-	}
-
-	records := keeper.ListResources(ctx, namespace)
+	records := keeper.ListResources(ctx)
 
 	bz, err2 := json.MarshalIndent(records, "", "  ")
 	if err2 != nil {
@@ -81,7 +76,7 @@ func getGraph(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keep
 	g.Attr("rankdir", "LR")
 
 	if len(path) == 0 {
-		records := keeper.ListResources(ctx, nil)
+		records := keeper.ListResources(ctx)
 		for _, r := range records {
 			GraphResourceNode(g, r)
 		}

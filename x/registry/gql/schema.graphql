@@ -2,10 +2,10 @@
 # Copyright 2019 Wireline, Inc.
 #
 
-# TODO(ashwin): Comment.
+# BigUInt is a 64-bit unsigned int.
 scalar BigUInt
 
-# TODO(ashwin): Comment.
+# Value of a given type.
 type Value {
   null:       Boolean
 
@@ -17,13 +17,13 @@ type Value {
   values:     [Value]
 }
 
-# TODO(ashwin): Comment.
+# Key/value pair.
 type KeyValue {
   key:        String!
   value:      Value!
 }
 
-# TODO(ashwin): Comment.
+# Value of a given type used as input to queries.
 input ValueInput {
   null:       Boolean
 
@@ -35,7 +35,7 @@ input ValueInput {
   values:     [ValueInput]
 }
 
-# TODO(ashwin): Comment.
+# Key/value pair for inputs.
 input KeyValueInput {
   key:        String!
   value:      ValueInput!

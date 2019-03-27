@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"reflect"
 	"strconv"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -172,7 +173,7 @@ func (r *queryResolver) GetResource(ctx context.Context, id string) (*Record, er
 	dbID := registry.ID(id)
 	if r.keeper.HasResource(sdkContext, dbID) {
 		record := r.keeper.GetResource(sdkContext, dbID)
-		return getGQLResource(record)
+		return getGQLRecord(record)
 	}
 
 	return nil, nil
@@ -181,25 +182,67 @@ func (r *queryResolver) GetResource(ctx context.Context, id string) (*Record, er
 func (r *queryResolver) GetRecordsByAttributes(ctx context.Context, attributes []*KeyValueInput) ([]*Record, error) {
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	// TODO(ashwin): Fix.
-	var namespace *string
+	records := r.keeper.ListResources(sdkContext)
+	gqlResponse := []*Record{}
 
-	records := r.keeper.ListResources(sdkContext, namespace)
-	gqlResponse := make([]*Record, len(records))
-
-	for index, record := range records {
-		gqlResource, err := getGQLResource(record)
+	for _, record := range records {
+		gqlRecord, err := getGQLRecord(record)
 		if err != nil {
 			return nil, err
 		}
 
-		gqlResponse[index] = gqlResource
+		if matchesOnAttributes(&record, attributes) {
+			gqlResponse = append(gqlResponse, gqlRecord)
+		}
 	}
 
 	return gqlResponse, nil
 }
 
-func getGQLResource(record registry.Record) (*Record, error) {
+func matchesOnAttributes(record *registry.Record, attributes []*KeyValueInput) bool {
+	recAttrs := record.Attributes
+
+	for _, attr := range attributes {
+		recAttrVal, recAttrFound := recAttrs[attr.Key]
+		if !recAttrFound {
+			return false
+		}
+
+		if attr.Value.Int != nil {
+			recAttrValInt, ok := recAttrVal.(int)
+			if !ok || *attr.Value.Int != recAttrValInt {
+				return false
+			}
+		}
+
+		if attr.Value.Float != nil {
+			recAttrValFloat, ok := recAttrVal.(float64)
+			if !ok || *attr.Value.Float != recAttrValFloat {
+				return false
+			}
+		}
+
+		if attr.Value.String != nil {
+			recAttrValString, ok := recAttrVal.(string)
+			if !ok || *attr.Value.String != recAttrValString {
+				return false
+			}
+		}
+
+		if attr.Value.Boolean != nil {
+			recAttrValBool, ok := recAttrVal.(bool)
+			if !ok || *attr.Value.Boolean != recAttrValBool {
+				return false
+			}
+		}
+
+		// TODO(ashwin): Handle arrays.
+	}
+
+	return true
+}
+
+func getGQLRecord(record registry.Record) (*Record, error) {
 	// systemAttrs, err := mapToJSONStr(record.SystemAttributes)
 	// if err != nil {
 	// 	return nil, err
@@ -219,7 +262,43 @@ func getGQLResource(record registry.Record) (*Record, error) {
 }
 
 func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
-	return []*KeyValue{}, nil
+	kvPairs := []*KeyValue{}
+
+	trueVal := true
+	falseVal := false
+
+	for key, value := range attrs {
+
+		kvPair := &KeyValue{
+			Key: key,
+		}
+
+		switch val := value.(type) {
+		case nil:
+			kvPair.Value.Null = &trueVal
+		case int:
+			kvPair.Value.Int = &val
+		case float64:
+			kvPair.Value.Float = &val
+		case string:
+			kvPair.Value.String = &val
+		case bool:
+			kvPair.Value.Boolean = &val
+		}
+
+		if kvPair.Value.Null == nil {
+			kvPair.Value.Null = &falseVal
+		}
+
+		valueType := reflect.ValueOf(value)
+		if valueType.Kind() == reflect.Slice {
+			// TODO(ashwin): Handle arrays.
+		}
+
+		kvPairs = append(kvPairs, kvPair)
+	}
+
+	return kvPairs, nil
 }
 
 func mapToJSONStr(attrs map[string]interface{}) (*string, error) {
@@ -357,18 +436,11 @@ func (r *queryResolver) GetBotsByAttributes(ctx context.Context, attributes []*K
 
 	sdkContext := r.baseApp.NewContext(true, abci.Header{})
 
-	// TODO(ashwin): Fix.
-	var namespace *string
-
-	records := r.keeper.ListResources(sdkContext, namespace)
+	records := r.keeper.ListResources(sdkContext)
 	for _, record := range records {
 		if record.Type == "Bot" && record.Attributes != nil {
 			// Name is mandatory.
-			if resName, ok := record.Attributes["name"].(string); ok {
-				res, err := getGQLResource(record)
-				if err != nil {
-					return nil, err
-				}
+			if name, ok := record.Attributes["name"].(string); ok {
 
 				// accessKey is optional.
 				var accessKeyVal *string
@@ -377,24 +449,19 @@ func (r *queryResolver) GetBotsByAttributes(ctx context.Context, attributes []*K
 					accessKeyVal = &accessKey
 				}
 
-				// Check for match if any names are passed as input, else return all.
-				// if len(name) > 0 {
-				// 	for _, iterName := range name {
-				// 		if iterName == resName {
-				// 			bots = append(bots, &Bot{
-				// 				Record:    res,
-				// 				Name:      resName,
-				// 				AccessKey: accessKeyVal,
-				// 			})
-				// 		}
-				// 	}
-				// } else {
-				bots = append(bots, &Bot{
-					Record:    res,
-					Name:      resName,
-					AccessKey: accessKeyVal,
-				})
-				// }
+				if matchesOnAttributes(&record, attributes) {
+					res, err := getGQLRecord(record)
+					if err != nil {
+						return nil, err
+					}
+
+					bots = append(bots, &Bot{
+						Record:    res,
+						Name:      name,
+						AccessKey: accessKeyVal,
+					})
+				}
+
 			}
 		}
 	}
