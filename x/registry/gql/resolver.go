@@ -23,6 +23,9 @@ import (
 	"github.com/wirelineio/registry/x/registry"
 )
 
+// WireRegistryTypeBot => Bot.
+const WireRegistryTypeBot = "wrn:registry-type:bot"
+
 // Resolver is the GQL query resolver.
 type Resolver struct {
 	baseApp       *bam.BaseApp
@@ -438,7 +441,7 @@ func (r *queryResolver) GetBotsByAttributes(ctx context.Context, attributes []*K
 
 	records := r.keeper.ListResources(sdkContext)
 	for _, record := range records {
-		if record.Type == "Bot" && record.Attributes != nil {
+		if record.Type == WireRegistryTypeBot && record.Attributes != nil {
 			// Name is mandatory.
 			if name, ok := record.Attributes["name"].(string); ok {
 
