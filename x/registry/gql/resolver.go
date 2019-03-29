@@ -333,10 +333,35 @@ func decodeStdTx(tx string) (*auth.StdTx, error) {
 		return nil, err
 	}
 
-	var msg []registry.MsgSetRecord
-	err = json.Unmarshal(*objmap["msg"], &msg)
-	if err != nil {
-		return nil, err
+	var operationStr = "set"
+	if objmap["operation"] != nil {
+		err = json.Unmarshal(*objmap["operation"], &operationStr)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var msgs []sdk.Msg
+
+	switch operationStr {
+	case "set":
+		{
+			var setMsg []registry.MsgSetRecord
+			err = json.Unmarshal(*objmap["msg"], &setMsg)
+			if err != nil {
+				return nil, err
+			}
+			msgs = []sdk.Msg{setMsg[0]}
+		}
+	case "delete":
+		{
+			var deleteMsg []registry.MsgDeleteRecord
+			err = json.Unmarshal(*objmap["msg"], &deleteMsg)
+			if err != nil {
+				return nil, err
+			}
+			msgs = []sdk.Msg{deleteMsg[0]}
+		}
 	}
 
 	var fee auth.StdFee
@@ -398,7 +423,7 @@ func decodeStdTx(tx string) (*auth.StdTx, error) {
 	}
 
 	stdTx := auth.StdTx{
-		Msgs: []sdk.Msg{msg[0]},
+		Msgs: msgs,
 		Fee:  fee,
 		Signatures: []auth.StdSignature{auth.StdSignature{
 			PubKey:        pubKey,
