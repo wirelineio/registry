@@ -13,7 +13,7 @@ go version go1.11 darwin/amd64
 
 Clone the repo. 
 
-NOTE: The repo must be created specifically in the specified directory under `GOPATH`.
+NOTE: The repo must be created in the specified directory under `GOPATH`.
 
 ```
 $ mkdir -p $GOPATH/src/github.com/wirelineio
