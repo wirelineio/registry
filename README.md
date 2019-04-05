@@ -78,7 +78,7 @@ $ registryd start --gql-server --gql-playground
 
 Run the following commands in another terminal.
 
-## Registry module
+## Register module
 
 Get Bob's address and public key.
 
@@ -89,6 +89,8 @@ PubKey    : 61rphyED+i6I7SuuyeuX9Zgsww9WnXi3BOpxhyEWpnI4kZEfNGY=
 ```
 
 Sign the resource with Bob's credentials.
+
+TODO: service1.yml is not defined.
 
 ```
 $ regcli tx registry set service1.yml --from bob --sign-only
