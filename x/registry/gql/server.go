@@ -19,7 +19,7 @@ import (
 	"github.com/rs/cors"
 )
 
-const defaultPort = "8080"
+const defaultPort = "9473"
 
 // Server configures and starts the GQL server.
 func Server(baseApp *bam.BaseApp, cdc *codec.Codec, keeper registry.Keeper, accountKeeper auth.AccountKeeper) {
