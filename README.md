@@ -167,8 +167,8 @@ $ regcli tx registry clear --from alice
 The GQL server is controlled using the following `registryd` flags:
 
 * `--gql-server` - Enable GQL server.
-* `--gql-playground` - Enable GQL playground app (Available at http://localhost:8080/).
-* `--gql-port` - Port to run the GQL server on (default 8080).
+* `--gql-playground` - Enable GQL playground app (Available at http://localhost:9473/).
+* `--gql-port` - Port to run the GQL server on (default 9473).
 
 See `registryd/x/registry/gql/schema.graphql` for the GQL schema.
 
