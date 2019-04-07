@@ -11,7 +11,7 @@ $ go version
 go version go1.11 darwin/amd64
 ```
 
-Clone the repo. 
+Clone the repo.
 
 NOTE: The repo must be created in the specified directory under `GOPATH`.
 
@@ -55,15 +55,20 @@ Initialize the chain.
 $ registryd init --chain-id wireline
 ```
 
-Setup accounts/keys for Alice & Bob. Enter a passphrase for the key when prompted.
+Setup accounts/keys for Alice & Bob. Enter a passphrase for the key (e.g. test12345) when prompted and use the mnemonics given below to recover the keys.
 
 ```
-$ regcli keys add alice
+$ regcli keys add alice --recover
 
-$ regcli keys add bob
+# Use the following mnemonic for recovery:
+# salad portion potato insect unknown exile lion soft layer evolve flavor hollow emerge celery ankle sponsor easy effort flush furnace life maximum rotate apple
+
+$ regcli keys add bob --recover
+# Use the following mnemonic for recovery:
+# range damp struggle liquid globe unfold another govern bacon fancy stumble ripple ensure fruit distance flag ice rule coil reform doll fence stereo midnight
 ```
 
-Add initial funds to the accounts.
+Add initial funds. Note we're creating a blockchain account only for Alice.
 
 ```
 $ registryd add-genesis-account $(regcli keys show alice --address) 1000000wire
@@ -88,22 +93,29 @@ Address   : 002aee66c9908426658a39d7e95a48646d172d0f
 PubKey    : 61rphyED+i6I7SuuyeuX9Zgsww9WnXi3BOpxhyEWpnI4kZEfNGY=
 ```
 
-Sign the resource with Bob's credentials.
+Create a payload file (e.g. service1.yml) with Bob's address as the `owner`.
 
-TODO: service1.yml is not defined.
+```yaml
+# service1.yml
+record:
+  id: wrn:record:05013527-30ef-4aee-85d5-a71e1722f255
+  type: wrn:registry-type:service
+  owner: 02e840ed2d4c3e0b4e068f0d4be811b095ec78d5
+  attributes:
+    label: Weather
+```
+
+Sign the payload with Bob's private key.
 
 ```
 $ regcli tx registry set service1.yml --from bob --sign-only
 Password to sign with 'bob':
-Address   : 002aee66c9908426658a39d7e95a48646d172d0f
-PubKey    : 61rphyED+i6I7SuuyeuX9Zgsww9WnXi3BOpxhyEWpnI4kZEfNGY=
-Signature : iYlLCgiqNL1vsm+3u7alGFNzZJD+u/vlM/YwdJfYAfZAwtChAOUQK3pWlIBIDsmqqwuqV5tK5pDrDcA5zT0swQ==
+Address   : 02e840ed2d4c3e0b4e068f0d4be811b095ec78d5
+PubKey    : 61rphyEDI/Iy96OBr9fn11ADRfDPUgAiEW5MdETVuK9PohsxWMU=
+Signature : r3J9Hi+1nyO86Gbdo0jRuxzU1zHRzEvtK3EqH2x9owQ9NNvzQp7BeBLyInASgwEDHu4Iec21fzRR8klHbDN5Sw==
 ```
 
-Update the resource payload (e.g. service1.yml) with Bob's address, public key and signature.
-
-* Set `resource/owner` to Bob's address.
-* Set signature `pubKey` and `sig` using output from the previous command.
+Update the resource payload (e.g. service1.yml) with Bob's public key (`pubKey`) and signature (`sig`), using output from the previous command.
 
 ```yaml
 # service1.yml
