@@ -63,7 +63,7 @@ $ regcli keys add alice --recover
 # Use the following mnemonic for recovery:
 # salad portion potato insect unknown exile lion soft layer evolve flavor hollow emerge celery ankle sponsor easy effort flush furnace life maximum rotate apple
 
-$ regcli keys add bob
+$ regcli keys add bob --recover
 # Use the following mnemonic for recovery:
 # range damp struggle liquid globe unfold another govern bacon fancy stumble ripple ensure fruit distance flag ice rule coil reform doll fence stereo midnight
 ```
@@ -93,9 +93,7 @@ Address   : 002aee66c9908426658a39d7e95a48646d172d0f
 PubKey    : 61rphyED+i6I7SuuyeuX9Zgsww9WnXi3BOpxhyEWpnI4kZEfNGY=
 ```
 
-Sign the resource with Bob's credentials.
-
-Create the payload file (e.g. service1.yml) with Bob's address as the `owner`.
+Create a payload file (e.g. service1.yml) with Bob's address as the `owner`.
 
 ```yaml
 # service1.yml
@@ -112,15 +110,12 @@ Sign the payload with Bob's private key.
 ```
 $ regcli tx registry set service1.yml --from bob --sign-only
 Password to sign with 'bob':
-Address   : 002aee66c9908426658a39d7e95a48646d172d0f
-PubKey    : 61rphyED+i6I7SuuyeuX9Zgsww9WnXi3BOpxhyEWpnI4kZEfNGY=
-Signature : iYlLCgiqNL1vsm+3u7alGFNzZJD+u/vlM/YwdJfYAfZAwtChAOUQK3pWlIBIDsmqqwuqV5tK5pDrDcA5zT0swQ==
+Address   : 02e840ed2d4c3e0b4e068f0d4be811b095ec78d5
+PubKey    : 61rphyEDI/Iy96OBr9fn11ADRfDPUgAiEW5MdETVuK9PohsxWMU=
+Signature : r3J9Hi+1nyO86Gbdo0jRuxzU1zHRzEvtK3EqH2x9owQ9NNvzQp7BeBLyInASgwEDHu4Iec21fzRR8klHbDN5Sw==
 ```
 
-Update the resource payload (e.g. service1.yml) with Bob's public key and signature.
-
-* Set `resource/owner` to Bob's address.
-* Set signature `pubKey` and `sig` using output from the previous command.
+Update the resource payload (e.g. service1.yml) with Bob's public key (`pubKey`) and signature (`sig`), using output from the previous command.
 
 ```yaml
 # service1.yml
