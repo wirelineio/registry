@@ -55,7 +55,7 @@ Initialize the chain.
 $ registryd init --chain-id wireline
 ```
 
-Setup the genesis account (`root`) which can be used to transfer funds to other accounts once the blockchain is running. Enter a passphrase for the key (e.g. test12345) when prompted. Note the generated mnemonic to restore the private key later.
+Setup the genesis account `root` which can be used to transfer funds to other accounts once the blockchain is running. Enter a passphrase for the key when prompted. Write down the generated mnemonic to restore the private key at a later date.
 
 ```
 $ regcli keys add root
