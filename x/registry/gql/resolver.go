@@ -497,3 +497,8 @@ func (r *queryResolver) GetBotsByAttributes(ctx context.Context, attributes []*K
 	return bots, nil
 
 }
+
+// GetStatus returns the registry status.
+func (r *queryResolver) GetStatus(ctx context.Context) (*Status, error) {
+	return &Status{Version: RegistryVersion}, nil
+}
