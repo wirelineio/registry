@@ -38,6 +38,10 @@ type Record struct {
 	Attributes []*KeyValue `json:"attributes"`
 }
 
+type Status struct {
+	Version string `json:"version"`
+}
+
 type Value struct {
 	Null    *bool    `json:"null"`
 	Int     *int     `json:"int"`

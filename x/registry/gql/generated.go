@@ -72,6 +72,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GetStatus              func(childComplexity int) int
 		GetAccounts            func(childComplexity int, addresses []string) int
 		GetRecordsByIds        func(childComplexity int, ids []string) int
 		GetRecordsByAttributes func(childComplexity int, attributes []*KeyValueInput) int
@@ -83,6 +84,10 @@ type ComplexityRoot struct {
 		Type       func(childComplexity int) int
 		Owner      func(childComplexity int) int
 		Attributes func(childComplexity int) int
+	}
+
+	Status struct {
+		Version func(childComplexity int) int
 	}
 
 	Value struct {
@@ -106,6 +111,7 @@ type MutationResolver interface {
 	Submit(ctx context.Context, tx string) (*string, error)
 }
 type QueryResolver interface {
+	GetStatus(ctx context.Context) (*Status, error)
 	GetAccounts(ctx context.Context, addresses []string) ([]*Account, error)
 	GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error)
 	GetRecordsByAttributes(ctx context.Context, attributes []*KeyValueInput) ([]*Record, error)
@@ -223,6 +229,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Submit(childComplexity, args["tx"].(string)), true
 
+	case "Query.GetStatus":
+		if e.complexity.Query.GetStatus == nil {
+			break
+		}
+
+		return e.complexity.Query.GetStatus(childComplexity), true
+
 	case "Query.GetAccounts":
 		if e.complexity.Query.GetAccounts == nil {
 			break
@@ -298,6 +311,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Record.Attributes(childComplexity), true
+
+	case "Status.Version":
+		if e.complexity.Status.Version == nil {
+			break
+		}
+
+		return e.complexity.Status.Version(childComplexity), true
 
 	case "Value.Null":
 		if e.complexity.Value.Null == nil {
@@ -422,10 +442,10 @@ var parsedSchema = gqlparser.MustLoadSchema(
 # Copyright 2019 Wireline, Inc.
 #
 
-# TODO(ashwin): Comment.
+# BigUInt is a 64-bit unsigned int.
 scalar BigUInt
 
-# TODO(ashwin): Comment.
+# Value of a given type.
 type Value {
   null:       Boolean
 
@@ -437,13 +457,13 @@ type Value {
   values:     [Value]
 }
 
-# TODO(ashwin): Comment.
+# Key/value pair.
 type KeyValue {
   key:        String!
   value:      Value!
 }
 
-# TODO(ashwin): Comment.
+# Value of a given type used as input to queries.
 input ValueInput {
   null:       Boolean
 
@@ -455,7 +475,7 @@ input ValueInput {
   values:     [ValueInput]
 }
 
-# TODO(ashwin): Comment.
+# Key/value pair for inputs.
 input KeyValueInput {
   key:        String!
   value:      ValueInput!
@@ -493,7 +513,17 @@ type Bot {
   accessKey: String
 }
 
+# Registry status.
+type Status {
+  version: String!
+}
+
 type Query {
+
+  #
+  # Status API.
+  #
+  getStatus: Status!
 
   #
   # Wallet API.
@@ -987,6 +1017,32 @@ func (ec *executionContext) _Mutation_submit(ctx context.Context, field graphql.
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_getStatus(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetStatus(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Status)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNStatus2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐStatus(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_getAccounts(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -1259,6 +1315,32 @@ func (ec *executionContext) _Record_attributes(ctx context.Context, field graphq
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOKeyValue2ᚕᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐKeyValue(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Status_version(ctx context.Context, field graphql.CollectedField, obj *Status) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Status",
+		Field:  field,
+		Args:   nil,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Version, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Value_null(ctx context.Context, field graphql.CollectedField, obj *Value) graphql.Marshaler {
@@ -2484,6 +2566,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "getStatus":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getStatus(ctx, field)
+				if res == graphql.Null {
+					invalid = true
+				}
+				return res
+			})
 		case "getAccounts":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -2571,6 +2667,33 @@ func (ec *executionContext) _Record(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "attributes":
 			out.Values[i] = ec._Record_attributes(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+var statusImplementors = []string{"Status"}
+
+func (ec *executionContext) _Status(ctx context.Context, sel ast.SelectionSet, obj *Status) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, statusImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	invalid := false
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Status")
+		case "version":
+			out.Values[i] = ec._Status_version(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2879,6 +3002,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 
 func (ec *executionContext) marshalNCoin2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐCoin(ctx context.Context, sel ast.SelectionSet, v Coin) graphql.Marshaler {
 	return ec._Coin(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNStatus2githubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐStatus(ctx context.Context, sel ast.SelectionSet, v Status) graphql.Marshaler {
+	return ec._Status(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNStatus2ᚖgithubᚗcomᚋwirelineioᚋregistryᚋxᚋregistryᚋgqlᚐStatus(ctx context.Context, sel ast.SelectionSet, v *Status) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Status(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

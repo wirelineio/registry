@@ -73,7 +73,17 @@ type Bot {
   accessKey: String
 }
 
+# Registry status.
+type Status {
+  version: String!
+}
+
 type Query {
+
+  #
+  # Status API.
+  #
+  getStatus: Status!
 
   #
   # Wallet API.
