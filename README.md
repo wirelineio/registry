@@ -59,7 +59,6 @@ Setup accounts/keys for Alice & Bob. Enter a passphrase for the key (e.g. test12
 
 ```
 $ regcli keys add alice --recover
-
 # Use the following mnemonic for recovery:
 # salad portion potato insect unknown exile lion soft layer evolve flavor hollow emerge celery ankle sponsor easy effort flush furnace life maximum rotate apple
 
@@ -72,7 +71,6 @@ Add initial funds. Note we're creating a blockchain account only for Alice.
 
 ```
 $ registryd add-genesis-account $(regcli keys show alice --address) 1000000wire
-
 ```
 
 Start the blockchain. You should see blocks being created every few seconds.
