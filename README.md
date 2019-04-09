@@ -2,7 +2,7 @@
 
 Registry is a custom blockchain built using the Cosmos SDK. It currently houses SDK modules and CLI toolchain for Registry and Payments.
 
-## Setup & install
+## Getting Started
 
 Install golang 1.11+ for your platform.
 
@@ -80,6 +80,7 @@ $ registryd start --gql-server --gql-playground
 ```
 
 Run the following commands in another terminal.
+
 
 ## Register module
 
