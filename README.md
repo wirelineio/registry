@@ -71,7 +71,8 @@ $ registryd start --gql-server --gql-playground
 Check that the Registry is up and running by querying the GQL endpoint in another terminal.
 
 ```
-$ curl -X POST -H "Content-Type: application/json" -d '{ "query": "{ getStatus { version } }" }' http://localhost:9473/query | jq
+$ curl -X POST -H "Content-Type: application/json" \
+  -d '{ "query": "{ getStatus { version } }" }' http://localhost:9473/query | jq
 ```
 
 If you just wanted to run the Registry locally, stop now. Read on if you want to explore basic usage of the in-built CLI.
