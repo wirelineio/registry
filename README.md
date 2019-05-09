@@ -11,6 +11,23 @@ $ go version
 go version go1.11 darwin/amd64
 ```
 
+And make sure that `$GOPATH` is set and that `$GOBIN` is in your `PATH`:
+
+```
+if [ -z "$GOPATH" ]; then
+  export GOPATH=$HOME/go
+  echo 'export GOPATH=$HOME/go' >> ~/.profile
+fi
+
+if [ -z "$GOBIN" ]; then
+  export GOBIN=$GOPATH/bin
+  echo 'export GOBIN=$GOPATH/bin' >> ~/.profile
+  
+  export PATH=$PATH:$GOBIN
+  echo 'export PATH=$PATH:$GOBIN' >> ~/.profile
+fi 
+```
+
 Clone the repo.
 
 NOTE: The repo must be created in the specified directory under `GOPATH`.
