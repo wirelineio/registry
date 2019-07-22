@@ -25,3 +25,7 @@ update_vendor_deps:
 install:
 	go install ./cmd/registryd
 	go install ./cmd/regcli
+
+build:
+	go build ./cmd/registryd
+	go build ./cmd/regcli
