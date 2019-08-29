@@ -43,39 +43,88 @@ input KeyValueInput {
 
 # Record is a base object which is used as a mixin for other types within the Registry.
 type Record {
-  id: String!                 # wrn:record:xxxxxxx.
-  type: String!               # wrn:registry-type:xxxxxxx.
-  owner: String!              # Address of record owner.
+  id:         String!         # wrn:record:xxxxxxx.
+  type:       String!         # wrn:registry-type:xxxxxxx.
+  owner:      String!         # Address of record owner.
+  system:     [KeyValue]      # System attributes (e.g. deleted flag).
   attributes: [KeyValue]      # User defined attributes.
+  links:      [Link]          # User defined links.
 }
 
 # Mutations require payment in coins (e.g. 100wire).
 # Used by the wallet to get the account balance for display and mutations.
 type Coin {
-  type: String!               # e.g. 'WIRE'
-  amount: BigUInt!            # e.g. 1000000
+  type:       String!         # e.g. 'WIRE'
+  amount:     BigUInt!        # e.g. 1000000
 }
 
 # Represents an account on the blockchain.
 # Mutations have to be signed by a particular account.
 type Account {
-  address: String!            # Blockchain address.
-  pubKey: String              # Public key.
-  number: BigUInt!            # Account number.
+  address:  String!           # Blockchain address.
+  pubKey:   String            # Public key.
+  number:   BigUInt!          # Account number.
   sequence: BigUInt!          # Sequence number used to prevent replays.
-  balance: [Coin!]            # Current balance for each coin type.
+  balance:  [Coin!]           # Current balance for each coin type.
+}
+
+# Protocols denote protobuf messages used by applications.
+type Protocol {
+  record:   Record
 }
 
 # Bots are autonomous agents that interact with users (and other bots).
 type Bot {
-  record: Record
-  name: String!
-  accessKey: String
+  record:     Record
+  name:       String!
+  accessKey:  String
+}
+
+# Pads are software modules that provide the UI/UX for applications.
+type Pad {
+  record:   Record
 }
 
 # Registry status.
 type Status {
-  version: String!
+  version:  String!
+}
+
+# Result for record queries.
+type Result {
+  record:   Record
+  protocol: Protocol
+  bot:      Bot
+  pad:      Pad
+}
+
+# Link to a record/result.
+type Link {
+  id:         String!         # wrn:record:xxxxxxx.
+  attributes: [KeyValue]      # User defined link attributes.
+  target:     Result          # Linked record/result.
+}
+
+# Condition for queries.
+input ConditionInput {
+  # All key/value inputs are logically AND-ed together.
+  attributes: [KeyValueInput]   # Match attributes.
+  links:      [KeyValueInput]   # Match link attributes.
+  meta:       [KeyValueInput]   # Meta conditions, e.g. return 'deleted' records.
+}
+
+# Condition for queries.
+type Condition {
+  # All key/value inputs are logically AND-ed together.
+  attributes: [KeyValue]   # Match attributes.
+  links:      [KeyValue]   # Match link attributes.
+  meta:       [KeyValue]   # Meta conditions, e.g. return 'deleted' records.
+}
+
+# Result set for record queries.
+type ResultSet {
+  conditions: [Condition]
+  results:    [Result]
 }
 
 type Query {
@@ -101,21 +150,32 @@ type Query {
   # Get records by IDs.
   getRecordsByIds(
     ids: [String!]
-  ): [Record]
+  ): ResultSet
 
-  # Get records by attributes.
-  getRecordsByAttributes(
-    attributes: [KeyValueInput]
-  ): [Record]
+  # Query records.
+  queryRecords(
+    # Multiple conditions are OR-ed together.
+    conditions: [ConditionInput]
+  ): ResultSet
 
   #
   # High layer API, works with types.
-  #
+  # TODO(ashwin): Remove high layer API?
 
-  # Get bots.
-  getBotsByAttributes(
-    attributes: [KeyValueInput]
-  ): [Bot]
+  # Query protocols.
+  queryProtocols(
+    conditions: [ConditionInput]
+  ): ResultSet
+
+  # Query bots.
+  queryBots(
+    conditions: [ConditionInput]
+  ): ResultSet
+
+  # Query pads.
+  queryPads(
+    conditions: [ConditionInput]
+  ): ResultSet
 }
 
 type Mutation {
