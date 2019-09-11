@@ -1,0 +1,52 @@
+#
+# Copyright 2019 Wireline, Inc.
+#
+
+# Protocols denote protobuf messages used by applications.
+type Protocol implements Record {
+  # Record fields.
+  id:         String!
+  version:    String!
+  type:       String!
+  name:       String!
+  protobuf:   String!
+  owner:      String!
+  system:     [KeyValue]
+  attributes: [KeyValue]
+  links:      [Link]
+
+  # TODO(ashwin): Define additional fields.
+}
+
+# Bots are autonomous agents that interact with users (and other bots).
+type Bot implements Record {
+  # Record fields.
+  id:         String!
+  version:    String!
+  type:       String!
+  name:       String!
+  protobuf:   String!
+  owner:      String!
+  system:     [KeyValue]
+  attributes: [KeyValue]
+  links:      [Link]
+
+  # Bot fields.
+  accessKey:  String
+}
+
+# Pads are software modules that provide the UI/UX for applications.
+type Pad implements Record {
+  # Record fields.
+  id:         String!
+  version:    String!
+  type:       String!
+  name:       String!
+  protobuf:   String!
+  owner:      String!
+  system:     [KeyValue]
+  attributes: [KeyValue]
+  links:      [Link]
+
+  # TODO(ashwin): Define additional fields.
+}
