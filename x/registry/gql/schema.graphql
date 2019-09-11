@@ -49,8 +49,8 @@ interface Record {
   name:       String!         # wrn:<type>:<path>, e.g. wrn:bot:wireline.io/chess
   protobuf:   String!         # wrn:protobuf:<namespace>.<typename>.
   owner:      String!         # Address of record owner.
-  attributes: [KeyValue]      # User defined attributes.
-  links:      [Link]          # User defined links.
+  attributes: [KeyValue]      # Record attributes.
+  links:      [Link]          # Record links.
 }
 
 # Mutations require payment in coins (e.g. 100wire).
