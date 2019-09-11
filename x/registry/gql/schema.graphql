@@ -49,7 +49,6 @@ interface Record {
   name:       String!         # wrn:<type>:<path>, e.g. wrn:bot:wireline.io/chess
   protobuf:   String!         # wrn:protobuf:<namespace>.<typename>.
   owner:      String!         # Address of record owner.
-  system:     [KeyValue]      # System attributes (e.g. deleted flag).
   attributes: [KeyValue]      # User defined attributes.
   links:      [Link]          # User defined links.
 }
